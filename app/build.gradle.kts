@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
+    id("androidx.navigation.safeargs")
 }
 
 android {
@@ -66,4 +69,30 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    /* Retrofit */
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    /* View Model & LiveData for MVVM architecture */
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.livedata)
+
+     /*
+     Dependency injection with Hilt - https://developer.android.com/training/dependency-injection/hilt-android#setup
+     Hilt Android Processor - https://mvnrepository.com/artifact/com.google.dagger/hilt-android-compiler
+     */
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.fragment)
+
+    // Save data in a local database using Room - https://developer.android.com/training/data-storage/room#setup
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
+}
+
+// Dependency injection with Hilt - Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }
