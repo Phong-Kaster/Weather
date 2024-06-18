@@ -12,5 +12,5 @@ import com.example.weather.data.datasource.database.entity.AdministrativeAreaEnt
     exportSchema = true,
 )
 abstract class WeatherDatabase : RoomDatabase() {
-    abstract fun wifiQRDao(): WeatherDao
+    abstract fun weatherDao(): WeatherDao
 }
