@@ -1,7 +1,11 @@
 package com.example.weather.data.datasource.remote.interceptor
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import com.example.weather.configuration.Constant
 import com.example.weather.data.repository.SettingRepository
+import com.panda.wifipassword.data.api.exception.NoConnectivityException
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -15,17 +19,21 @@ import javax.inject.Inject
 class WeatherInterceptor
 @Inject
 constructor(
+    private val context: Context,
     private val settingRepository: SettingRepository
 ) : Interceptor {
 
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
+        val isNetworkConnected = isNetworkConnected()
+        if (!isNetworkConnected) throw NoConnectivityException()
+
 
         // Chain.request represents the current request/response chain.
-        var request: Request = chain.request()
+        val originalRequest: Request = chain.request()
 
-        val url: HttpUrl = request.url()
+        val url: HttpUrl = originalRequest.url
             .newBuilder()
             .addQueryParameter("apikey", Constant.ACCU_WEATHER_KEY)
             .addQueryParameter("details", "true")
@@ -33,13 +41,30 @@ constructor(
             .addQueryParameter("metric", "false")
             .build()
 
-        request = request
+        val outputRequest = originalRequest
             .newBuilder()
+            .addHeader("Authorization", "Bearer accessToken")
             .url(url)
             .build()
 
 
-        val response: Response = chain.proceed(request)// pass the request/response on to the next interceptor or the server.
+        val response: Response = chain.proceed(outputRequest)// pass the request/response on to the next interceptor or the server.
         return response
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val network = connectivityManager.activeNetwork
+        if (network != null) {
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+            if (networkCapabilities != null) {
+                return (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || networkCapabilities.hasTransport(
+                    NetworkCapabilities.TRANSPORT_WIFI
+                ))
+            }
+        }
+        return false
     }
 }

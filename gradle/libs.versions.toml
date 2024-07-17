@@ -40,6 +40,11 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 #Retrofit
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+retrofit-converter-jackson = { module = "com.squareup.retrofit2:converter-jackson", version.ref = "retrofit" }
+retrofit-converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
+okhttp3 = { module = "com.squareup.okhttp3:okhttp", version = "5.0.0-alpha.3" }
+okhttp3_interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version = "4.12.0" }
 
 # Dependency injection with Hilt
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }

@@ -50,6 +50,23 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    buildFeatures.buildConfig = true
+
+    flavorDimensions += "type"
+    productFlavors {
+        create("AppTest") {
+            dimension = "type"
+            buildConfigField("String", "BASE_URL", "\"https://api-wifipassword.dev.apero.vn\"")
+            buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "true")
+        }
+
+        create("AppProduct") {
+            dimension = "type"
+            buildConfigField("String", "BASE_URL", "\"https://api-wifipassword.dev.apero.vn\"")
+            buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "false")
+        }
+    }
 }
 
 dependencies {
@@ -90,6 +107,15 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
+
+    /*
+    * Retrofit*/
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.retrofit.converter.jackson)
+    implementation(libs.retrofit.converter.scalars)
+    implementation(libs.okhttp3)
+    implementation(libs.okhttp3.interceptor)
 }
 
 // Dependency injection with Hilt - Allow references to generated code
