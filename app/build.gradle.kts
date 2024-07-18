@@ -55,15 +55,19 @@ android {
 
     flavorDimensions += "type"
     productFlavors {
-        create("AppTest") {
+        create("Development") {
             dimension = "type"
-            buildConfigField("String", "BASE_URL", "\"https://api-wifipassword.dev.apero.vn\"")
+
+            buildConfigField("String", "API_URL", "\"https://dataservice.accuweather.com\"")
+            buildConfigField("String", "API_KEY", "\"x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ\"")
             buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "true")
         }
 
-        create("AppProduct") {
+        create("Production") {
             dimension = "type"
-            buildConfigField("String", "BASE_URL", "\"https://api-wifipassword.dev.apero.vn\"")
+
+            buildConfigField("String", "API_URL", "\"https://dataservice.accuweather.com\"")
+            buildConfigField("String", "API_KEY", "\"x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ\"")
             buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "false")
         }
     }

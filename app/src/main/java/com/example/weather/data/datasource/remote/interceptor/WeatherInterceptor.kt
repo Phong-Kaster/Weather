@@ -3,6 +3,7 @@ package com.example.weather.data.datasource.remote.interceptor
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import com.example.weather.BuildConfig
 import com.example.weather.configuration.Constant
 import com.example.weather.data.repository.SettingRepository
 import com.panda.wifipassword.data.api.exception.NoConnectivityException
@@ -35,7 +36,8 @@ constructor(
 
         val url: HttpUrl = originalRequest.url
             .newBuilder()
-            .addQueryParameter("apikey", Constant.ACCU_WEATHER_KEY)
+//            .addQueryParameter("apikey", Constant.ACCU_WEATHER_KEY)
+            .addQueryParameter("apikey", BuildConfig.API_KEY)
             .addQueryParameter("details", "true")
             /*.addQueryParameter("language", settingRepository.getLanguage().code)*/
             .addQueryParameter("metric", "false")

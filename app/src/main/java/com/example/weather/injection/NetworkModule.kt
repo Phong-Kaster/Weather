@@ -83,6 +83,6 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideApiService(retrofit: Retrofit.Builder): WeatherApi {
-        return retrofit.baseUrl(BuildConfig.BASE_URL).build().create(WeatherApi::class.java)
+        return retrofit.baseUrl(BuildConfig.API_URL).build().create(WeatherApi::class.java)
     }
 }

@@ -9,21 +9,21 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface WeatherApi {
-    /**
+    /*********************************
      * https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/geoposition/search
      */
     @GET("/locations/v1/cities/geoposition/search")
     fun searchGeoposition( @Query("q") lnglat: String ): Response<LocationGeoDto>
 
 
-    /**
+    /*********************************
      * https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/autocomplete
      */
     @GET("/locations/v1/cities/autocomplete")
     suspend fun searchAutocomplete( @Query("q") keyword: String ): Response<List<LocationAutoDto>>
 
 
-    /**
+    /*********************************
      * https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/%7BlocationKey%7D
      */
     @GET("/locations/v1/{locationKey}")
