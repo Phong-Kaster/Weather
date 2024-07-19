@@ -4,6 +4,7 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("androidx.navigation.safeargs")
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -83,11 +84,15 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.profileinstaller)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    "baselineProfile"(project(":baselineprofile"))
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -113,13 +118,16 @@ dependencies {
     kapt(libs.androidx.room.compiler)
 
     /*
-    * Retrofit*/
+    Retrofit*/
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.retrofit.converter.jackson)
     implementation(libs.retrofit.converter.scalars)
     implementation(libs.okhttp3)
     implementation(libs.okhttp3.interceptor)
+
+    // Preferences DataStore - https://developer.android.com/topic/libraries/architecture/datastore#preferences-datastore-dependencies
+    implementation(libs.androidx.datastore.preferences)
 }
 
 // Dependency injection with Hilt - Allow references to generated code

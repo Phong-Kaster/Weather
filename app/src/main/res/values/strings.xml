@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Weather</string>
+    <string name="english">English</string>
+    <string name="vietnamese">Vietnamese</string>
+    <string name="wind">Wind</string>
+    <string name="rain">Rain</string>
+    <string name="pressure">Pressure</string>
+    <string name="visibility">Visibility</string>
+    <string name="uv_index">UV Index</string>
+    <string name="precipitation">Precipation</string>
+    <string name="view_all">View all</string>
+    <string name="data_provided_in_part_by">"Data provided in part by "</string>
 </resources>

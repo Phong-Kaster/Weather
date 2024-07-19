@@ -1,5 +1,7 @@
 package com.example.weather.data.repository
 
+import com.example.weather.configuration.Language
+import com.example.weather.data.datastore.SettingDatastore
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -7,44 +9,36 @@ import javax.inject.Singleton
 class SettingRepository
 @Inject
 constructor(
-   /* private val settingDatastore: SettingDatastore,*/
+    private val settingDatastore: SettingDatastore,
 ) {
     // ENABLE INTRO
-    /*fun enableIntro(): Boolean {
+    fun enableIntro(): Boolean {
         return settingDatastore.enableIntro
-    }*/
+    }
 
-    /*fun setEnableIntro(boolean: Boolean) {
+    fun setEnableIntro(boolean: Boolean) {
         settingDatastore.enableIntro = boolean
-    }*/
+    }
 
     // ENABLE LANGUAGE INTRO
-    /*fun enableLanguageIntro(): Boolean {
+    fun enableLanguageIntro(): Boolean {
         return settingDatastore.enableLanguageIntro
-    }*/
+    }
 
-    /*fun setEnableLanguageIntro(boolean: Boolean) {
+    fun setEnableLanguageIntro(boolean: Boolean) {
         settingDatastore.enableLanguageIntro = boolean
-    }*/
+    }
 
 
     // LANGUAGE
-    /*fun getLanguage(): Language {
+    fun getLanguage(): Language {
         return settingDatastore.language
     }
 
     fun setLanguage(language: Language) {
         settingDatastore.language = language
-    }*/
-
-    /*fun getLanguageFlow() = settingDatastore.languageFlow*/
-
-    // LOGO
-    /*fun getLogo(): Logo {
-        return settingDatastore.logo
     }
 
-    fun setLogo(logo: Logo){
-        settingDatastore.logo = logo
-    }*/
+    fun getLanguageFlow() = settingDatastore.languageFlow
+
 }
