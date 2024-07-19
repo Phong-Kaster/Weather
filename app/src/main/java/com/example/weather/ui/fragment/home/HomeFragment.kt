@@ -1,7 +1,12 @@
 package com.example.weather.ui.fragment.home
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.Animatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -31,8 +36,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -49,12 +58,14 @@ import com.example.weather.ui.theme.brushDay
 import com.example.weather.ui.theme.brushDreary
 import com.example.weather.ui.theme.brushFog
 import com.example.weather.ui.theme.brushManageLocation
+import com.example.weather.ui.theme.brushMidnight
 import com.example.weather.ui.theme.brushNight
 import com.example.weather.ui.theme.brushRain
 import com.example.weather.ui.theme.brushSunrise
 import com.example.weather.ui.theme.brushSunset
 import com.example.weather.ui.theme.colorDay
 import com.example.weather.ui.theme.colorDreary
+import com.example.weather.ui.theme.colorMidnight
 import com.example.weather.ui.theme.colorNight
 import com.example.weather.ui.theme.colorRain
 import com.example.weather.ui.theme.colorSunset
@@ -75,6 +86,7 @@ class HomeFragment : CoreFragment() {
 @Composable
 fun HomeLayout() {
 
+    val context = LocalContext.current
     val color = remember { Animatable(colorDay) }
 
     var pageValue by remember { mutableIntStateOf(0) }
@@ -86,7 +98,7 @@ fun HomeLayout() {
                 1 -> brushDay
                 2 -> brushNight
                 3 -> brushDreary
-                4 -> brushSunset
+                4 -> brushMidnight
                 else -> brushNight
             }
         }
@@ -94,132 +106,143 @@ fun HomeLayout() {
 
     LaunchedEffect(Unit) {
         snapshotFlow { pagerState.settledPage }.collect { page ->
-            when (page) {
-                0 -> color.animateTo(colorDay, animationSpec = tween(1000))
-                1 -> color.animateTo(colorDreary, animationSpec = tween(1000))
-                2 -> color.animateTo(colorNight, animationSpec = tween(1000))
-                3 -> color.animateTo(colorRain, animationSpec = tween(1000))
-                4 -> color.animateTo(colorSunset, animationSpec = tween(1000))
-                else -> color.animateTo(colorNight, animationSpec = tween(1000))
-            }
+            color.animateTo(
+                targetValue = when (page) {
+                    0 -> colorMidnight
+                    1 -> colorDreary
+                    2 -> colorNight
+                    3 -> colorRain
+                    4 -> colorSunset
+                    else -> colorNight
+                },
+                animationSpec = tween(1000),
+                block = {},
+            )
         }
     }
 
-    CoreLayout(
-//        backgroundBrush = backgroundBrush,
-        backgroundColor = color.value,
-        modifier = Modifier
-            .graphicsLayer {
-                // Calculate the absolute offset for the current page from the
-                // scroll position. We use the absolute value which allows us to mirror
-                // any effects for both directions
-                val pageOffset = ((pagerState.currentPage - pageValue) + pagerState.currentPageOffsetFraction).absoluteValue
 
-                Log.d("TAG", "currentPageOffsetFraction: ${pagerState.currentPageOffsetFraction}")
-
-                alpha = lerp(
-                    start = 1f,
-                    stop = 1f,
-                    fraction = pageOffset.coerceIn(-0.5f, 1f)
+    Box(modifier = Modifier.background(brush = backgroundBrush)) {
+        CoreLayout(
+            backgroundBrush = backgroundBrush,
+//        backgroundColor = color.value,
+            modifier = Modifier
+                .alpha(
+                    alpha = lerp(1f, 0f, pagerState.currentPageOffsetFraction.absoluteValue)
+                ),
+//            .graphicsLayer {
+//                // Calculate the absolute offset for the current page from the
+//                // scroll position. We use the absolute value which allows us to mirror
+//                // any effects for both directions
+//                val pageOffset = ((pagerState.currentPage - pageValue) + pagerState.currentPageOffsetFraction).absoluteValue
+//
+//                Log.d("TAG", "currentPageOffsetFraction: ${pagerState.currentPageOffsetFraction}")
+//
+//                alpha = lerp(
+//                    start = 1f,
+//                    stop = 1f,
+//                    fraction = pageOffset.coerceIn(-0.5f, 1f)
+//                )
+//            }
+            topBar = {
+                HomeTopBar(
+                    pageCurrent = pagerState.currentPage,
+                    pageCount = pagerState.pageCount,
+                    onMenuLeft = {},
+                    onMenuRight = {},
+                    modifier = Modifier.statusBarsPadding(),
                 )
             },
-        topBar = {
-            HomeTopBar(
-                pageCurrent = pagerState.currentPage,
-                pageCount = pagerState.pageCount,
-                onMenuLeft = {},
-                onMenuRight = {},
-                modifier = Modifier.statusBarsPadding(),
-            )
-        },
-        bottomBar = {
-            AccuWeather(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-        },
-        content = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-
-                Spacer(
+            bottomBar = {
+                AccuWeather(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(20.dp)
+                        .padding(16.dp)
                 )
-
-                WeatherHeader(
-                    page = pagerState.settledPage
-                )
-
-                HorizontalPager(
-                    verticalAlignment = Alignment.Top,
-                    state = pagerState,
+            },
+            content = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier
-                        .fillMaxSize(),
-                    pageContent = { page ->
-                        pageValue = page
+                        .fillMaxSize()
+                ) {
 
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            item(key = "WeatherForecastHourly") {
-                                WeatherForecastHourly(
-                                    modifier = Modifier,
-                                    hourlyForecasts = listOf(
-                                        HourlyForecast(id = "0"),
-                                        HourlyForecast(id = "1"),
-                                        HourlyForecast(id = "2"),
-                                        HourlyForecast(id = "3"),
-                                        HourlyForecast(id = "4"),
-                                        HourlyForecast(id = "5"),
-                                        HourlyForecast(id = "6"),
-                                        HourlyForecast(id = "7"),
-                                        HourlyForecast(id = "8"),
-                                        HourlyForecast(id = "9"),
-                                        HourlyForecast(id = "10"),
-                                        HourlyForecast(id = "11"),
-                                        HourlyForecast(id = "12"),
-                                        HourlyForecast(id = "13"),
-                                        HourlyForecast(id = "14"),
-                                        HourlyForecast(id = "15"),
-                                    )
-                                )
-                            }
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(20.dp)
+                    )
 
-                            item(key = "WeatherForecastDaily") {
-                                WeatherForecastDaily(
-                                    modifier = Modifier,
-                                    dailyForecasts = listOf(
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
+                    WeatherHeader(
+                        page = pagerState.settledPage
+                    )
+
+                    HorizontalPager(
+                        verticalAlignment = Alignment.Top,
+                        state = pagerState,
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        pageContent = { page ->
+                            pageValue = page
+
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                item(key = "WeatherForecastHourly") {
+                                    WeatherForecastHourly(
+                                        modifier = Modifier,
+                                        hourlyForecasts = listOf(
+                                            HourlyForecast(id = "0"),
+                                            HourlyForecast(id = "1"),
+                                            HourlyForecast(id = "2"),
+                                            HourlyForecast(id = "3"),
+                                            HourlyForecast(id = "4"),
+                                            HourlyForecast(id = "5"),
+                                            HourlyForecast(id = "6"),
+                                            HourlyForecast(id = "7"),
+                                            HourlyForecast(id = "8"),
+                                            HourlyForecast(id = "9"),
+                                            HourlyForecast(id = "10"),
+                                            HourlyForecast(id = "11"),
+                                            HourlyForecast(id = "12"),
+                                            HourlyForecast(id = "13"),
+                                            HourlyForecast(id = "14"),
+                                            HourlyForecast(id = "15"),
+                                        )
                                     )
-                                )
+                                }
+
+                                item(key = "WeatherForecastDaily") {
+                                    WeatherForecastDaily(
+                                        modifier = Modifier,
+                                        dailyForecasts = listOf(
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                            DailyForecast(),
+                                        )
+                                    )
+                                }
                             }
                         }
-                    }
-                )
-            }
-        },
-    )
+                    )
+                }
+            },
+
+            )
+    }
 }
 
 @Preview
