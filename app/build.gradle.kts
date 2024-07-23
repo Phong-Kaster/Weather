@@ -58,17 +58,19 @@ android {
     productFlavors {
         create("Development") {
             dimension = "type"
+            manifestPlaceholders["accu_weather_key"] = "AIzaSyCGG3b4JmGZaeXRVDlZio3OBaA6EaUv9wU"
 
             buildConfigField("String", "API_URL", "\"https://dataservice.accuweather.com\"")
-            buildConfigField("String", "API_KEY", "\"x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ\"")
+            buildConfigField("String", "API_KEY", "\"AIzaSyCGG3b4JmGZaeXRVDlZio3OBaA6EaUv9wU\"")
             buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "true")
         }
 
         create("Production") {
             dimension = "type"
+            manifestPlaceholders["accu_weather_key"] = "AIzaSyCGG3b4JmGZaeXRVDlZio3OBaA6EaUv9wU"
 
             buildConfigField("String", "API_URL", "\"https://dataservice.accuweather.com\"")
-            buildConfigField("String", "API_KEY", "\"x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ\"")
+            buildConfigField("String", "API_KEY", "\"AIzaSyCGG3b4JmGZaeXRVDlZio3OBaA6EaUv9wU\"")
             buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "false")
         }
     }
@@ -117,8 +119,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
 
-    /*
-    Retrofit*/
+    /*Retrofit*/
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.retrofit.converter.jackson)
@@ -128,6 +129,10 @@ dependencies {
 
     // Preferences DataStore - https://developer.android.com/topic/libraries/architecture/datastore#preferences-datastore-dependencies
     implementation(libs.androidx.datastore.preferences)
+
+    // Coil - https://coil-kt.github.io/coil/compose/
+    implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
 }
 
 // Dependency injection with Hilt - Allow references to generated code

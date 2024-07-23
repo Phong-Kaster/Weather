@@ -30,8 +30,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCGG3b4JmGZaeXRVDlZio3OBaA6EaUv9wU" />
+            android:value="${accu_weather_key}" />
 
     </application>
-
 </manifest>
