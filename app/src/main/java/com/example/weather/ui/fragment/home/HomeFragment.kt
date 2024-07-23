@@ -26,9 +26,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -49,11 +55,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
@@ -98,7 +107,7 @@ class HomeFragment : CoreFragment() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeLayout() {
 
@@ -165,19 +174,36 @@ fun HomeLayout() {
         label = "cloudyAnimation"
     )
 
+    val lazyColumnState = rememberLazyListState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+    val isCollapsed = remember { derivedStateOf { scrollBehavior.state.collapsedFraction > 0.5 } }
+
+    val collapsed = 22
+    val expanded = 28
+    val topAppBarTextSize = (collapsed + (expanded - collapsed)*(1-scrollBehavior.state.collapsedFraction)).sp
+
     Box(modifier = Modifier.fillMaxSize()) {
         // CONTENT
         CoreLayout(
             backgroundColor = color.value,
             modifier = Modifier,
             topBar = {
-                HomeTopBar(
-                    pageCurrent = pagerState.currentPage,
-                    pageCount = pagerState.pageCount,
-                    onMenuLeft = {},
-                    onMenuRight = {},
-                    modifier = Modifier.statusBarsPadding(),
+                LargeTopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(id = R.string.app_name),
+                            fontSize = topAppBarTextSize
+                        )
+                    },
+                    scrollBehavior = scrollBehavior
                 )
+//                HomeTopBar(
+//                    pageCurrent = pagerState.currentPage,
+//                    pageCount = pagerState.pageCount,
+//                    onMenuLeft = {},
+//                    onMenuRight = {},
+//                    modifier = Modifier.statusBarsPadding(),
+//                )
             },
             bottomBar = {
                 AccuWeather(
@@ -191,6 +217,7 @@ fun HomeLayout() {
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier
                         .fillMaxSize()
+                      .nestedScroll(scrollBehavior.nestedScrollConnection)
                 ) {
 
                     Spacer(
@@ -212,6 +239,7 @@ fun HomeLayout() {
                             pageValue = page
 
                             LazyColumn(
+                                state = lazyColumnState,
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier
