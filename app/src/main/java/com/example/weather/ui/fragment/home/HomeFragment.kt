@@ -122,10 +122,9 @@ fun HomeLayout() {
     }
 
 
-    Box(modifier = Modifier.background(brush = backgroundBrush)) {
+    Box(modifier = Modifier.background(color = color.value)) {
         CoreLayout(
             backgroundBrush = backgroundBrush,
-//        backgroundColor = color.value,
             modifier = Modifier
                 .alpha(
                     alpha = lerp(1f, 0f, pagerState.currentPageOffsetFraction.absoluteValue)

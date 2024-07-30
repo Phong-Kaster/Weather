@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
@@ -13,6 +14,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.example.weather.ui.localcomposition.DarkCustomizedTheme
+import com.example.weather.ui.localcomposition.LightCustomizedTheme
+import com.example.weather.ui.localcomposition.LocalCustomizedTheme
+import com.example.weather.ui.theme.CustomizedWeatherTheme
 import com.example.weather.ui.theme.WeatherTheme
 import com.example.weather.util.AppUtil
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,9 +43,12 @@ open class CoreFragment : Fragment(), CoreBehavior {
                     LocalLocale provides requireActivity().resources.configuration.locales[0],
                     *compositionLocalProvider().toTypedArray()
                 ) {
-                    WeatherTheme {
-                        ComposeView()
+                    CustomizedWeatherTheme {
+                        WeatherTheme {
+                            ComposeView()
+                        }
                     }
+
                 }
             }
         }
