@@ -41,4 +41,12 @@ constructor(
 
     fun getLanguageFlow() = settingDatastore.languageFlow
 
+    // DARK THEME
+    fun enableDarkTheme(): Boolean {
+        return settingDatastore.enableDarkMode
+    }
+
+    fun setDarkMode(boolean: Boolean) {
+        settingDatastore.enableDarkMode = boolean
+    }
 }

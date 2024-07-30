@@ -9,18 +9,21 @@ val LocalCustomizedTheme = compositionLocalOf {
 }
 
 val DarkCustomizedTheme = CustomizedTheme(
-    backgroundColor = Color.White,
+    textColor = Color.White,
     backgroundBrush = Brush.linearGradient(listOf(Color.Yellow, Color.Green)),
 )
 
 val LightCustomizedTheme = CustomizedTheme(
-    backgroundColor = Color.Black,
+    textColor = Color.Black,
     backgroundBrush = Brush.linearGradient(listOf(Color.Magenta, Color.Cyan)),
 )
 
-data class CustomizedTheme
-constructor(
-    val backgroundColor: Color,
+/**
+ * We can define a customized theme like the following below:
+ * Next, we need to open Core Fragment to provide the theme as reference to whole app
+ */
+data class CustomizedTheme(
+    val textColor: Color,
     val backgroundBrush: Brush,
 ){
 

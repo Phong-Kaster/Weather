@@ -1,6 +1,5 @@
 package com.example.weather.ui.fragment.home
 
-import android.widget.Toast
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -29,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.viewModels
 import com.example.jetpack.core.CoreFragment
 import com.example.jetpack.core.CoreLayout
 import com.example.weather.domain.model.DailyForecast
@@ -49,13 +49,15 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class HomeFragment : CoreFragment() {
 
+    private val viewModel: HomeViewModel by viewModels()
+
     @Composable
     override fun ComposeView() {
         super.ComposeView()
         HomeLayout(
             onChangeDarkTheme = {
-                Toast.makeText(requireContext(), "Change theme", Toast.LENGTH_SHORT).show()
                 darkTheme = !darkTheme
+                viewModel.setDarkMode(darkTheme)
             }
         )
     }

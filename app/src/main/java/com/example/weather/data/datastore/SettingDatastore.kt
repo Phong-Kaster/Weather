@@ -31,6 +31,7 @@ constructor(application: WeatherApplication) {
     private val enableIntroKey = booleanPreferencesKey("enableIntroKey")
     private val enableLanguageIntroKey = booleanPreferencesKey("enableLanguageIntroKey")
     private val logoKey = stringPreferencesKey("logoKey")
+    private val enableDarkModeKey = booleanPreferencesKey("enableDarkModeKey")
 
     // Enable Intro
     var enableIntro: Boolean
@@ -55,4 +56,9 @@ constructor(application: WeatherApplication) {
     val languageFlow: Flow<Language> = datastore.data.map { mutablePreferences ->
         Language.getByCode(code = mutablePreferences[languageKey])
     }
+
+    // Enable Intro
+    var enableDarkMode: Boolean
+        get() = runBlocking { datastore.data.first()[enableDarkModeKey] ?: true }
+        set(value) = runBlocking { datastore.edit { pref -> pref[enableDarkModeKey] = value } }
 }

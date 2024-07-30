@@ -1,6 +1,7 @@
 package com.example.jetpack.core
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.example.weather.data.repository.SettingRepository
 import com.example.weather.ui.localcomposition.DarkCustomizedTheme
 import com.example.weather.ui.localcomposition.LightCustomizedTheme
 import com.example.weather.ui.localcomposition.LocalCustomizedTheme
@@ -26,6 +28,7 @@ import com.example.weather.ui.theme.WeatherTheme
 import com.example.weather.util.AppUtil
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
+import javax.inject.Inject
 
 
 val LocalLocale = staticCompositionLocalOf { Locale.getDefault() }
@@ -33,8 +36,19 @@ val LocalNavController = staticCompositionLocalOf<NavController?> { null }
 
 @AndroidEntryPoint
 open class CoreFragment : Fragment(), CoreBehavior {
+    protected val TAG = this.javaClass.simpleName
+
+    @Inject
+    lateinit var settingRepository: SettingRepository
 
     var darkTheme by mutableStateOf(false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated: ")
+        setupDarkMode()
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,13 +64,12 @@ open class CoreFragment : Fragment(), CoreBehavior {
                     *compositionLocalProvider().toTypedArray()
                 ) {
                     CustomizedWeatherTheme(
-                        darkTheme = darkTheme
-                    ){
-                        WeatherTheme {
-                            ComposeView()
-                        }
-                    }
-
+                        darkTheme = darkTheme,
+                        content = {
+                            WeatherTheme {
+                                ComposeView()
+                            }
+                        })
                 }
             }
         }
@@ -92,5 +105,9 @@ open class CoreFragment : Fragment(), CoreBehavior {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
             )
         }*/
+    }
+
+    private fun setupDarkMode() {
+        darkTheme = settingRepository.enableDarkTheme()
     }
 }
