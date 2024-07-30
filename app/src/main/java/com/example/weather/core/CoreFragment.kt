@@ -9,6 +9,10 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
@@ -30,6 +34,8 @@ val LocalNavController = staticCompositionLocalOf<NavController?> { null }
 @AndroidEntryPoint
 open class CoreFragment : Fragment(), CoreBehavior {
 
+    var darkTheme by mutableStateOf(false)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,7 +49,9 @@ open class CoreFragment : Fragment(), CoreBehavior {
                     LocalLocale provides requireActivity().resources.configuration.locales[0],
                     *compositionLocalProvider().toTypedArray()
                 ) {
-                    CustomizedWeatherTheme {
+                    CustomizedWeatherTheme(
+                        darkTheme = darkTheme
+                    ){
                         WeatherTheme {
                             ComposeView()
                         }

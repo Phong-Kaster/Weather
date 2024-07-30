@@ -3,6 +3,8 @@ package com.example.weather.ui.fragment.home.component
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +34,12 @@ fun WeatherHeader(
     page: Int = 0,
 ) {
     val context = LocalContext.current
+
+    val textColor by
+    animateColorAsState(
+        targetValue = LocalCustomizedTheme.current.backgroundColor,
+        animationSpec = tween(durationMillis = 1500),
+        label = "textColor")
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -62,7 +71,8 @@ fun WeatherHeader(
                     text = "Thunder storm",
                     //style = customizedTextStyle(fontWeight = 400, fontSize = 16),
                     /*color = if (isNight) Color.White else Color.Black,*/
-                    color = Color.White,
+//                    color = Color.White,
+                    color = textColor,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     modifier = Modifier.fillMaxWidth()
@@ -78,7 +88,8 @@ fun WeatherHeader(
                     text = "Feels like 30°C",
                     style = customizedTextStyle(fontWeight = 400, fontSize = 16),
                     /*color = if (isNight) Color.White else Color.Black,*/
-                    color = Color.White,
+//                    color = Color.White,
+                    color = textColor,
                     modifier = Modifier
                 )
 
@@ -87,7 +98,7 @@ fun WeatherHeader(
                     style = customizedTextStyle(fontWeight = 600, fontSize = 110),
                     /*color = if (isNight) Color.White else Color.Black,*/
 //                    color = Color.White,
-                    color = LocalCustomizedTheme.current.backgroundColor
+                    color = textColor
                 )
             }
         }
