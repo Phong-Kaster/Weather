@@ -9,12 +9,12 @@ val LocalCustomizedTheme = compositionLocalOf {
 }
 
 val DarkCustomizedTheme = CustomizedTheme(
-    backgroundColor = Color.Black,
+    backgroundColor = Color.White,
     backgroundBrush = Brush.linearGradient(listOf(Color.Yellow, Color.Green)),
 )
 
 val LightCustomizedTheme = CustomizedTheme(
-    backgroundColor = Color.White,
+    backgroundColor = Color.Black,
     backgroundBrush = Brush.linearGradient(listOf(Color.Magenta, Color.Cyan)),
 )
 

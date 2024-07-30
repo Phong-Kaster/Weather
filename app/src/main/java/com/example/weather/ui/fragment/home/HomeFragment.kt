@@ -188,22 +188,22 @@ fun HomeLayout() {
             backgroundColor = color.value,
             modifier = Modifier,
             topBar = {
-                LargeTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(id = R.string.app_name),
-                            fontSize = topAppBarTextSize
-                        )
-                    },
-                    scrollBehavior = scrollBehavior
-                )
-//                HomeTopBar(
-//                    pageCurrent = pagerState.currentPage,
-//                    pageCount = pagerState.pageCount,
-//                    onMenuLeft = {},
-//                    onMenuRight = {},
-//                    modifier = Modifier.statusBarsPadding(),
+//                LargeTopAppBar(
+//                    title = {
+//                        Text(
+//                            text = stringResource(id = R.string.app_name),
+//                            fontSize = topAppBarTextSize
+//                        )
+//                    },
+//                    scrollBehavior = scrollBehavior
 //                )
+                HomeTopBar(
+                    pageCurrent = pagerState.currentPage,
+                    pageCount = pagerState.pageCount,
+                    onMenuLeft = {},
+                    onMenuRight = {},
+                    modifier = Modifier.statusBarsPadding(),
+                )
             },
             bottomBar = {
                 AccuWeather(
