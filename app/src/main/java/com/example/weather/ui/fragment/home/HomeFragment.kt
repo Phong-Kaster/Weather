@@ -1,5 +1,7 @@
 package com.example.weather.ui.fragment.home
 
+import android.os.Bundle
+import android.view.View
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -51,6 +53,12 @@ class HomeFragment : CoreFragment() {
 
     private val viewModel: HomeViewModel by viewModels()
 
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.getCurrentCondition(locationKey = "3554439")
+    }
+
     @Composable
     override fun ComposeView() {
         super.ComposeView()
@@ -66,7 +74,7 @@ class HomeFragment : CoreFragment() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeLayout(
-    onChangeDarkTheme: ()->Unit = {}
+    onChangeDarkTheme: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val color = remember { Animatable(colorDay) }

@@ -7,6 +7,7 @@ import com.example.weather.data.datasource.database.WeatherDatabase
 import com.example.weather.data.datasource.database.dao.WeatherDao
 import com.example.weather.data.datasource.remote.WeatherApi
 import com.example.weather.data.datasource.remote.dto.LocationInfoDto
+import com.example.weather.data.datasource.remote.response.CurrentForecastResponse
 import com.example.weather.util.ApiUtil
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,5 +30,10 @@ constructor(
         val response = ApiUtil.fetchDataBody { weatherApi.searchAutocomplete(keyword = keyword) }
         Log.d(TAG, "searchAutocomplete - response: $response")
         return response
+    }
+
+    suspend fun getCurrentCondition(locationKey: String) {
+        val response = ApiUtil.fetchDataBody { weatherApi.getCurrentCondition(locationKey = locationKey) }
+        Log.d(TAG, "getCurrentCondition - response: $response")
     }
 }

@@ -5,6 +5,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("androidx.navigation.safeargs")
     alias(libs.plugins.baselineprofile)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -58,19 +59,19 @@ android {
     productFlavors {
         create("Development") {
             dimension = "type"
-            manifestPlaceholders["accu_weather_key"] = "AIzaSyCGG3b4JmGZaeXRVDlZio3OBaA6EaUv9wU"
+            manifestPlaceholders["accu_weather_key"] = "x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ"
 
             buildConfigField("String", "API_URL", "\"https://dataservice.accuweather.com\"")
-            buildConfigField("String", "API_KEY", "\"AIzaSyCGG3b4JmGZaeXRVDlZio3OBaA6EaUv9wU\"")
+            buildConfigField("String", "API_KEY", "\"x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ\"")
             buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "true")
         }
 
         create("Production") {
             dimension = "type"
-            manifestPlaceholders["accu_weather_key"] = "AIzaSyCGG3b4JmGZaeXRVDlZio3OBaA6EaUv9wU"
+            manifestPlaceholders["accu_weather_key"] = "x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ"
 
             buildConfigField("String", "API_URL", "\"https://dataservice.accuweather.com\"")
-            buildConfigField("String", "API_KEY", "\"AIzaSyCGG3b4JmGZaeXRVDlZio3OBaA6EaUv9wU\"")
+            buildConfigField("String", "API_KEY", "\"x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ\"")
             buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "false")
         }
     }
@@ -133,6 +134,8 @@ dependencies {
     // Coil - https://coil-kt.github.io/coil/compose/
     implementation(libs.coil.compose)
     implementation(libs.coil.gif)
+
+    //
 }
 
 // Dependency injection with Hilt - Allow references to generated code

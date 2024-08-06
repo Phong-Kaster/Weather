@@ -48,6 +48,7 @@ object ApiUtil {
     suspend inline fun <reified T : Any> fetchDataBody(crossinline call: suspend () -> Response<T>): T {
         var result: T? = null
 
+
         withContext(Dispatchers.Main) {
             try {
                 val response = call()
