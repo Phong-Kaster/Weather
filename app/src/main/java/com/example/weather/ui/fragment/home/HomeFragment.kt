@@ -20,6 +20,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +62,12 @@ class HomeFragment : CoreFragment() {
 
     @Composable
     override fun ComposeView() {
+        val errorMessage = viewModel.errorMessage.collectAsState().value
+
+        LaunchedEffect(key1 = errorMessage) {
+            
+        }
+
         super.ComposeView()
         HomeLayout(
             onChangeDarkTheme = {

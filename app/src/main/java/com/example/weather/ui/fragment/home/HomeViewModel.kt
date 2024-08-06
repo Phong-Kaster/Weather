@@ -15,6 +15,8 @@ import com.panda.wifipassword.data.api.exception.UnauthorizedException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -27,7 +29,10 @@ constructor(
     private val weatherRepository: WeatherRepository,
 ) : CoreViewModel() {
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler{coroutineContext: CoroutineContext, throwable: Throwable ->
+    private var _errorMessage = MutableStateFlow<String>("")
+    val errorMessage = _errorMessage.asStateFlow()
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler{ coroutineContext: CoroutineContext, throwable: Throwable ->
         Log.d(TAG, "----------> coroutineExceptionHandler")
         when(throwable){
             is UnauthorizedException -> Log.d(TAG, "UnauthorizedException")
