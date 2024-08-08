@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class ValueMultiResponseDto(
+data class MetricAndImperialResponseDto(
     @SerializedName("Metric")
     val metric: ValueResponseDto = ValueResponseDto(),
 

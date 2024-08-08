@@ -17,14 +17,7 @@ constructor(
     private val weatherRepository: WeatherRepository
 ) : ViewModel()
 {
-    /*init {
-        searchAutocomplete(keyword = "h")
-    }*/
 
-    fun searchAutocomplete(keyword: String) {
-        Log.d(TAG, "searchAutocomplete - keyword: $keyword")
-        viewModelScope.launch(Dispatchers.IO) {
-            weatherRepository.searchAutocomplete(keyword = keyword)
-        }
-    }
+
+
 }

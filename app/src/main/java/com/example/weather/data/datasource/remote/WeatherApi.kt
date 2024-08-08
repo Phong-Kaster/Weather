@@ -2,42 +2,38 @@ package com.example.weather.data.datasource.remote
 
 import com.example.jetpack.network.dto.LocationAutoDto
 import com.example.jetpack.network.dto.LocationGeoDto
-import com.example.weather.data.datasource.remote.response.CurrentForecastResponse
-import com.google.gson.JsonObject
-import kotlinx.coroutines.Deferred
+import com.example.weather.data.datasource.remote.response.CurrentConditionResponse
 import retrofit2.Response
-import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface WeatherApi {
     /*********************************
-     * https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/geoposition/search
+     * # [Geoposition Search](https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/geoposition/search)
      */
     @GET("/locations/v1/cities/geoposition/search")
     fun searchGeoposition( @Query("q") lnglat: String ): Response<LocationGeoDto>
 
 
     /*********************************
-     * https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/autocomplete
+     * # [Autocomplete search](https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/autocomplete)
      */
     @GET("/locations/v1/cities/autocomplete")
     suspend fun searchAutocomplete( @Query("q") keyword: String ): Response<List<LocationAutoDto>>
 
 
     /*********************************
-     * https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/%7BlocationKey%7D
+     * # [Search by locationKey](https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/%7BlocationKey%7D)
      */
 //    @GET("/locations/v1/{locationKey}")
 //    fun searchLocationByKey( @Path("locationKey") locationKey: String ): Deferred<Response<LocationGeoDto>>
 
     /***********************************
-     * Current Conditions - https://developer.accuweather.com/accuweather-current-conditions-api/apis/get/currentconditions/v1/%7BlocationKey%7D
+     * # [Current Conditions](https://developer.accuweather.com/accuweather-current-conditions-api/apis/get/currentconditions/v1/%7BlocationKey%7D)
      */
     @GET("/currentconditions/v1/{locationKey}")
-    suspend fun getCurrentCondition(@Path("locationKey") locationKey: String): Response<List<CurrentForecastResponse>>
+    suspend fun getCurrentCondition(@Path("locationKey") locationKey: String): Response<List<CurrentConditionResponse>>
 
 //    @GET("/forecasts/v1/hourly/72hour/{locationKey}")
 //    fun get12HoursForecast(

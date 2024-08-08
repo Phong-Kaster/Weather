@@ -35,12 +35,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.weather.R
 import com.example.weather.domain.enums.ConditionType
 import com.example.weather.domain.model.HourlyForecast
@@ -285,12 +283,12 @@ fun WeatherForecastHourlyItem(
                             tint = Color.White,
                             modifier = Modifier
                                 .size(24.dp)
-                                .rotate(hourlyForecast.wind.direction.degree - 90f)
+                                .rotate(hourlyForecast.wind.windDirection.degree - 90f)
                         )
 
                         Text(
                             modifier = Modifier.height(16.dp),
-                            text = hourlyForecast.wind.direction.localized,
+                            text = hourlyForecast.wind.windDirection.localized,
                             style = customizedTextStyle(fontWeight = 400, fontSize =  14),
                             color = Color.White
                         )

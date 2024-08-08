@@ -1,6 +1,7 @@
 package com.example.weather.ui.fragment.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.compose.animation.Animatable
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,8 +37,10 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import com.example.jetpack.core.CoreFragment
 import com.example.jetpack.core.CoreLayout
+import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.DailyForecast
 import com.example.weather.domain.model.HourlyForecast
+import com.example.weather.ui.component.dialog.LoadingDialog
 import com.example.weather.ui.fragment.home.component.AccuWeather
 import com.example.weather.ui.fragment.home.component.HomeTopBar
 import com.example.weather.ui.fragment.home.component.WeatherForecastDaily
@@ -58,31 +62,39 @@ class HomeFragment : CoreFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getCurrentCondition(locationKey = "3554439")
+        viewModel.getCurrentCondition(
+            locationKey = "3554439",
+            fetchFromCache = false
+        )
     }
 
     @Composable
     override fun ComposeView() {
-        val errorMessage = viewModel.errorMessage.collectAsState().value
-
-
-        LaunchedEffect(key1 = errorMessage) {
-            showToast(errorMessage)
-        }
-
         super.ComposeView()
+        val errorMessage = viewModel.errorMessage.collectAsState().value
+        val showLoading = viewModel.showLoading.collectAsState().value
+
         HomeLayout(
+            currentCondition = viewModel.currentCondition.collectAsState().value,
             onChangeDarkTheme = {
                 darkTheme = !darkTheme
                 viewModel.setDarkMode(darkTheme)
             }
         )
+
+        LaunchedEffect(key1 = errorMessage) {
+            if (errorMessage.isEmpty()) return@LaunchedEffect
+            showToast(errorMessage)
+        }
+
+        LoadingDialog(enable = showLoading)
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeLayout(
+    currentCondition: CurrentCondition,
     onChangeDarkTheme: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -157,6 +169,7 @@ fun HomeLayout(
                     )
 
                     WeatherHeader(
+                        currentCondition = currentCondition,
                         page = pagerState.settledPage
                     )
 
@@ -231,5 +244,8 @@ fun HomeLayout(
 @Preview
 @Composable
 private fun PreviewHome() {
-    HomeLayout()
+    HomeLayout(
+        currentCondition = CurrentCondition(),
+        onChangeDarkTheme = {}
+    )
 }
