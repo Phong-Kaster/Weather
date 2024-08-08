@@ -11,4 +11,8 @@
     <string name="view_all">View all</string>
     <string name="data_provided_in_part_by">"Data provided in part by "</string>
     <string name="please_wait_a_minute">Please, wait a minute</string>
+    <string name="allow_location_permission">Allow Location Permission</string>
+    <string name="location_enabled">Location enabled</string>
+    <string name="wrong_please_try_again_later">Something goes wrong. Please! Try again later</string>
+    <string name="enter_a_name">Enter a name</string>
 </resources>

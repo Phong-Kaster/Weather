@@ -1,9 +1,7 @@
 package com.example.weather.ui.fragment.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -20,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,6 +49,7 @@ import com.example.weather.ui.theme.colorMidnight
 import com.example.weather.ui.theme.colorNight
 import com.example.weather.ui.theme.colorRain
 import com.example.weather.ui.theme.colorSunset
+import com.example.weather.util.NavigationUtil.safeNavigate
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -79,7 +77,8 @@ class HomeFragment : CoreFragment() {
             onChangeDarkTheme = {
                 darkTheme = !darkTheme
                 viewModel.setDarkMode(darkTheme)
-            }
+            },
+            onOpenSearch = { safeNavigate(destination = HomeFragmentDirections.toSearch()) }
         )
 
         LaunchedEffect(key1 = errorMessage) {
@@ -95,7 +94,8 @@ class HomeFragment : CoreFragment() {
 @Composable
 fun HomeLayout(
     currentCondition: CurrentCondition,
-    onChangeDarkTheme: () -> Unit = {}
+    onChangeDarkTheme: () -> Unit = {},
+    onOpenSearch: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val color = remember { Animatable(colorDay) }
@@ -144,7 +144,7 @@ fun HomeLayout(
                     pageCurrent = pagerState.currentPage,
                     pageCount = pagerState.pageCount,
                     onMenuLeft = onChangeDarkTheme,
-                    onMenuRight = onChangeDarkTheme,
+                    onMenuRight = onOpenSearch,
                     modifier = Modifier.statusBarsPadding(),
                 )
             },

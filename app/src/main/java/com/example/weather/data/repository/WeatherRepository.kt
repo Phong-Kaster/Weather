@@ -1,7 +1,7 @@
 package com.example.weather.data.repository
 
 import android.util.Log
-import com.example.jetpack.network.dto.LocationAutoDto
+import com.example.weather.data.datasource.remote.response.LocationAutoResponse
 import com.example.jetpack.network.dto.LocationGeoDto
 import com.example.weather.data.datasource.database.WeatherDatabase
 import com.example.weather.data.datasource.database.mapper.CurrentConditionMapper.toModel
@@ -31,9 +31,11 @@ constructor(
         return ApiUtil.fetchDataBody {  weatherApi.searchGeoposition(lnglat = lntLng) }
     }
 
-    suspend fun searchAutocomplete(keyword: String): List<LocationAutoDto> {
+    suspend fun searchAutocomplete(keyword: String): List<LocationAutoResponse> {
         val response = ApiUtil.fetchDataBody { weatherApi.searchAutocomplete(keyword = keyword) }
-        Log.d(TAG, "searchAutocomplete - response: $response")
+        Log.d(TAG, "searchAutocomplete -------------------->")
+        Log.d(TAG, "searchAutocomplete - response size: ${response.size}")
+
         return response
     }
 

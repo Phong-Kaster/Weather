@@ -1,6 +1,6 @@
 package com.example.weather.data.datasource.remote
 
-import com.example.jetpack.network.dto.LocationAutoDto
+import com.example.weather.data.datasource.remote.response.LocationAutoResponse
 import com.example.jetpack.network.dto.LocationGeoDto
 import com.example.weather.data.datasource.remote.response.CurrentConditionResponse
 import retrofit2.Response
@@ -20,7 +20,7 @@ interface WeatherApi {
      * # [Autocomplete search](https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/autocomplete)
      */
     @GET("/locations/v1/cities/autocomplete")
-    suspend fun searchAutocomplete( @Query("q") keyword: String ): Response<List<LocationAutoDto>>
+    suspend fun searchAutocomplete( @Query("q") keyword: String ): Response<List<LocationAutoResponse>>
 
 
     /*********************************
