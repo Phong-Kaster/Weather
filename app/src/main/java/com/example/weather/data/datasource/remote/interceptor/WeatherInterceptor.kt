@@ -3,6 +3,7 @@ package com.example.weather.data.datasource.remote.interceptor
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.util.Log
 import com.example.weather.BuildConfig
 import com.example.weather.configuration.Constant
 import com.example.weather.data.repository.SettingRepository
@@ -24,6 +25,7 @@ constructor(
     private val settingRepository: SettingRepository
 ) : Interceptor {
 
+    private val TAG : String = "WeatherInterceptor"
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -33,6 +35,9 @@ constructor(
 
         // Chain.request represents the current request/response chain.
         val originalRequest: Request = chain.request()
+
+        Log.d(TAG, "intercept --------------------------------")
+        Log.d(TAG, "intercept - apikey: ${BuildConfig.API_KEY}")
 
         val url: HttpUrl = originalRequest.url
             .newBuilder()

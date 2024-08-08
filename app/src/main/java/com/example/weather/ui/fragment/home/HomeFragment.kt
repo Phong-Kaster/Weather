@@ -2,6 +2,7 @@ package com.example.weather.ui.fragment.home
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -64,8 +65,9 @@ class HomeFragment : CoreFragment() {
     override fun ComposeView() {
         val errorMessage = viewModel.errorMessage.collectAsState().value
 
+
         LaunchedEffect(key1 = errorMessage) {
-            
+            showToast(errorMessage)
         }
 
         super.ComposeView()

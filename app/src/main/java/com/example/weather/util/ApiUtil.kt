@@ -60,7 +60,7 @@ object ApiUtil {
                         401 -> throw UnauthorizedException()
                         403 -> throw ForbiddenException()
                         404 -> throw ServerNotFoundException()
-                        else -> throw Exception()
+                         else -> throw Exception()
                     }
                 }
             } catch (e: NoConnectivityException) {

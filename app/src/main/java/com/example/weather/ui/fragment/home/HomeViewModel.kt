@@ -35,11 +35,26 @@ constructor(
     private val coroutineExceptionHandler = CoroutineExceptionHandler{ coroutineContext: CoroutineContext, throwable: Throwable ->
         Log.d(TAG, "----------> coroutineExceptionHandler")
         when(throwable){
-            is UnauthorizedException -> Log.d(TAG, "UnauthorizedException")
-            is ServerNotFoundException -> Log.d(TAG, "ServerNotFoundException")
-            is ForbiddenException -> Log.d(TAG, "ForbiddenException")
-            is NoConnectivityException -> Log.d(TAG, "NoConnectivityException")
-            else -> throwable.message
+            is UnauthorizedException -> {
+                Log.d(TAG, "UnauthorizedException")
+                _errorMessage.value = "UnauthorizedException"
+            }
+            is ServerNotFoundException -> {
+                Log.d(TAG, "ServerNotFoundException")
+                _errorMessage.value = "ServerNotFoundException"
+            }
+            is ForbiddenException ->  {
+                Log.d(TAG, "ForbiddenException")
+                _errorMessage.value = "ForbiddenException"
+            }
+            is NoConnectivityException -> {
+                Log.d(TAG, "NoConnectivityException")
+                _errorMessage.value = "NoConnectivityException"
+            }
+            else ->{
+                throwable.message
+                _errorMessage.value = "Check exception for more detail"
+            }
         }
         throwable.printStackTrace()
     }
@@ -51,8 +66,7 @@ constructor(
     }
 
     fun getCurrentCondition(locationKey: String) {
-        Log.d(TAG, "getCurrentCondition - locationKey: $locationKey")
-        viewModelScope.launch(coroutineExceptionHandler + Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             weatherRepository.getCurrentCondition(locationKey)
         }
     }
