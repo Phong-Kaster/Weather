@@ -1,12 +1,13 @@
 package com.example.weather.data.repository
 
 import android.util.Log
-import com.example.weather.data.datasource.remote.response.LocationAutoResponse
 import com.example.jetpack.network.dto.LocationGeoDto
 import com.example.weather.data.datasource.database.WeatherDatabase
-import com.example.weather.data.datasource.database.mapper.CurrentConditionMapper.toModel
+import com.example.weather.domain.mapper.CurrentConditionMapper.toModel
 import com.example.weather.data.datasource.remote.WeatherApi
+import com.example.weather.domain.mapper.LocationAutoMapper.toModel
 import com.example.weather.domain.model.CurrentCondition
+import com.example.weather.domain.model.LocationAuto
 import com.example.weather.domain.status.Status
 import com.example.weather.util.ApiUtil
 import com.panda.wifipassword.data.api.exception.NoConnectivityException
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,12 +33,35 @@ constructor(
         return ApiUtil.fetchDataBody {  weatherApi.searchGeoposition(lnglat = lntLng) }
     }
 
-    suspend fun searchAutocomplete(keyword: String): List<LocationAutoResponse> {
-        val response = ApiUtil.fetchDataBody { weatherApi.searchAutocomplete(keyword = keyword) }
-        Log.d(TAG, "searchAutocomplete -------------------->")
-        Log.d(TAG, "searchAutocomplete - response size: ${response.size}")
+    suspend fun searchAutocomplete(keyword: String): Flow<Status<List<LocationAuto>>> {
+        Log.d(TAG, "searchAutocomplete -----------------------")
+        return flow {
+            emit(value = Status.Loading())
+            try {
+                val response = ApiUtil.fetchDataBody { weatherApi.searchAutocomplete(keyword = keyword) }
+                Log.d(TAG, "searchAutocomplete - response size: ${response.size}")
+                Log.d(TAG, "searchAutocomplete - response: $response")
 
-        return response
+                if (response.isEmpty()) {
+                    emit(value = Status.Failure(message = "Accu Weather does not find any thing!"))
+                    return@flow
+                }
+
+                val outcome: List<LocationAuto> = response.map { it.toModel() }
+
+                emit(value = Status.Success(data = outcome))
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                emit(value = Status.Failure(message = "HttpException"))
+            } catch (e: NoConnectivityException) {
+                e.printStackTrace()
+                emit(value = Status.Failure(message = "No Internet connectivity"))
+            } catch (e: IOException) {
+                e.printStackTrace()
+                emit(value = Status.Failure(message = "IOException"))
+            }
+
+        }
     }
 
     suspend fun getCurrentCondition(
@@ -46,12 +71,13 @@ constructor(
         Log.d(TAG, "getCurrentCondition -----------------------")
         return flow {
             /** 1. Check database*/
-            emit(value = Status.Loading(showLoading = true))
+            emit(value = Status.Loading(enabled = true))
             val localCurrentCondition = weatherCurrentConditionDao.findByLocationKey(locationKey = locationKey)
-            Log.d(TAG, "getCurrentCondition - localCurrentCondition size ${localCurrentCondition.size}")
             val isDatabaseNotEmpty = localCurrentCondition.isNotEmpty()
+
+            Log.d(TAG, "getCurrentCondition - localCurrentCondition size = ${localCurrentCondition.size}")
+            Log.d(TAG, "getCurrentCondition - isDatabaseNotEmpty = $isDatabaseNotEmpty")
             if (isDatabaseNotEmpty) {
-                Log.d(TAG, "getCurrentCondition - isDatabaseNotEmpty = $isDatabaseNotEmpty")
                 emit(value = Status.Success(data = localCurrentCondition.map { it.toModel() }.first()))
             }
 
@@ -62,9 +88,14 @@ constructor(
             Log.d(TAG, "getCurrentCondition - justFetchFromLocal = $justFetchFromLocal")
             if (justFetchFromLocal) {
                 Log.d(TAG, "getCurrentCondition - case 1 - just fetch from database")
-                //emit(value = Status.Loading(showLoading = false))
+                emit(value = Status.Loading(enabled = false))
                 return@flow
             }
+
+            /** 3. Check current condition is outdated or not*/
+            val localDate: Date = localCurrentCondition.map { it.toModel() }.first().toModel().date
+            val date: Date = Date()
+
 
 
             /** 3. Let us fetch from Accu Weather*/

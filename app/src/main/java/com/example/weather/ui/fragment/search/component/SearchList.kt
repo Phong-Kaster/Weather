@@ -11,11 +11,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -32,30 +35,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weather.data.datasource.remote.response.LocationAutoResponse
+import com.example.weather.domain.model.LocationAuto
 import com.example.weather.ui.theme.brushDay
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun SearchList(
-    visible: Boolean,
-    locations: List<LocationAutoResponse>,
-    onClick: (LocationAutoResponse) -> Unit = {},
+    locations: ImmutableList<LocationAuto>?,
+    onClick: (LocationAuto) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        AnimatedVisibility(
-            visible = visible,
-            enter = fadeIn(initialAlpha = 0.4f),
-            exit = fadeOut(animationSpec = tween(durationMillis = 250))
-        ) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                //LoadingAnimationCircular(visible = showLoading)
 
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+    Column(modifier = modifier) {
+        AnimatedVisibility(visible = locations?.isEmpty() == true) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.fillMaxWidth(),
+                content = {
                     items(
-                        items = locations,
+                        items = LocationAuto.getFakeData(),
                         itemContent = { location ->
                             LocationAutoElement(
                                 location = location,
@@ -63,8 +62,28 @@ fun SearchList(
                             )
                         }
                     )
-                }
-            }
+                })
+        }
+
+        AnimatedVisibility(
+            visible = locations?.isNotEmpty() == true,
+            enter = fadeIn(initialAlpha = 0.4f),
+            exit = fadeOut(animationSpec = tween(durationMillis = 250))
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.fillMaxWidth(),
+                content = {
+                items(
+                    items = locations ?: listOf(),
+                    itemContent = { location ->
+                        LocationAutoElement(
+                            location = location,
+                            onClick = onClick
+                        )
+                    }
+                )
+            })
         }
     }
 }
@@ -72,14 +91,14 @@ fun SearchList(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LocationAutoElement(
-    location: LocationAutoResponse,
-    onClick: (LocationAutoResponse) -> Unit = {},
+    location: LocationAuto,
+    onClick: (LocationAuto) -> Unit = {},
 ) {
-    val placeName by remember(location) { mutableStateOf("${location.LocalizedName}") }
+    val placeName by remember(location) { mutableStateOf("${location.localizedName}") }
     val countryName by remember(location) {
         derivedStateOf {
-            val cityName = location.AdministrativeAreaDto?.LocalizedName
-            val countryName = location.CountryDto?.LocalizedName
+            val cityName = location.administrativeArea?.localizedName
+            val countryName = location.country?.localizedName
             if (placeName == cityName) {
                 "$countryName"
             } else {
@@ -131,8 +150,18 @@ fun LocationAutoElement(
 private fun PreviewSearchList() {
     Column(modifier = Modifier.background(brush = brushDay)) {
         SearchList(
-            visible = true,
-            locations = LocationAutoResponse.getFakeData(),
+            locations = LocationAuto.getFakeData().toImmutableList(),
+            modifier = Modifier,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewSearchListForEmpty() {
+    Column(modifier = Modifier.background(brush = brushDay)) {
+        SearchList(
+            locations = null,
             modifier = Modifier,
         )
     }

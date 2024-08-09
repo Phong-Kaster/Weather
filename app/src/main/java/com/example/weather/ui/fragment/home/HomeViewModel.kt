@@ -78,7 +78,7 @@ constructor(
                 fetchFromRemote = fetchFromCache,
                 locationKey = locationKey
             ).collect { status->
-                Log.d(TAG, "getCurrentCondition - status: ${status.javaClass.simpleName}")
+                Log.d(TAG, "getCurrentCondition - status = ${status.javaClass.simpleName}")
                 when(status) {
                     is Status.Success -> {
                         _showLoading.value = false
@@ -90,8 +90,7 @@ constructor(
                         _errorMessage.value = status.message ?: "Error"
                     }
                     is Status.Loading -> {
-                        Log.d(TAG, "getCurrentCondition - showLoading: ${status.showLoading}")
-                        _showLoading.value = status.showLoading
+                        _showLoading.value = status.enabled
                     }
                 }
             }
@@ -99,7 +98,7 @@ constructor(
     }
 
     fun searchAutocomplete(keyword: String) {
-        Log.d(ContentValues.TAG, "searchAutocomplete - keyword: $keyword")
+        Log.d(ContentValues.TAG, "searchAutocomplete - keyword = $keyword")
         viewModelScope.launch(Dispatchers.IO) {
             weatherRepository.searchAutocomplete(keyword = keyword)
         }

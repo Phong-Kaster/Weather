@@ -1,4 +1,4 @@
-package com.example.weather.data.datasource.remote.model
+package com.example.weather.domain.model
 
 import com.example.jetpack.network.dto.CountryDto
 
@@ -11,8 +11,8 @@ data class Country(
     val englishName: String? = null,
 ){
     companion object{
-        fun getFakeCountry(): CountryDto {
-            return CountryDto(ID = "DE", LocalizedName = "Deutschland", EnglishName = "Germany")
+        fun getFakeCountry(): Country{
+            return Country(id = "DE", localizedName = "Deutschland", englishName = "Germany")
         }
     }
 }

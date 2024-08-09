@@ -15,7 +15,10 @@
     <action
         android:id="@+id/toSearch"
         app:destination="@id/searchFragment"
-        app:popUpTo="@id/homeFragment"
+        app:enterAnim="@anim/enter_slide_in_right"
+        app:exitAnim="@anim/exit_slide_out_left"
+        app:popEnterAnim="@anim/enter_slide_in_left"
+        app:popExitAnim="@anim/exit_slide_out_right"
         app:popUpToInclusive="true"/>
 
 </navigation>

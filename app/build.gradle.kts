@@ -135,7 +135,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.gif)
 
-    //
+    // Immutable Collections Library for Kotlin - https://github.com/Kotlin/kotlinx.collections.immutable
+    implementation(libs.kotlinx.collections.immutable)
 }
 
 // Dependency injection with Hilt - Allow references to generated code

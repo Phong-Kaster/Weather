@@ -6,7 +6,7 @@ sealed class Status<T>(
 ) {
     class Success<T>(data: T?): Status<T>(data)
 
-    class Failure<T>(data: T? = null, message: String?): Status<T>(data, message)
+    class Failure<T>(data: T? = null, message: String?): Status<T>(data = data, message= message)
 
-    class Loading<T>(val showLoading: Boolean = true): Status<T>(null)
+    class Loading<T>(val enabled: Boolean = true): Status<T>(data = null, message = null)
 }

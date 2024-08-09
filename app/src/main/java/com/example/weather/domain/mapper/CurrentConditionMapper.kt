@@ -1,4 +1,4 @@
-package com.example.weather.data.datasource.database.mapper
+package com.example.weather.domain.mapper
 
 import com.example.weather.data.datasource.database.entity.CurrentConditionEntity
 import com.example.weather.data.datasource.remote.response.CurrentConditionResponse

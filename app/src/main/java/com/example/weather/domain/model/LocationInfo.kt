@@ -1,4 +1,4 @@
-package com.example.weather.data.datasource.remote.model
+package com.example.weather.domain.model
 
 /**
  * # DTO is Data transfer object

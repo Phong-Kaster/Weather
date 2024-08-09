@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import com.example.jetpack.core.CoreFragment
 import com.example.jetpack.core.CoreLayout
+import com.example.weather.R
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.DailyForecast
 import com.example.weather.domain.model.HourlyForecast
@@ -48,6 +49,7 @@ import com.example.weather.ui.theme.colorDreary
 import com.example.weather.ui.theme.colorMidnight
 import com.example.weather.ui.theme.colorNight
 import com.example.weather.ui.theme.colorRain
+import com.example.weather.ui.theme.colorSunrise
 import com.example.weather.ui.theme.colorSunset
 import com.example.weather.util.NavigationUtil.safeNavigate
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,7 +80,7 @@ class HomeFragment : CoreFragment() {
                 darkTheme = !darkTheme
                 viewModel.setDarkMode(darkTheme)
             },
-            onOpenSearch = { safeNavigate(destination = HomeFragmentDirections.toSearch()) }
+            onOpenSearch = { safeNavigate(R.id.toSearch) }
         )
 
         LaunchedEffect(key1 = errorMessage) {
@@ -119,7 +121,7 @@ fun HomeLayout(
         snapshotFlow { pagerState.settledPage }.collect { page ->
             color.animateTo(
                 targetValue = when (page) {
-                    0 -> colorMidnight
+                    0 -> colorSunrise
                     1 -> colorDreary
                     2 -> colorNight
                     3 -> colorRain

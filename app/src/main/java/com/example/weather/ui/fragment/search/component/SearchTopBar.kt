@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -46,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weather.R
+import com.example.weather.ui.theme.brushManageLocation
 
 @Composable
 fun SearchTopBar(
@@ -82,7 +84,7 @@ fun SearchTopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = RoundedCornerShape(10.dp))
-                .background(color = Color(0xFFC2DBEB))
+                .background(color = Color.White.copy(alpha = 0.3f))
                 .padding(horizontal = 10.dp, vertical = 5.dp),
         ) {
             Icon(
@@ -108,7 +110,10 @@ fun SearchTopBar(
                     textAlign = TextAlign.Start,
                 ),
                 decorationBox = { innerTextField ->
-                    Box(contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         if (query.isEmpty()) {
                             Text(
                                 text = stringResource(R.string.enter_a_name),
@@ -123,7 +128,9 @@ fun SearchTopBar(
                                     color = Color.White
                                 ),
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.wrapContentHeight()
+                                modifier = Modifier
+                                    .align(BiasAlignment(horizontalBias = -1f, verticalBias = 0f))
+                                    .wrapContentHeight()
                             )
                         }
                     }
@@ -137,6 +144,7 @@ fun SearchTopBar(
                     }
                 ),
                 modifier = Modifier
+                    .padding(vertical = 5.dp)
                     .focusRequester(focusRequester = focusRequester)
             )
 
@@ -164,6 +172,6 @@ fun SearchTopBar(
 
 @Preview
 @Composable
-private fun Preview() {
+private fun PreviewSearchTopBar() {
     SearchTopBar()
 }

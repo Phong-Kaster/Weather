@@ -56,6 +56,7 @@ val brushFog = Brush.linearGradient(
     end = Offset(2 * Float.POSITIVE_INFINITY, 2 * Float.POSITIVE_INFINITY),
 )
 
+val colorSunrise = Color(0xFF83B8DA)
 val brushSunrise = Brush.linearGradient(
     colors = listOf(
         Color(0xFF83B8DA),

@@ -3,7 +3,6 @@ package com.example.weather.ui.fragment.search
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.SearchView
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -41,15 +40,17 @@ import androidx.fragment.app.viewModels
 import com.example.jetpack.core.CoreFragment
 import com.example.jetpack.core.CoreLayout
 import com.example.weather.R
-import com.example.weather.data.datasource.remote.response.LocationAutoResponse
+import com.example.weather.domain.model.LocationAuto
 import com.example.weather.lifecycleobserver.LocationPermissionLifecycleObserver
 import com.example.weather.ui.fragment.search.component.SearchList
 import com.example.weather.ui.fragment.search.component.SearchTopBar
-import com.example.weather.ui.theme.brushSunrise
+import com.example.weather.ui.theme.brushManageLocation
 import com.example.weather.ui.theme.customizedTextStyle
 import com.example.weather.util.NavigationUtil.safeNavigateUp
 import com.example.weather.util.PermissionUtil
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @AndroidEntryPoint
 class SearchFragment : CoreFragment() {
@@ -70,7 +71,7 @@ class SearchFragment : CoreFragment() {
         verifyLocationEnabled()
     }
 
-    private fun verifyLocationEnabled(){
+    private fun verifyLocationEnabled() {
         val enableAllPermissions = PermissionUtil.hasPermissions(
             context = requireContext(),
             permissions = LocationPermissionLifecycleObserver.mandatoryPermissions
@@ -149,10 +150,24 @@ class SearchFragment : CoreFragment() {
         super.ComposeView()
         SearchLayout(
             isLocationEnabled = locationPermissionObserver.hasPermissionsEnabled.collectAsState().value,
+            locations = viewModel.locations.collectAsState().value,
             onBack = { safeNavigateUp() },
             onAllow = { requestLocationPermissions() },
-            onValueChange = { query ->
-                Log.d(TAG, "ComposeView - query: $query")
+            onValueChange = { query -> viewModel.searchAutocomplete(keyword = query) },
+            onClickLocation = { locationAuto ->
+
+                val cityName = locationAuto.localizedName
+                val countryName = locationAuto.country?.localizedName
+                val locationKey = locationAuto.key
+
+                Log.d(TAG, "ComposeView - onClickLocation")
+                Log.d(TAG, "ComposeView - location ${cityName}, $countryName with location key $locationKey")
+
+                if (locationKey.isNullOrEmpty()) {
+                    showToast("There is something wrong. Please, try again !")
+                    return@SearchLayout
+                }
+                viewModel.getCurrentCondition(locationKey = locationKey, fetchFromCache = true)
             }
         )
     }
@@ -161,12 +176,14 @@ class SearchFragment : CoreFragment() {
 @Composable
 fun SearchLayout(
     isLocationEnabled: Boolean,
+    locations: ImmutableList<LocationAuto>?,
     onBack: ()->Unit = {},
     onAllow: ()->Unit = {},
     onValueChange: (String) -> Unit = {},
+    onClickLocation: (LocationAuto) -> Unit = {},
 ) {
     CoreLayout(
-        backgroundBrush = brushSunrise,
+        backgroundBrush = brushManageLocation,
         topBar = {
             SearchTopBar(
                 onBack = onBack,
@@ -193,7 +210,8 @@ fun SearchLayout(
                                 .clip(shape = RoundedCornerShape(15.dp))
                                 .clickable { onAllow() }
                                 .background(
-                                    color = Color(0xFF9BC2D7)
+//                                    color = Color(0xFF9BC2D7)
+                                    color = Color.White.copy(alpha = 0.3f)
                                 )
                                 .padding(horizontal = 16.dp, vertical = 16.dp)
                         ) {
@@ -227,12 +245,9 @@ fun SearchLayout(
 
                 // search location that API returns
                 SearchList(
-                    locations = LocationAutoResponse.getFakeData(),
-                    visible = true,
-                    onClick = {
-
-                    },
-                    modifier = Modifier.fillMaxWidth()
+                    locations = locations,
+                    onClick = { locationAuto -> onClickLocation(locationAuto) },
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -242,5 +257,8 @@ fun SearchLayout(
 @Preview
 @Composable
 private fun PreviewSearchLayout() {
-    SearchLayout(isLocationEnabled = false)
+    SearchLayout(
+        isLocationEnabled = false,
+        locations = persistentListOf()
+    )
 }
