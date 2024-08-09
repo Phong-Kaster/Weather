@@ -140,13 +140,13 @@ constructor(
     suspend fun saveLocationInfo(locationAuto: LocationAuto): Flow<Status<LocationInfo>> {
         return flow {
             emit(value = Status.Loading(enabled = true))
-            val localLocationInfo = locationInfoDao.findByLocationKey(locationKey = locationAuto.key ?: "")
-            val isDatabaseNotEmpty = localLocationInfo.isNotEmpty()
+            val localInfo = locationInfoDao.findByLocationKey(locationKey = locationAuto.key ?: "")
+            val isDatabaseNotEmpty = localInfo.isNotEmpty()
 
             Log.d(TAG, "saveLocationInfo - isDatabaseNotEmpty = $isDatabaseNotEmpty")
             
             if (isDatabaseNotEmpty) {
-                emit(value = Status.Success(data = localLocationInfo.map { it.toModel() }.first()))
+                emit(value = Status.Success(data = localInfo.map { it.toModel() }.first()))
                 return@flow
             }
 
@@ -155,7 +155,6 @@ constructor(
                 Log.d(TAG, "saveLocationInfo - model: $model")
                 locationInfoDao.insert(model.toEntity())
                 emit(value = Status.Success(data = model))
-                Log.d(TAG, "saveLocationInfo - run get current condition")
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(value = Status.Failure(message = "IOException"))
@@ -164,5 +163,19 @@ constructor(
                 emit(value = Status.Failure(message = "Exception"))
             }
         }
+    }
+
+    suspend fun searchInfoByLocationKey(locationKey: String): LocationInfo? {
+        val listOfLocationInfo = locationInfoDao.findByLocationKey(locationKey = locationKey)
+
+        return if (listOfLocationInfo.isEmpty()) {
+            null
+        } else {
+            listOfLocationInfo.first().toModel()
+        }
+    }
+
+    suspend fun findAllLocationInfo(): List<LocationInfo> {
+        return locationInfoDao.findAll().map { it.toModel() }
     }
 }

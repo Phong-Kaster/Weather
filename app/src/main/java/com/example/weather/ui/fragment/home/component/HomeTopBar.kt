@@ -1,5 +1,7 @@
 package com.example.weather.ui.fragment.home.component
 
+import android.location.Location
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +20,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,18 +35,26 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.weather.R
+import com.example.weather.domain.model.CurrentCondition
+import com.example.weather.domain.model.LocationInfo
 import com.example.weather.ui.theme.brushSunset
 import com.example.weather.ui.theme.customizedTextStyle
 
 @Composable
 fun HomeTopBar(
+    locationInfo: LocationInfo,
     pageCurrent: Int,
     pageCount: Int,
     onMenuLeft: () -> Unit = {},
     onMenuRight: () -> Unit = {},
-
     modifier: Modifier = Modifier
 ) {
+    val cityName by remember(locationInfo){ mutableStateOf(locationInfo.localizedName.ifEmpty { "Phong Kaster" }) }
+
+    LaunchedEffect(key1 = cityName) {
+        Log.d("TAG", "HomeTopBar - cityName = $cityName")
+    }
+
     Box(modifier = modifier.fillMaxWidth()) {
         IconButton(
             onClick = onMenuLeft,
@@ -60,8 +75,7 @@ fun HomeTopBar(
                 .align(Alignment.Center)
         ) {
             Text(
-//                text = location.name?.ifEmpty { "" } ?: "",
-                text = stringResource(id = R.string.app_name),
+                text = cityName,
                 style = customizedTextStyle(fontWeight = 500, fontSize = 18),
                 color = Color.White,
                 maxLines = 1,
@@ -120,6 +134,7 @@ fun HomeTopBar(
 private fun PreviewHomeTopBar() {
     Column(modifier = Modifier.background(brush = brushSunset)) {
         HomeTopBar(
+            locationInfo = LocationInfo(),
             pageCurrent = 1,
             pageCount = 5,
             onMenuLeft = {},

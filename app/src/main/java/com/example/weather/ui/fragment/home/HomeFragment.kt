@@ -31,13 +31,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.example.jetpack.core.CoreFragment
 import com.example.jetpack.core.CoreLayout
 import com.example.weather.R
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.DailyForecast
 import com.example.weather.domain.model.HourlyForecast
+import com.example.weather.domain.model.LocationInfo
+import com.example.weather.domain.model.Weather
+import com.example.weather.ui.activity.MainViewModel
 import com.example.weather.ui.component.dialog.LoadingDialog
 import com.example.weather.ui.fragment.home.component.AccuWeather
 import com.example.weather.ui.fragment.home.component.HomeTopBar
@@ -46,7 +49,6 @@ import com.example.weather.ui.fragment.home.component.WeatherForecastHourly
 import com.example.weather.ui.fragment.home.component.WeatherHeader
 import com.example.weather.ui.theme.colorDay
 import com.example.weather.ui.theme.colorDreary
-import com.example.weather.ui.theme.colorMidnight
 import com.example.weather.ui.theme.colorNight
 import com.example.weather.ui.theme.colorRain
 import com.example.weather.ui.theme.colorSunrise
@@ -57,8 +59,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class HomeFragment : CoreFragment() {
 
-    private val viewModel: HomeViewModel by viewModels()
-
+    val chosenLocationKey = "1024259"
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -71,7 +73,6 @@ class HomeFragment : CoreFragment() {
         val showLoading = viewModel.showLoading.collectAsState().value
 
         HomeLayout(
-            currentCondition = viewModel.currentCondition.collectAsState().value,
             onChangeDarkTheme = {
                 darkTheme = !darkTheme
                 viewModel.setDarkMode(darkTheme)
@@ -91,7 +92,9 @@ class HomeFragment : CoreFragment() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeLayout(
-    currentCondition: CurrentCondition,
+//    locationInfo: LocationInfo,
+//    currentCondition: CurrentCondition,
+    weather: Weather = Weather(),
     onChangeDarkTheme: () -> Unit = {},
     onOpenSearch: () -> Unit = {}
 ) {
@@ -139,6 +142,7 @@ fun HomeLayout(
             modifier = Modifier,
             topBar = {
                 HomeTopBar(
+                    locationInfo = weather.locationInfo,
                     pageCurrent = pagerState.currentPage,
                     pageCount = pagerState.pageCount,
                     onMenuLeft = onChangeDarkTheme,
@@ -167,7 +171,7 @@ fun HomeLayout(
                     )
 
                     WeatherHeader(
-                        currentCondition = currentCondition,
+                        currentCondition = weather.currentCondition,
                         page = pagerState.settledPage
                     )
 
@@ -243,7 +247,7 @@ fun HomeLayout(
 @Composable
 private fun PreviewHome() {
     HomeLayout(
-        currentCondition = CurrentCondition(),
+        weather = Weather(),
         onChangeDarkTheme = {}
     )
 }

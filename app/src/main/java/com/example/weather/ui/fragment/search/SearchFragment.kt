@@ -36,12 +36,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.example.jetpack.core.CoreFragment
 import com.example.jetpack.core.CoreLayout
 import com.example.weather.R
 import com.example.weather.domain.model.LocationAuto
 import com.example.weather.lifecycleobserver.LocationPermissionLifecycleObserver
+import com.example.weather.ui.activity.MainViewModel
 import com.example.weather.ui.fragment.search.component.SearchList
 import com.example.weather.ui.fragment.search.component.SearchTopBar
 import com.example.weather.ui.theme.brushManageLocation
@@ -59,7 +60,8 @@ class SearchFragment : CoreFragment() {
     private var showLoadingDialog by mutableStateOf(false)
     private var showLoadingAnimationCircular by mutableStateOf(false)
 
-    private val viewModel: SearchViewModel by viewModels()
+    private val viewModel: MainViewModel by activityViewModels()
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -168,7 +170,20 @@ class SearchFragment : CoreFragment() {
                     return@SearchLayout
                 }
 
-                viewModel.getWeatherForecastForLocation(locationAuto)
+                viewModel.saveLocationInfo(
+                    locationAuto = locationAuto,
+                    onSuccess = {
+                        requireActivity().runOnUiThread {
+                            safeNavigateUp()
+                        }
+                    },
+                    onFailure = { it ->
+                        requireActivity().runOnUiThread {
+                            showToast(it)
+                            safeNavigateUp()
+                        }
+                    }
+                )
             }
         )
     }

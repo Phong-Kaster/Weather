@@ -49,9 +49,9 @@ object DateUtil {
         val hours = minutes / 60
         val days = hours / 24
 
-        Log.d("TAG", "getCurrentCondition - fromDate = $fromDate")
-        Log.d("TAG", "getCurrentCondition - toDate = $toDate")
-        Log.d("TAG", "getCurrentCondition - $days days $hours hours $minutes minutes $seconds seconds")
+//        Log.d("TAG", "getCurrentCondition - fromDate = $fromDate")
+//        Log.d("TAG", "getCurrentCondition - toDate = $toDate")
+//        Log.d("TAG", "getCurrentCondition - $days days $hours hours $minutes minutes $seconds seconds")
 
         return days
     }

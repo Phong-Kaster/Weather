@@ -18,6 +18,9 @@ interface LocationInfoDao {
     @Query("SELECT * FROM table_location_info WHERE table_location_info.locationKey LIKE :locationKey")
     suspend fun findByLocationKey(locationKey: String): List<LocationInfoEntity>
 
+    @Query("SELECT * FROM table_location_info")
+    suspend fun findAll(): List<LocationInfoEntity>
+
     // UPDATE
     @Update
     suspend fun update(entity: LocationInfoEntity)
