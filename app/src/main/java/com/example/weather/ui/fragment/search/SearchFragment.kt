@@ -167,7 +167,8 @@ class SearchFragment : CoreFragment() {
                     showToast("There is something wrong. Please, try again !")
                     return@SearchLayout
                 }
-                viewModel.getCurrentCondition(locationKey = locationKey, fetchFromCache = true)
+
+                viewModel.getWeatherForecastForLocation(locationAuto)
             }
         )
     }

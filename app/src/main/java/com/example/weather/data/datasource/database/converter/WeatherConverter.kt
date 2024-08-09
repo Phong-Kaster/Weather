@@ -1,6 +1,8 @@
 package com.example.weather.data.datasource.database.converter
 
 import androidx.room.TypeConverter
+import com.example.weather.domain.model.AdministrativeArea
+import com.example.weather.domain.model.Country
 import com.example.weather.domain.model.Value
 import com.example.weather.domain.model.WindDirection
 import com.google.gson.Gson
@@ -55,5 +57,36 @@ object WeatherConverter {
     fun jsonStingFromDirection(windDirection: WindDirection?): String {
         val gson = Gson()
         return gson.toJson(windDirection)
+    }
+
+    // Country
+    @TypeConverter
+    @JvmStatic
+    fun countryFromJsonString(json: String?): Country {
+        val listType = object : TypeToken<Country?>() {}.type
+        return Gson().fromJson(json, listType)
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun jsonStingFromCountry(country: Country?): String {
+        val gson = Gson()
+        return gson.toJson(country)
+    }
+
+
+    // Administrative Area
+    @TypeConverter
+    @JvmStatic
+    fun administrativeAreaFromJsonString(json: String?): AdministrativeArea {
+        val listType = object : TypeToken<AdministrativeArea?>() {}.type
+        return Gson().fromJson(json, listType)
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun jsonStingFromAdministrativeArea(administrativeArea: AdministrativeArea?): String {
+        val gson = Gson()
+        return gson.toJson(administrativeArea)
     }
 }

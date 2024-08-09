@@ -84,4 +84,28 @@ constructor(
             }
         }
     }
+
+    /***************************************
+     * get Weather Forecast For Location
+     */
+    fun getWeatherForecastForLocation(
+        locationAuto: LocationAuto,
+        onFailure: () -> Unit = {}
+    ) {
+        if (locationAuto.key.isNullOrEmpty()) {
+            onFailure()
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            weatherRepository.saveLocationInfo(locationAuto).collect { status ->
+                Log.d(TAG, "saveLocationInfo - status: ${status.javaClass.simpleName} ")
+                when (status) {
+                    is Status.Success -> { Log.d(TAG, "getWeatherForecastForLocation - status success") }
+                    is Status.Failure -> {}
+                    is Status.Loading -> {}
+                }
+            }
+        }
+    }
 }

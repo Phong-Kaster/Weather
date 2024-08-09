@@ -62,10 +62,6 @@ class HomeFragment : CoreFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getCurrentCondition(
-            locationKey = "3554439",
-            fetchFromCache = false
-        )
     }
 
     @Composable

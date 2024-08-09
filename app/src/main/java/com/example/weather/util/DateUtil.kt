@@ -1,6 +1,7 @@
 package com.example.weather.util
 
 import android.annotation.SuppressLint
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,5 +31,76 @@ object DateUtil {
     fun Date.formatWithPattern(pattern: String, locale: Locale = Locale.getDefault()): String {
         val simpleDateFormat = SimpleDateFormat(pattern, locale)
         return simpleDateFormat.format(this@formatWithPattern)
+    }
+
+
+    /*******************************
+     * compute difference days between two dates
+     * for instance: from 08-08-2024 to 09-08-2024 differs 1 days 2 hours 34 minutes 42 seconds+
+     */
+    fun computeDifferenceDaysBetweenTwoDates(
+        fromDate: Date,
+        toDate: Date
+    ): Long {
+
+        val difference: Long = toDate.time - fromDate.time
+        val seconds = difference / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        val days = hours / 24
+
+        Log.d("TAG", "getCurrentCondition - fromDate = $fromDate")
+        Log.d("TAG", "getCurrentCondition - toDate = $toDate")
+        Log.d("TAG", "getCurrentCondition - $days days $hours hours $minutes minutes $seconds seconds")
+
+        return days
+    }
+
+    /*******************************
+     * compute difference days between two dates
+     * for instance: from 08-08-2024 to 09-08-2024 differs 1 days 2 hours 34 minutes 42 seconds+
+     */
+    fun computeDifferenceHoursBetweenTwoDates(
+        fromDate: Date,
+        toDate: Date
+    ): Long {
+        val difference: Long = fromDate.time - toDate.time
+        val seconds = difference / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        return hours
+    }
+
+    /*******************************
+     * compute difference days between two dates
+     * for instance: from 08-08-2024 to 09-08-2024 differs 1 days 2 hours 34 minutes 42 seconds+
+     */
+    fun computeDifferenceMinutesBetweenTwoDates(
+        fromDate: Date,
+        toDate: Date
+    ): Long {
+        val difference: Long = fromDate.time - toDate.time
+        val seconds = difference / 1000
+        val minutes = seconds / 60
+        return minutes
+    }
+
+    /*******************************
+     * compute difference days between two dates
+     * for instance: from 08-08-2024 to 09-08-2024 differs 1 days 2 hours 34 minutes 42 seconds+
+     */
+    fun computeDifferenceSecondsBetweenTwoDates(
+        fromDate: Date,
+        toDate: Date
+    ): Long {
+        val difference: Long = fromDate.time - toDate.time
+        val seconds = difference / 1000
+        return seconds
+    }
+
+    fun isLocalNotOutdated(fromDate: Date, toDate: Date) : Boolean{
+        val differenceHour = computeDifferenceDaysBetweenTwoDates(fromDate = fromDate, toDate = toDate)
+        val expiryHour = 12
+        return differenceHour < expiryHour
     }
 }

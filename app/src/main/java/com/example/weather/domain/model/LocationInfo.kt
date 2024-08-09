@@ -7,12 +7,11 @@ package com.example.weather.domain.model
  * @see https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/geoposition/search
  * */
 data class LocationInfo(
-    val version: Int? = 1,
-    val key: Int? = null,
-    val type: String? = null,
-    val rank: Int? = null,
-    val localizedName: String? = null,
-    val country: Country? = null,
+    val id: Long = 0,
+    val locationKey: String = "",
+    val localizedName: String = "",
+    val country: Country? = Country(),
+    val administrativeArea: AdministrativeArea? = AdministrativeArea(),
 ){
 
 }
