@@ -180,7 +180,6 @@ class SearchFragment : CoreFragment() {
                     onFailure = { it ->
                         requireActivity().runOnUiThread {
                             showToast(it)
-                            safeNavigateUp()
                         }
                     }
                 )

@@ -2,13 +2,16 @@ package com.example.weather.ui.fragment.home.component
 
 import android.location.Location
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -37,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.example.weather.R
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.LocationInfo
+import com.example.weather.ui.component.effect.shimmerEffect
 import com.example.weather.ui.theme.brushSunset
 import com.example.weather.ui.theme.customizedTextStyle
 
@@ -49,7 +53,7 @@ fun HomeTopBar(
     onMenuRight: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val cityName by remember(locationInfo){ mutableStateOf(locationInfo.localizedName.ifEmpty { "Phong Kaster" }) }
+    val cityName by remember(locationInfo){ mutableStateOf(locationInfo.localizedName.ifEmpty { "" }) }
 
     LaunchedEffect(key1 = cityName) {
         Log.d("TAG", "HomeTopBar - cityName = $cityName")
@@ -74,16 +78,36 @@ fun HomeTopBar(
             modifier = Modifier
                 .align(Alignment.Center)
         ) {
-            Text(
-                text = cityName,
-                style = customizedTextStyle(fontWeight = 500, fontSize = 18),
-                color = Color.White,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .widthIn(0.dp, 200.dp)
+            AnimatedVisibility(
+                visible = cityName.isEmpty(),
+                content = {
+                    Box(
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(20.dp)
+                            .shimmerEffect()
+                    ) {}
+                }
             )
+
+            AnimatedVisibility(
+                visible = cityName.isNotEmpty(),
+                content = {
+                    Text(
+                        text = cityName,
+                        style = customizedTextStyle(fontWeight = 500, fontSize = 18),
+                        color = Color.White,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .widthIn(0.dp, 200.dp)
+                    )
+                }
+            )
+
+
+
 
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),

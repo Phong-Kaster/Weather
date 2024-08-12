@@ -134,6 +134,66 @@ constructor(
         }
     }
 
+    suspend fun getCurrentCondition2(
+        fetchFromRemote: Boolean,
+        locationKey: String
+    ): CurrentCondition {
+        Log.d(TAG, "getCurrentCondition -----------------------")
+        var outcome = CurrentCondition()
+
+        /** 1. Check database*/
+        val localCurrentCondition = currentConditionDao.findByLocationKey(locationKey = locationKey)
+        val isDatabaseNotEmpty = localCurrentCondition.isNotEmpty()
+        Log.d(TAG, "getCurrentCondition - localCurrentCondition size = ${localCurrentCondition.size}")
+        Log.d(TAG, "getCurrentCondition - isDatabaseNotEmpty = $isDatabaseNotEmpty")
+        if (isDatabaseNotEmpty) {
+            outcome = localCurrentCondition.map { it.toModel() }.first()
+        }
+
+
+        /** 2. Check should we need to fetch from Accu Weather or not. If local data is outdated then call accu weather as usual*/
+        val fetchFromLocalOnly = isDatabaseNotEmpty && !fetchFromRemote
+        val isLocalNotOutdated = if (isDatabaseNotEmpty) {
+            val local = localCurrentCondition.map { it.toModel() }.first().toModel()
+            DateUtil.isLocalNotOutdated(fromDate = local.date, toDate = Date())
+        } else false
+        if (fetchFromLocalOnly && isLocalNotOutdated) {
+            Log.d(TAG, "getCurrentCondition - case 1 - just fetch from database")
+            return outcome
+        }
+
+
+        /** 3. Let us fetch from Accu Weather*/
+        Log.d(TAG, "getCurrentCondition - case 2 - fetch from Accu Weather")
+        try {
+            val response = ApiUtil.fetchDataBody { weatherApi.getCurrentCondition(locationKey = locationKey) }
+            if (response.isEmpty()) {
+                Log.d(TAG, "getCurrentCondition2 - Accu Weather returns nothing")
+                //emit(value = Status.Failure(message = "Accu Weather returns nothing"))
+                return outcome
+            }
+
+            outcome = response.first().toModel(locationKey = locationKey)
+
+            currentConditionDao.deleteByLocationKey(locationKey = locationKey)
+            currentConditionDao.insert(entity = outcome.toModel())
+            return outcome
+
+        } catch (e: HttpException) {
+            e.printStackTrace()
+            //emit(value = Status.Failure(message = "HttpException"))
+            return outcome
+        } catch (e: NoConnectivityException) {
+            e.printStackTrace()
+            //emit(value = Status.Failure(message = "No Internet connectivity"))
+            return outcome
+        } catch (e: IOException) {
+            e.printStackTrace()
+            //emit(value = Status.Failure(message = "IOException"))
+            return outcome
+        }
+    }
+
     /**
      * save location info
      */

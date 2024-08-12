@@ -1,9 +1,7 @@
 package com.example.weather.ui.fragment.home
 
-import android.os.Bundle
-import android.view.View
+import android.util.Log
 import androidx.compose.animation.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,23 +44,22 @@ import com.example.weather.ui.fragment.home.component.HomeTopBar
 import com.example.weather.ui.fragment.home.component.WeatherForecastDaily
 import com.example.weather.ui.fragment.home.component.WeatherForecastHourly
 import com.example.weather.ui.fragment.home.component.WeatherHeader
-import com.example.weather.ui.theme.colorDay
-import com.example.weather.ui.theme.colorDreary
+import com.example.weather.ui.fragment.home.component.WeatherSunrise
 import com.example.weather.ui.theme.colorNight
-import com.example.weather.ui.theme.colorRain
-import com.example.weather.ui.theme.colorSunrise
-import com.example.weather.ui.theme.colorSunset
 import com.example.weather.util.NavigationUtil.safeNavigate
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @AndroidEntryPoint
 class HomeFragment : CoreFragment() {
 
-    val chosenLocationKey = "1024259"
     private val viewModel: MainViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onResume() {
+        super.onResume()
+        viewModel.findAllWeathers()
     }
 
     @Composable
@@ -73,6 +69,8 @@ class HomeFragment : CoreFragment() {
         val showLoading = viewModel.showLoading.collectAsState().value
 
         HomeLayout(
+//            weather = viewModel.weather.collectAsState().value,
+            weathers = viewModel.weathers.collectAsState().value.toImmutableList(),
             onChangeDarkTheme = {
                 darkTheme = !darkTheme
                 viewModel.setDarkMode(darkTheme)
@@ -92,17 +90,21 @@ class HomeFragment : CoreFragment() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeLayout(
-//    locationInfo: LocationInfo,
-//    currentCondition: CurrentCondition,
-    weather: Weather = Weather(),
+    weathers: ImmutableList<Weather>,
+//    weather: Weather = Weather(),
     onChangeDarkTheme: () -> Unit = {},
     onOpenSearch: () -> Unit = {}
 ) {
+    LaunchedEffect(key1 = weathers) {
+        Log.d("TAG", "HomeLayout - weathers: ${weathers.size}")
+    }
+
     val context = LocalContext.current
-    val color = remember { Animatable(colorDay) }
+    val color = remember { Animatable(colorNight) }
 
     var pageValue by remember { mutableIntStateOf(0) }
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 5 })
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { weathers.size })
+
 //    val backgroundBrush by remember {
 //        derivedStateOf {
 //            when (pagerState.currentPage) {
@@ -116,22 +118,22 @@ fun HomeLayout(
 //        }
 //    }
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { pagerState.settledPage }.collect { page ->
-            color.animateTo(
-                targetValue = when (page) {
-                    0 -> colorSunrise
-                    1 -> colorDreary
-                    2 -> colorNight
-                    3 -> colorRain
-                    4 -> colorSunset
-                    else -> colorNight
-                },
-                animationSpec = tween(1000),
-                block = {},
-            )
-        }
-    }
+//    LaunchedEffect(Unit) {
+//        snapshotFlow { pagerState.settledPage }.collect { page ->
+//            color.animateTo(
+//                targetValue = when (page) {
+//                    0 -> colorSunrise
+//                    1 -> colorDreary
+//                    2 -> colorNight
+//                    3 -> colorRain
+//                    4 -> colorSunset
+//                    else -> colorNight
+//                },
+//                animationSpec = tween(1000),
+//                block = {},
+//            )
+//        }
+//    }
 
     val lazyColumnState = rememberLazyListState()
 
@@ -142,9 +144,13 @@ fun HomeLayout(
             modifier = Modifier,
             topBar = {
                 HomeTopBar(
-                    locationInfo = weather.locationInfo,
+                    locationInfo =
+                    if (weathers.isEmpty())
+                        LocationInfo()
+                    else
+                        weathers[pagerState.settledPage].locationInfo,
                     pageCurrent = pagerState.currentPage,
-                    pageCount = pagerState.pageCount,
+                    pageCount = weathers.size,
                     onMenuLeft = onChangeDarkTheme,
                     onMenuRight = onOpenSearch,
                     modifier = Modifier.statusBarsPadding(),
@@ -163,18 +169,6 @@ fun HomeLayout(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(20.dp)
-                    )
-
-                    WeatherHeader(
-                        currentCondition = weather.currentCondition,
-                        page = pagerState.settledPage
-                    )
-
                     HorizontalPager(
                         verticalAlignment = Alignment.Top,
                         state = pagerState,
@@ -191,6 +185,24 @@ fun HomeLayout(
                                     .fillMaxWidth()
                                     .padding(16.dp)
                             ) {
+                                item(key = "WeatherHeader") {
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(20.dp)
+                                    )
+
+                                    WeatherHeader(
+                                        currentCondition =
+                                        if (weathers.isEmpty())
+                                            CurrentCondition()
+                                        else
+                                            weathers[pagerState.settledPage].currentCondition,
+                                        page = pagerState.settledPage
+                                    )
+
+                                }
+
                                 item(key = "WeatherForecastHourly") {
                                     WeatherForecastHourly(
                                         modifier = Modifier,
@@ -234,6 +246,10 @@ fun HomeLayout(
                                         )
                                     )
                                 }
+
+                                item(key = "WeatherSunrise"){
+                                    WeatherSunrise()
+                                }
                             }
                         }
                     )
@@ -247,7 +263,8 @@ fun HomeLayout(
 @Composable
 private fun PreviewHome() {
     HomeLayout(
-        weather = Weather(),
+//        weather = Weather(),
+        weathers = persistentListOf(),
         onChangeDarkTheme = {}
     )
 }

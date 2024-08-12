@@ -1,6 +1,5 @@
 package com.example.weather.ui.activity
 
-import android.location.Location
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.weather.core.CoreViewModel
@@ -21,7 +20,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -54,28 +52,37 @@ constructor(
     private var _errorMessage = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
 
-//    private var _weather = MutableStateFlow(Weather())
-//    val weather = _weather.asStateFlow()
+    private var _weather = MutableStateFlow(Weather())
+    val weather = _weather.asStateFlow()
 
-    private var _weathers = MutableStateFlow<List<Weather>>(mutableListOf())
+    private var _weathers = MutableStateFlow<ImmutableList<Weather>>(persistentListOf())
     val weathers = _weathers.asStateFlow()
 
     private var _index = MutableStateFlow<Int>(0)
     val index = _index.asStateFlow()
 
     init {
-        findAllLocationInfo()
         getCurrentCondition(
-            locationKey = _weathers.value.find { it.locationInfo.locationKey == chosenLocationKey }?.locationInfo?.locationKey ?: "",
+            locationKey = _weather.value.locationInfo.locationKey.ifEmpty { chosenLocationKey },
             fetchFromCache = true
         )
         searchLocationByKey(
-            locationKey = _weathers.value.find { it.locationInfo.locationKey == chosenLocationKey }?.locationInfo?.locationKey ?: ""
+            locationKey = _weather.value.locationInfo.locationKey.ifEmpty { chosenLocationKey }
         )
+
+        findAllWeathers()
+//        getCurrentCondition(
+//            locationKey = _weathers.value.find { it.locationInfo.locationKey == chosenLocationKey }?.locationInfo?.locationKey ?: "",
+//            fetchFromCache = true
+//        )
+//        searchLocationByKey(
+//            locationKey = _weathers.value.find { it.locationInfo.locationKey == chosenLocationKey }?.locationInfo?.locationKey ?: ""
+//        )
     }
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler{ coroutineContext: CoroutineContext, throwable: Throwable ->
         Log.d(TAG, "----------> coroutineExceptionHandler")
+        _showLoading.value = false
         when(throwable){
             is UnauthorizedException -> {
                 Log.d(TAG, "UnauthorizedException")
@@ -151,7 +158,7 @@ constructor(
                         if (status.data == null) {
                             onFailure("Location Info is null")
                         } else {
-//                            weather.value.locationInfo = status.data
+                            weather.value.locationInfo = status.data
                             onSuccess()
                         }
                     }
@@ -166,9 +173,9 @@ constructor(
     /***************************************
      * get current condition
      */
-    fun getCurrentCondition(
+    private fun getCurrentCondition(
         locationKey: String,
-        fetchFromCache: Boolean,
+        fetchFromCache: Boolean = false,
     ) {
 //        Log.d(TAG, "getCurrentCondition ----------------->")
 //        Log.d(TAG, "getCurrentCondition - locationKey = $locationKey")
@@ -211,30 +218,35 @@ constructor(
         if (locationKey.isEmpty()) return
 
         viewModelScope.launch(Dispatchers.IO) {
-            //weather.value.locationInfo = weatherRepository.searchInfoByLocationKey(locationKey = locationKey) ?: LocationInfo()
+            _weather.value.locationInfo = weatherRepository.searchInfoByLocationKey(locationKey = locationKey) ?: LocationInfo()
         }
     }
 
-    private fun findAllLocationInfo() {
+    fun findAllWeathers() {
+        _showLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             val listOfLocationInfo: List<LocationInfo> = weatherRepository.findAllLocationInfo()
             val listOfWeather = mutableListOf<Weather>()
 
+            listOfLocationInfo.forEachIndexed { index: Int, locationInfo: LocationInfo  ->
+                val currentCondition = findActualCurrentCondition(locationKey = locationInfo.locationKey)
+                val weather = Weather(locationInfo = locationInfo, currentCondition = currentCondition)
+                listOfWeather.add(weather)
+            }
 
-//            listOfLocationInfo.forEachIndexed { index: Int, locationInfo: LocationInfo  ->
-//                val currentCondition = withContext(Dispatchers.IO) {
-//                    weatherRepository.getCurrentCondition(fetchFromRemote = false, locationKey = locationInfo.locationKey)
-//                }
-//                val weather = Weather(
-//                    locationInfo = locationInfo,
-//                    currentCondition = currentCondition
-//                )
-//                listOfWeather.add(weather)
-//            }
-            _weathers.value = listOfWeather
+            _weathers.value = listOfWeather.toImmutableList()
+            _showLoading.value = false
+        }
+    }
 
-            Log.d(TAG, "findAllLocationInfo - listOfLocationInfo size: ${listOfLocationInfo.size} ")
-            Log.d(TAG, "findAllLocationInfo - weathers.value size: ${_weathers.value.size} ")
+    private suspend fun findActualCurrentCondition(locationKey: String) : CurrentCondition {
+        if (locationKey.isEmpty()) return CurrentCondition()
+
+        return withContext(Dispatchers.IO) {
+            weatherRepository.getCurrentCondition2(
+                fetchFromRemote = true,
+                locationKey = locationKey
+            )
         }
     }
 }
