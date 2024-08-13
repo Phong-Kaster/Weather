@@ -20,6 +20,8 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -225,14 +227,26 @@ constructor(
     fun findAllWeathers() {
         _showLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            val listOfLocationInfo: List<LocationInfo> = weatherRepository.findAllLocationInfo()
-            val listOfWeather = mutableListOf<Weather>()
 
-            listOfLocationInfo.forEachIndexed { index: Int, locationInfo: LocationInfo  ->
-                val currentCondition = findActualCurrentCondition(locationKey = locationInfo.locationKey)
-                val weather = Weather(locationInfo = locationInfo, currentCondition = currentCondition)
-                listOfWeather.add(weather)
-            }
+            val listOfLocationInfo: List<LocationInfo> = weatherRepository.findAllLocationInfo()
+            val listOfCurrentCondition = listOfLocationInfo.mapIndexed { index: Int, locationInfo: LocationInfo  ->
+                async {
+                    findActualCurrentCondition(locationKey = locationInfo.locationKey)
+                }
+            }.awaitAll()
+
+
+//            listOfCurrentCondition.forEachIndexed { index: Int, currentCondition: CurrentCondition ->
+//                val weather = Weather(
+//                    currentCondition = currentCondition,
+//                    locationInfo = listOfLocationInfo[index]
+//                )
+//                listOfWeather.add(weather)
+//            }
+
+            val listOfWeather: List<Weather> = listOfLocationInfo.zip(listOfCurrentCondition) { info, condition ->
+                    Weather(locationInfo = info, currentCondition = condition)
+                }
 
             _weathers.value = listOfWeather.toImmutableList()
             _showLoading.value = false
@@ -249,4 +263,5 @@ constructor(
             )
         }
     }
+
 }
