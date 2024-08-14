@@ -29,7 +29,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.weather.R
 import com.example.weather.ui.theme.customizedTextStyle
+import com.example.weather.util.DateUtil
+import com.example.weather.util.DateUtil.formatWithPattern
 import java.util.Calendar
+import java.util.Date
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -56,17 +59,34 @@ import kotlin.math.sin
 fun WeatherSunrise(
     modifier: Modifier = Modifier
 ) {
+    // sunrise
+    val calendarSunrise = Calendar.getInstance()
+    calendarSunrise.time = Date()
+    calendarSunrise.set(Calendar.HOUR_OF_DAY, 6)
+    calendarSunrise.set(Calendar.MINUTE, 0)
+    calendarSunrise.set(Calendar.SECOND, 0)
+    calendarSunrise.time
+
+    // sunset
+    val calendarSunset = Calendar.getInstance()
+    calendarSunset.time = Date()
+    calendarSunset.set(Calendar.HOUR_OF_DAY, 18)
+    calendarSunset.set(Calendar.MINUTE, 15)
+    calendarSunset.set(Calendar.SECOND, 30)
+    calendarSunset.time
+
 
     val vector = ImageVector.vectorResource(id = R.drawable.ic_sunny)
     val painter = rememberVectorPainter(image = vector)
 
+
     val diameter = 200
-    val percent = 0.1// the sun rise 55% of circular arc
+    //val percent = 0.1// the sun rise 55% of circular arc
+    val percent = DateUtil.calculatePercent(sunrise = calendarSunrise.time, sunset = calendarSunset.time)
     val canvasPercent = 1 - percent // because the canvas start from top left corner
     val radian = -(canvasPercent * 180) * (Math.PI / 180) // we places minus because the canvas start from top left corner
 
-    val calendar = Calendar.getInstance()
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+
 
     Column(modifier = modifier.fillMaxWidth()) {
         // Moon Phase
@@ -92,7 +112,7 @@ fun WeatherSunrise(
                     modifier = Modifier
                 ) {
                     Text(
-                        text = "06:00 am",
+                        text = calendarSunrise.time.formatWithPattern(DateUtil.PATTERN_hh_mm_aa),
                         style = customizedTextStyle(fontSize = 14, fontWeight = 600),
                         color = Color.White,
                         modifier = Modifier,
@@ -121,7 +141,7 @@ fun WeatherSunrise(
                     val startPointArc = Offset(x = 0f, y = size.height * 0f)
 
                     // Central Point of Circle
-                    drawCircle(color = Color.Red, radius = 4f, center = centerPoint)
+                    //drawCircle(color = Color.Red, radius = 4f, center = centerPoint)
 
                     drawArc(
                         color = Color.White,
@@ -168,7 +188,7 @@ fun WeatherSunrise(
                     modifier = Modifier
                 ) {
                     Text(
-                        text = "06:00 pm",
+                        text = calendarSunset.time.formatWithPattern(DateUtil.PATTERN_hh_mm_aa),
                         style = customizedTextStyle(fontSize = 14, fontWeight = 600),
                         color = Color.White,
                         modifier = Modifier,

@@ -3,8 +3,10 @@ package com.example.weather.util
 import android.annotation.SuppressLint
 import android.util.Log
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.abs
 
 object DateUtil {
     /**
@@ -102,5 +104,33 @@ object DateUtil {
         val differenceHour = computeDifferenceDaysBetweenTwoDates(fromDate = fromDate, toDate = toDate)
         val expiryHour = 12
         return differenceHour < expiryHour
+    }
+
+    fun calculatePercent(sunrise: Date, sunset: Date): Float {
+        val calendarSunrise = Calendar.getInstance()
+        calendarSunrise.time = sunrise
+
+        val calendarSunset = Calendar.getInstance()
+        calendarSunset.time = sunset
+
+        val calendarNow = Calendar.getInstance()
+        calendarNow.time = Date()
+
+        val distance: Long = abs(calendarSunrise.timeInMillis - calendarSunset.timeInMillis)
+        val elapsedDistance: Long = abs(calendarNow.timeInMillis - calendarSunrise.timeInMillis)
+        val percent = (elapsedDistance.toDouble() / distance)
+
+
+//        Log.d("TAG", "calculatePercent --------------------")
+//        Log.d("TAG", "calculatePercent - sunrise = $sunrise")
+//        Log.d("TAG", "calculatePercent - sunset =  $sunset")
+//        Log.d("TAG", "calculatePercent - distance = $distance")
+//        Log.d("TAG", "calculatePercent - elapsedDistance = $elapsedDistance")
+//        Log.d("TAG", "calculatePercent - percent = $percent ")
+//        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance / distance)} ")
+//        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance - distance)} ")
+//        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance * distance)} ")
+//        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance + distance)} ")
+        return if(percent > 1) 1f else percent.toFloat()
     }
 }

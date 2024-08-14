@@ -2,7 +2,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/navigation_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.weather.ui.fragment.splash.SplashFragment" />
+
 
     <fragment
         android:id="@+id/homeFragment"
@@ -15,6 +20,16 @@
     <action
         android:id="@+id/toSearch"
         app:destination="@id/searchFragment"
+        app:enterAnim="@anim/enter_slide_in_right"
+        app:exitAnim="@anim/exit_slide_out_left"
+        app:popEnterAnim="@anim/enter_slide_in_left"
+        app:popExitAnim="@anim/exit_slide_out_right"
+        app:popUpToInclusive="true"/>
+
+
+    <action
+        android:id="@+id/toHome"
+        app:destination="@id/homeFragment"
         app:enterAnim="@anim/enter_slide_in_right"
         app:exitAnim="@anim/exit_slide_out_left"
         app:popEnterAnim="@anim/enter_slide_in_left"

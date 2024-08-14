@@ -69,7 +69,6 @@ class HomeFragment : CoreFragment() {
         val showLoading = viewModel.showLoading.collectAsState().value
 
         HomeLayout(
-//            weather = viewModel.weather.collectAsState().value,
             weathers = viewModel.weathers.collectAsState().value.toImmutableList(),
             onChangeDarkTheme = {
                 darkTheme = !darkTheme
@@ -82,8 +81,6 @@ class HomeFragment : CoreFragment() {
             if (errorMessage.isEmpty()) return@LaunchedEffect
             showToast(errorMessage)
         }
-
-        LoadingDialog(enable = showLoading)
     }
 }
 

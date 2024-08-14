@@ -90,7 +90,7 @@ val brushMidnight = Brush.linearGradient(
     end = Offset(2 * Float.POSITIVE_INFINITY, 2 * Float.POSITIVE_INFINITY),
 )
 
-val colorNight = Color(0xFF122432)
+val colorNight = Color(0xFF171A1D)
 val brushNight = Brush.linearGradient(
     colors = listOf(
         Color(0xFF172A39),
