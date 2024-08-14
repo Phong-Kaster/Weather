@@ -30,7 +30,6 @@ fun AccuWeather(
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp)
     ) {
 
         Text(

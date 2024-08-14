@@ -157,7 +157,7 @@ fun HomeLayout(
                 AccuWeather(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 3.dp)
+                        .padding(horizontal = 16.dp, vertical = 0.dp)
                 )
             },
             content = {
