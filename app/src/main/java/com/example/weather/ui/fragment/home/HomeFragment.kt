@@ -32,6 +32,7 @@ import androidx.fragment.app.activityViewModels
 import com.example.jetpack.core.CoreFragment
 import com.example.jetpack.core.CoreLayout
 import com.example.weather.R
+import com.example.weather.domain.model.AirAndPollen
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.DailyForecast
 import com.example.weather.domain.model.HourlyForecast
@@ -59,6 +60,15 @@ class HomeFragment : CoreFragment() {
 
     override fun onResume() {
         super.onResume()
+
+        val airAndPollen = AirAndPollen()
+        val airAndPollen1 = AirAndPollen()
+        Log.d(TAG, "onResume - hashCode: ${airAndPollen.hashCode()} ")
+        Log.d(TAG, "onResume - toString: ${airAndPollen.toString()} ")
+        Log.d(TAG, "onResume - toString: ${airAndPollen.equals(airAndPollen1)} ")
+        Log.d(TAG, "onResume - toString: ${airAndPollen.copy(name = "ABC")} ")
+
+
         viewModel.findAllWeathers()
     }
 
@@ -66,16 +76,17 @@ class HomeFragment : CoreFragment() {
     override fun ComposeView() {
         super.ComposeView()
         val errorMessage = viewModel.errorMessage.collectAsState().value
-        val showLoading = viewModel.showLoading.collectAsState().value
 
         HomeLayout(
-            weathers = viewModel.weathers.collectAsState().value.toImmutableList(),
+            showLoading = viewModel.showLoading.collectAsState().value,
+            weathers = viewModel.weathers.collectAsState().value,
+            onOpenSearch = { safeNavigate(R.id.toSearch) },
             onChangeDarkTheme = {
                 darkTheme = !darkTheme
                 viewModel.setDarkMode(darkTheme)
             },
-            onOpenSearch = { safeNavigate(R.id.toSearch) }
-        )
+
+            )
 
         LaunchedEffect(key1 = errorMessage) {
             if (errorMessage.isEmpty()) return@LaunchedEffect
@@ -87,20 +98,21 @@ class HomeFragment : CoreFragment() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeLayout(
-    weathers: ImmutableList<Weather>,
-//    weather: Weather = Weather(),
+    showLoading: Boolean,
+    weathers: List<Weather>,
     onChangeDarkTheme: () -> Unit = {},
     onOpenSearch: () -> Unit = {}
 ) {
-    LaunchedEffect(key1 = weathers) {
-        Log.d("TAG", "HomeLayout - weathers: ${weathers.size}")
-    }
+//    LaunchedEffect(key1 = weathers) {
+//        Log.d("TAG", "HomeLayout - weathers: ${weathers.size}")
+//    }
 
     val context = LocalContext.current
     val color = remember { Animatable(colorNight) }
 
     var pageValue by remember { mutableIntStateOf(0) }
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { weathers.size })
+    val pagerState =
+        rememberPagerState(initialPage = 0, pageCount = { weathers.size.coerceAtLeast(1) })
 
 //    val backgroundBrush by remember {
 //        derivedStateOf {
@@ -134,133 +146,134 @@ fun HomeLayout(
 
     val lazyColumnState = rememberLazyListState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        // CONTENT
-        CoreLayout(
-            backgroundColor = color.value,
-            modifier = Modifier,
-            topBar = {
-                HomeTopBar(
-                    locationInfo =
-                    if (weathers.isEmpty())
-                        LocationInfo()
-                    else
-                        weathers[pagerState.settledPage].locationInfo,
-                    pageCurrent = pagerState.currentPage,
-                    pageCount = weathers.size,
-                    onMenuLeft = onChangeDarkTheme,
-                    onMenuRight = onOpenSearch,
-                    modifier = Modifier.statusBarsPadding(),
-                )
-            },
-            bottomBar = {
-                AccuWeather(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 0.dp)
-                )
-            },
-            content = {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    HorizontalPager(
-                        verticalAlignment = Alignment.Top,
-                        state = pagerState,
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        pageContent = { page ->
-                            pageValue = page
 
-                            LazyColumn(
-                                state = lazyColumnState,
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                item(key = "WeatherHeader") {
-                                    Spacer(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(20.dp)
-                                    )
+    // CONTENT
+    CoreLayout(
+        backgroundColor = color.value,
+        modifier = Modifier,
+        topBar = {
+            HomeTopBar(
+                locationInfo =
+                if (weathers.isEmpty())
+                    LocationInfo()
+                else
+                    weathers[pagerState.settledPage].locationInfo,
+                pageCurrent = pagerState.currentPage,
+                pageCount = weathers.size,
+                onMenuLeft = onChangeDarkTheme,
+                onMenuRight = onOpenSearch,
+                modifier = Modifier.statusBarsPadding(),
+            )
+        },
+        bottomBar = {
+            AccuWeather(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 0.dp)
+            )
+        },
+        content = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                HorizontalPager(
+                    verticalAlignment = Alignment.Top,
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize(),
+                    pageContent = { page ->
+                        pageValue = page
 
-                                    WeatherHeader(
-                                        currentCondition =
-                                        if (weathers.isEmpty())
-                                            CurrentCondition()
-                                        else
-                                            weathers[pagerState.settledPage].currentCondition,
-                                        page = pagerState.settledPage
-                                    )
+                        LazyColumn(
+                            state = lazyColumnState,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            item(key = "WeatherHeader") {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(20.dp)
+                                )
 
-                                }
+                                WeatherHeader(
+                                    currentCondition =
+                                    if (weathers.isEmpty())
+                                        CurrentCondition()
+                                    else
+                                        weathers[pagerState.settledPage].currentCondition,
+                                )
 
-                                item(key = "WeatherForecastHourly") {
-                                    WeatherForecastHourly(
-                                        modifier = Modifier,
-                                        hourlyForecasts = listOf(
-                                            HourlyForecast(id = "0"),
-                                            HourlyForecast(id = "1"),
-                                            HourlyForecast(id = "2"),
-                                            HourlyForecast(id = "3"),
-                                            HourlyForecast(id = "4"),
-                                            HourlyForecast(id = "5"),
-                                            HourlyForecast(id = "6"),
-                                            HourlyForecast(id = "7"),
-                                            HourlyForecast(id = "8"),
-                                            HourlyForecast(id = "9"),
-                                            HourlyForecast(id = "10"),
-                                            HourlyForecast(id = "11"),
-                                            HourlyForecast(id = "12"),
-                                            HourlyForecast(id = "13"),
-                                            HourlyForecast(id = "14"),
-                                            HourlyForecast(id = "15"),
-                                        )
-                                    )
-                                }
+                            }
 
-                                item(key = "WeatherForecastDaily") {
-                                    WeatherForecastDaily(
-                                        modifier = Modifier,
-                                        dailyForecasts = listOf(
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                            DailyForecast(),
-                                        )
-                                    )
-                                }
+                            item(key = "WeatherForecastHourly") {
+                                WeatherForecastHourly(
+                                    showLoading = showLoading,
+                                    hourlyForecasts = listOf(
+                                        HourlyForecast(id = "0"),
+                                        HourlyForecast(id = "1"),
+                                        HourlyForecast(id = "2"),
+                                        HourlyForecast(id = "3"),
+                                        HourlyForecast(id = "4"),
+                                        HourlyForecast(id = "5"),
+                                        HourlyForecast(id = "6"),
+                                        HourlyForecast(id = "7"),
+                                        HourlyForecast(id = "8"),
+                                        HourlyForecast(id = "9"),
+                                        HourlyForecast(id = "10"),
+                                        HourlyForecast(id = "11"),
+                                        HourlyForecast(id = "12"),
+                                        HourlyForecast(id = "13"),
+                                        HourlyForecast(id = "14"),
+                                        HourlyForecast(id = "15"),
+                                    ),
+                                    modifier = Modifier,
+                                )
+                            }
 
-                                item(key = "WeatherSunrise"){
-                                    WeatherSunrise()
-                                }
+                            item(key = "WeatherForecastDaily") {
+                                WeatherForecastDaily(
+                                    showLoading = showLoading,
+                                    dailyForecasts = listOf(
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                        DailyForecast(),
+                                    ),
+                                    modifier = Modifier,
+                                )
+                            }
+
+                            item(key = "WeatherSunrise") {
+                                WeatherSunrise(
+                                    showLoading = showLoading,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
                             }
                         }
-                    )
-                }
+                    }
+                )
             }
-        )
-    }
+        }
+    )
 }
 
 @Preview
 @Composable
 private fun PreviewHome() {
     HomeLayout(
-//        weather = Weather(),
+        showLoading = false,
         weathers = persistentListOf(),
         onChangeDarkTheme = {}
     )

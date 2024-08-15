@@ -2,6 +2,12 @@ package com.example.weather.ui.fragment.home.component
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +40,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import com.example.weather.R
 import com.example.weather.domain.enums.ConditionType
 import com.example.weather.domain.model.HourlyForecast
+import com.example.weather.ui.component.effect.shimmerEffect
 import com.example.weather.ui.theme.brushSunset
 import com.example.weather.ui.theme.customizedTextStyle
 
@@ -51,12 +59,15 @@ var lastFilter: ConditionType = ConditionType.TEMPERATURE
 
 @Composable
 fun WeatherForecastHourly(
+    showLoading: Boolean,
     modifier: Modifier = Modifier,
     hourlyForecasts: List<HourlyForecast> = listOf(),
-    timeZone: String = "",
+    timezone: String = "",
 ) {
     var filterChange by remember { mutableStateOf(lastFilter) }
     val filter by remember { derivedStateOf { filterChange } }
+
+    val density = LocalDensity.current
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -176,7 +187,7 @@ fun WeatherForecastHourly(
         )
 
         AnimatedVisibility(
-            visible = hourlyForecasts.isNotEmpty(),
+            visible = !showLoading,
             content = {
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(30.dp),
@@ -189,7 +200,7 @@ fun WeatherForecastHourly(
                             WeatherForecastHourlyItem(
                                 modifier = Modifier,
                                 hourlyForecast = hourlyForecast,
-                                timeZone = timeZone,
+                                timeZone = timezone,
                                 conditionType = filter,
                                 onClick = {  },
                             )
@@ -200,13 +211,24 @@ fun WeatherForecastHourly(
         )
 
         AnimatedVisibility(
-            visible = hourlyForecasts.isEmpty(),
+            visible = showLoading,
+            enter = slideInVertically {
+                // Slide in from 40 dp from the top.
+                with(density) { -40.dp.roundToPx() }
+            } + expandVertically(
+                // Expand from the top.
+                expandFrom = Alignment.Top
+            ) + fadeIn(
+                // Fade in with the initial alpha of 0.3f.
+                initialAlpha = 0.3f
+            ),
+            exit = slideOutVertically() + shrinkVertically() + fadeOut(),
             content = {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(138.dp)
-//                        .highlightShimmer()
+                        .height(100.dp)
+                        .shimmerEffect()
                 )
             }
         )
@@ -375,6 +397,22 @@ private fun PreviewWeatherForecastHourlyItem() {
 fun PreviewDetailHourlyView() {
     Column(modifier = Modifier.background(brush = brushSunset)) {
         WeatherForecastHourly(
+            showLoading = false,
+            hourlyForecasts = listOf(
+                HourlyForecast(),
+                HourlyForecast(),
+                HourlyForecast(),
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewDetailHourlyViewShowLoading() {
+    Column(modifier = Modifier.background(brush = brushSunset)) {
+        WeatherForecastHourly(
+            showLoading = true,
             hourlyForecasts = listOf(
                 HourlyForecast(),
                 HourlyForecast(),

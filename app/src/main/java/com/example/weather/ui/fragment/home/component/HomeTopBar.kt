@@ -1,6 +1,5 @@
 package com.example.weather.ui.fragment.home.component
 
-import android.location.Location
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -25,20 +24,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.weather.R
-import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.LocationInfo
 import com.example.weather.ui.component.effect.shimmerEffect
 import com.example.weather.ui.theme.brushSunset
@@ -78,17 +72,17 @@ fun HomeTopBar(
             modifier = Modifier
                 .align(Alignment.Center)
         ) {
-            AnimatedVisibility(
-                visible = cityName.isEmpty(),
-                content = {
-                    Box(
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(20.dp)
-                            .shimmerEffect()
-                    ) {}
-                }
-            )
+//            AnimatedVisibility(
+//                visible = cityName.isEmpty(),
+//                content = {
+//                    Box(
+//                        modifier = Modifier
+//                            .width(200.dp)
+//                            .height(20.dp)
+//                            .shimmerEffect()
+//                    ) {}
+//                }
+//            )
 
             AnimatedVisibility(
                 visible = cityName.isNotEmpty(),
@@ -113,7 +107,9 @@ fun HomeTopBar(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                itemsIndexed(items = (1..pageCount).toList(), key = { index, _ ->
+                itemsIndexed(
+                    items = (1..pageCount).toList(),
+                    key = { index, _ ->
                     index
                 }) { index, _ ->
                     /*if (index == 0) {

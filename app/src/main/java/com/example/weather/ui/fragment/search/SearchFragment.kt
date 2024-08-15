@@ -47,6 +47,7 @@ import com.example.weather.ui.fragment.search.component.SearchList
 import com.example.weather.ui.fragment.search.component.SearchTopBar
 import com.example.weather.ui.theme.brushManageLocation
 import com.example.weather.ui.theme.customizedTextStyle
+import com.example.weather.util.NavigationUtil.safeNavigate
 import com.example.weather.util.NavigationUtil.safeNavigateUp
 import com.example.weather.util.PermissionUtil
 import dagger.hilt.android.AndroidEntryPoint
@@ -174,7 +175,8 @@ class SearchFragment : CoreFragment() {
                     locationAuto = locationAuto,
                     onSuccess = {
                         requireActivity().runOnUiThread {
-                            safeNavigateUp()
+                            val destination = R.id.toHome
+                            safeNavigate(destination = destination)
                         }
                     },
                     onFailure = { it ->

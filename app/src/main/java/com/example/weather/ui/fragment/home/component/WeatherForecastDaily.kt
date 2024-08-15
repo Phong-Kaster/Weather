@@ -41,12 +41,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.weather.R
 import com.example.weather.domain.model.DailyForecast
+import com.example.weather.ui.component.effect.shimmerEffect
 import com.example.weather.ui.theme.brushSunset
 import com.example.weather.ui.theme.customizedTextStyle
 
 @Composable
 fun WeatherForecastDaily(
 //    location: Location,
+    showLoading: Boolean,
     modifier: Modifier = Modifier,
     dailyForecasts: List<DailyForecast> = listOf(),
     timeZone: String = "America/New_York",
@@ -155,77 +157,20 @@ fun WeatherForecastDaily(
                 .background(color = Color.White.copy(0.3f))
         )
 
-        /*Column(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            if (dailyForecasts.isNotEmpty()) {
-                DailyForecastItem(
-                    dailyForecast = daily0,
-                    timeZone = timeZone,
-                    isDayTime = isDayTime,
-                    onClick = {
-                        onDailyClick(daily0)
-                    }
-                )
-
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth()
-                        .height(0.5.dp)
-                        .background(color = Color.White.copy(alpha = 0.4f))
-                )
-
-                DailyForecastItem(
-                    dailyForecast = daily1,
-                    timeZone = timeZone,
-                    isDayTime = isDayTime,
-                    onClick = {
-                        onDailyClick(daily1)
-                    }
-                )
-
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth()
-                        .height(0.5.dp)
-                        .background(color = Color.White.copy(alpha = 0.4f))
-                )
-
-                DailyForecastItem(
-                    dailyForecast = daily2,
-                    timeZone = timeZone,
-                    isDayTime = isDayTime,
-                    onClick = {
-                        onDailyClick(daily2)
-                    }
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(130.dp)
-                        .highlightShimmer()
-                )
-            }
-        }*/
-
         AnimatedVisibility(
-            visible = dailyForecasts.isEmpty(),
+            visible = showLoading,
             content = {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(130.dp)
-//                        .highlightShimmer()
+                        .shimmerEffect()
                 )
             }
         )
 
         AnimatedVisibility(
-            visible = dailyForecasts.isNotEmpty(),
+            visible = !showLoading,
             content = {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -385,9 +330,7 @@ fun DailyForecastItem2(
         }
 
         // Weather text
-
         Text(
-//            text = stringResource(weatherText(weatherIcon2)),
             text = "Cloudy",
             style = customizedTextStyle(14, 500),
             color = Color.White,
@@ -440,6 +383,25 @@ fun PreviewDailyForecastItem2() {
 fun PreviewDetailDailyView() {
     Column(modifier = Modifier.background(brush = brushSunset)) {
         WeatherForecastDaily(
+            showLoading = false,
+//            location = Location(),
+            dailyForecasts = listOf(
+                DailyForecast(),
+                DailyForecast(),
+                DailyForecast(),
+                DailyForecast(),
+                DailyForecast(),
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewDetailDailyViewForLoading() {
+    Column(modifier = Modifier.background(brush = brushSunset)) {
+        WeatherForecastDaily(
+            showLoading = true,
 //            location = Location(),
             dailyForecasts = listOf(
                 DailyForecast(),

@@ -34,16 +34,13 @@ import kotlin.math.roundToInt
 @Composable
 fun WeatherHeader(
     currentCondition: CurrentCondition,
-    page: Int = 0,
 ) {
-    val context = LocalContext.current
-
     var temperature by remember { mutableFloatStateOf(0f) }
-    val temperatureAnimation by animateFloatAsState(
-        targetValue = temperature,
-        animationSpec = tween(durationMillis = 2500),
-        label = "temperatureAnimation"
-    )
+//    val temperatureAnimation by animateFloatAsState(
+//        targetValue = temperature,
+//        animationSpec = tween(durationMillis = 2500),
+//        label = "temperatureAnimation"
+//    )
 
     val textColor by animateColorAsState(
         targetValue = LocalCustomizedTheme.current.textColor,
@@ -82,7 +79,7 @@ fun WeatherHeader(
                 modifier = Modifier
             ) {
                 Text(
-                    text = "Thunder storm",
+                    text = currentCondition.weatherText.ifEmpty { "Sunny" },
                     //style = customizedTextStyle(fontWeight = 400, fontSize = 16),
                     /*color = if (isNight) Color.White else Color.Black,*/
 //                    color = Color.White,
@@ -99,7 +96,7 @@ fun WeatherHeader(
                 )
 
                 Text(
-                    text = "Feels like 30°C",
+                    text = "Feels like ${currentCondition.feelTemperature.roundToInt()}°C",
                     style = customizedTextStyle(fontWeight = 400, fontSize = 16),
                     /*color = if (isNight) Color.White else Color.Black,*/
 //                    color = Color.White,
@@ -108,7 +105,7 @@ fun WeatherHeader(
                 )
 
                 Text(
-                    text = "${temperatureAnimation.roundToInt()}°C",
+                    text = "${temperature.roundToInt()}°C",
                     style = customizedTextStyle(fontWeight = 600, fontSize = 110),
                     /*color = if (isNight) Color.White else Color.Black,*/
 //                    color = Color.White,

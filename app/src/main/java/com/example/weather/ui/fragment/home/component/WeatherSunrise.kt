@@ -1,8 +1,10 @@
 package com.example.weather.ui.fragment.home.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +30,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.weather.R
+import com.example.weather.ui.component.effect.shimmerEffect
 import com.example.weather.ui.theme.customizedTextStyle
 import com.example.weather.util.DateUtil
 import com.example.weather.util.DateUtil.formatWithPattern
@@ -57,6 +60,7 @@ import kotlin.math.sin
  */
 @Composable
 fun WeatherSunrise(
+    showLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
     // sunrise
@@ -82,132 +86,147 @@ fun WeatherSunrise(
 
     val diameter = 200
     //val percent = 0.1// the sun rise 55% of circular arc
-    val percent = DateUtil.calculatePercent(sunrise = calendarSunrise.time, sunset = calendarSunset.time)
+    val percent =
+        DateUtil.calculatePercent(sunrise = calendarSunrise.time, sunset = calendarSunset.time)
     val canvasPercent = 1 - percent // because the canvas start from top left corner
-    val radian = -(canvasPercent * 180) * (Math.PI / 180) // we places minus because the canvas start from top left corner
+    val radian =
+        -(canvasPercent * 180) * (Math.PI / 180) // we places minus because the canvas start from top left corner
 
 
-
-    Column(modifier = modifier.fillMaxWidth()) {
-        // Moon Phase
-        Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape = RoundedCornerShape(20.dp))
-                .background(
-                    color = Color.White.copy(alpha = 0.3f)
+    // Moon Phase
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape = RoundedCornerShape(20.dp))
+            .background(
+                color = Color.White.copy(alpha = 0.3f)
+            )
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+    ) {
+        AnimatedVisibility(visible = showLoading,
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .shimmerEffect()
                 )
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-        ) {
+            }
+        )
 
-            // Draw semi circle
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
+        AnimatedVisibility(visible = !showLoading,
+            content = {
+                // Draw semi circle
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = calendarSunrise.time.formatWithPattern(DateUtil.PATTERN_hh_mm_aa),
-                        style = customizedTextStyle(fontSize = 14, fontWeight = 600),
-                        color = Color.White,
-                        modifier = Modifier,
-                    )
-
-                    Text(
-                        text = "Sunrise",
-                        style = customizedTextStyle(fontSize = 14, fontWeight = 400),
-                        color = Color.White,
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                    )
-                }
-
-
-                Canvas(
-                    modifier = Modifier
-                        .width(diameter.dp)
-                        .height((diameter * 0.5f).dp)
-                ) {
-                    val radius = size.width * 0.5
-                    val centerPoint = Offset(x = size.width * 0.5f, y = size.height)
-                    val sunX =
-                        centerPoint.x + radius * cos(radian) - painter.intrinsicSize.width * 0.25f
-                    val sunY =
-                        centerPoint.y + radius * sin(radian) - painter.intrinsicSize.height * 0.3f
-                    val startPointArc = Offset(x = 0f, y = size.height * 0f)
-
-                    // Central Point of Circle
-                    //drawCircle(color = Color.Red, radius = 4f, center = centerPoint)
-
-                    drawArc(
-                        color = Color.White,
-                        startAngle = -180f,
-                        sweepAngle = 180f,
-                        useCenter = false,
-                        topLeft = startPointArc,
-                        size = Size(size.width, size.height * 2),
-                        style = Stroke(
-                            width = 10f,
-                            cap = StrokeCap.Square,
-                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f), 0f)
-                        )
-                    )
-
-                    // sun path with Yellow
-                    drawArc(
-                        color = Color.Yellow,
-                        startAngle = -180f,
-                        sweepAngle = (180f * percent).toFloat(),
-                        useCenter = false,
-                        size = Size(size.width, size.height * 2),
-                        topLeft = startPointArc,
-                        style = Stroke(
-                            width = 10f,
-                            cap = StrokeCap.Square,
-                        ),
-                    )
-
-                    // draw sun
-                    translate(
-                        left = sunX.toFloat(),
-                        top = sunY.toFloat()
                     ) {
-                        with(painter) {
-                            draw(painter.intrinsicSize * 0.5f)
+                        Text(
+                            text = calendarSunrise.time.formatWithPattern(DateUtil.PATTERN_hh_mm_aa),
+                            style = customizedTextStyle(fontSize = 14, fontWeight = 600),
+                            color = Color.White,
+                            modifier = Modifier,
+                        )
+
+                        Text(
+                            text = "Sunrise",
+                            style = customizedTextStyle(fontSize = 14, fontWeight = 400),
+                            color = Color.White,
+                            modifier = Modifier
+                        )
+                    }
+
+
+                    Canvas(
+                        modifier = Modifier
+                            .width(diameter.dp)
+                            .height((diameter * 0.5f).dp)
+                    ) {
+                        val radius = size.width * 0.5
+                        val centerPoint = Offset(x = size.width * 0.5f, y = size.height)
+                        val sunX =
+                            centerPoint.x + radius * cos(radian) - painter.intrinsicSize.width * 0.25f
+                        val sunY =
+                            centerPoint.y + radius * sin(radian) - painter.intrinsicSize.height * 0.3f
+                        val startPointArc = Offset(x = 0f, y = size.height * 0f)
+
+                        // Central Point of Circle
+                        //drawCircle(color = Color.Red, radius = 4f, center = centerPoint)
+
+                        drawArc(
+                            color = Color.White,
+                            startAngle = -180f,
+                            sweepAngle = 180f,
+                            useCenter = false,
+                            topLeft = startPointArc,
+                            size = Size(size.width, size.height * 2),
+                            style = Stroke(
+                                width = 10f,
+                                cap = StrokeCap.Square,
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f), 0f)
+                            )
+                        )
+
+                        // sun path with Yellow
+                        drawArc(
+                            color = Color.Yellow,
+                            startAngle = -180f,
+                            sweepAngle = (180f * percent).toFloat(),
+                            useCenter = false,
+                            size = Size(size.width, size.height * 2),
+                            topLeft = startPointArc,
+                            style = Stroke(
+                                width = 10f,
+                                cap = StrokeCap.Square,
+                            ),
+                        )
+
+                        // draw sun
+                        translate(
+                            left = sunX.toFloat(),
+                            top = sunY.toFloat()
+                        ) {
+                            with(painter) {
+                                draw(painter.intrinsicSize * 0.5f)
+                            }
                         }
                     }
-                }
 
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                ) {
-                    Text(
-                        text = calendarSunset.time.formatWithPattern(DateUtil.PATTERN_hh_mm_aa),
-                        style = customizedTextStyle(fontSize = 14, fontWeight = 600),
-                        color = Color.White,
-                        modifier = Modifier,
-                    )
-
-                    Text(
-                        text = "Sunrise",
-                        style = customizedTextStyle(fontSize = 14, fontWeight = 400),
-                        color = Color.White,
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                    )
+                    ) {
+                        Text(
+                            text = calendarSunset.time.formatWithPattern(DateUtil.PATTERN_hh_mm_aa),
+                            style = customizedTextStyle(fontSize = 14, fontWeight = 600),
+                            color = Color.White,
+                            modifier = Modifier,
+                        )
+
+                        Text(
+                            text = "Sunrise",
+                            style = customizedTextStyle(fontSize = 14, fontWeight = 400),
+                            color = Color.White,
+                            modifier = Modifier
+                        )
+                    }
                 }
             }
-        }
+        )
     }
 }
 
 @Preview
 @Composable
 private fun PreviewWeatherOverall() {
-    WeatherSunrise()
+    WeatherSunrise(
+        showLoading = false,
+    )
 }
