@@ -38,7 +38,7 @@ constructor(
         return ApiUtil.fetchDataBody {  weatherApi.searchGeoposition(lnglat = lntLng) }
     }
 
-    /**
+    /****************************************
      * search autocomplete
      */
     suspend fun searchAutocomplete(keyword: String): Flow<Status<List<LocationAuto>>> {
@@ -72,7 +72,7 @@ constructor(
         }
     }
 
-    /**
+    /****************************************
      * get current condition
      */
     suspend fun getCurrentCondition(
@@ -194,7 +194,7 @@ constructor(
         }
     }
 
-    /**
+    /****************************************
      * save location info
      */
     suspend fun saveLocationInfo(locationAuto: LocationAuto): Flow<Status<LocationInfo>> {
@@ -237,5 +237,11 @@ constructor(
 
     suspend fun findAllLocationInfo(): List<LocationInfo> {
         return locationInfoDao.findAll().map { it.toModel() }
+    }
+
+    suspend fun get1HourOfHourlyForecast(locationKey: String){
+        val response = ApiUtil.fetchDataBody { weatherApi.get1HourOfHourlyForecast(locationKey = locationKey) }
+
+        Log.d(TAG, "get1HourOfHourlyForecast = $response ")
     }
 }

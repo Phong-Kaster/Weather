@@ -87,13 +87,10 @@ constructor(
         )
 
         findWeathers()
-//        getCurrentCondition(
-//            locationKey = _weathers.value.find { it.locationInfo.locationKey == chosenLocationKey }?.locationInfo?.locationKey ?: "",
-//            fetchFromCache = true
-//        )
-//        searchLocationByKey(
-//            locationKey = _weathers.value.find { it.locationInfo.locationKey == chosenLocationKey }?.locationInfo?.locationKey ?: ""
-//        )
+
+        getHourlyForecast(
+            locationKey = chosenLocationKey
+        )
     }
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler{ coroutineContext: CoroutineContext, throwable: Throwable ->
@@ -290,23 +287,8 @@ constructor(
             .setRequiredNetworkType(NetworkType.UNMETERED)
             .build()
 
-        // Add initial delay for 3 AM
-//        val weatherWorker = PeriodicWorkRequestBuilder<WeatherWorker>(
-//            repeatInterval = 3,
-//            repeatIntervalTimeUnit = TimeUnit.HOURS,
-//        ).setConstraints(weatherConstraint)
-//            .addTag("weather")
-//            .setInitialDelay(
-//                6000,
-//                TimeUnit.MILLISECONDS
-//            )
-//            .build()
-//
-//        workerManager.enqueueUniquePeriodicWork(
-//            "weather",
-//            ExistingPeriodicWorkPolicy.UPDATE,
-//            weatherWorker
-//        )
+        // Add initial delay for 3 AM. Do not use periodic worker because they
+        // can not run at specific time
 
         val weatherWorker = OneTimeWorkRequestBuilder<WeatherWorker>()
             .addTag("weather")
@@ -318,5 +300,11 @@ constructor(
             .build()
 
         workerManager.enqueue(weatherWorker)
+    }
+
+    private fun getHourlyForecast(locationKey: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            weatherRepository.get1HourOfHourlyForecast(locationKey = locationKey)
+        }
     }
 }

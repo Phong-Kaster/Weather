@@ -3,6 +3,8 @@ package com.example.weather.data.datasource.remote
 import com.example.weather.data.datasource.remote.response.LocationAutoResponse
 import com.example.jetpack.network.dto.LocationGeoDto
 import com.example.weather.data.datasource.remote.response.CurrentConditionResponse
+import com.example.weather.data.datasource.remote.response.HourlyForecastResponse
+import com.example.weather.domain.model.HourlyForecast
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -35,24 +37,15 @@ interface WeatherApi {
     @GET("/currentconditions/v1/{locationKey}")
     suspend fun getCurrentCondition(@Path("locationKey") locationKey: String): Response<List<CurrentConditionResponse>>
 
-//    @GET("/forecasts/v1/hourly/72hour/{locationKey}")
-//    fun get12HoursForecast(
-//        @Path("locationKey") locationKey: String
-//    ): Deferred<Response<List<HourlyResponse>>>
-//
-//    @GET("/forecasts/v1/daily/10day/{locationKey}")
-//    fun get10DaysForecast(
-//        @Path("locationKey") locationKey: String
-//    ): Deferred<Response<DailyBaseResponse>>
-//
-//    @GET("/imagery/v1/maps/radsat/1024x1024/{locationKey}")
-//    fun getMaps(
-//        @Path("locationKey") locationKey: String
-//    ): Deferred<Response<MapResponse>>
+    /***********************************
+     * # [24 Hours of Hourly Forecasts](https://developer.accuweather.com/accuweather-forecast-api/apis/get/forecasts/v1/hourly/24hour/%7BlocationKey%7D)
+     */
+    @GET("forecasts/v1/hourly/24hour/{locationKey}")
+    suspend fun get24HoursOfHourlyForecast(@Path("locationKey") locationKey: String): Response<List<HourlyForecastResponse>>
 
-//    @POST("https://api.reliefweb.int/v1/reports?appname=WeatherLive")
-//    fun getListDisaster(@Body text: JsonObject = JsonObject()): Deferred<Response<BaseListResponse<DisasterListResponse>>>
-//
-//    @GET("https://api.reliefweb.int/v1/reports/{id}")
-//    fun getListDisaster(@Path("id") id: String): Deferred<Response<BaseListResponse<DisasterDetailResponse>>>
+    /***********************************
+     * # [1 Hour of Hourly Forecasts](https://developer.accuweather.com/accuweather-forecast-api/apis/get/forecasts/v1/hourly/1hour/%7BlocationKey%7D)
+     */
+    @GET("/forecasts/v1/hourly/1hour/{locationKey}")
+    suspend fun get1HourOfHourlyForecast(@Path("locationKey") locationKey: String): Response<List<HourlyForecastResponse>>
 }
