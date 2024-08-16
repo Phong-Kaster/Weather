@@ -1,29 +1,21 @@
 package com.example.weather.domain.model
 
 import androidx.compose.runtime.Immutable
-import com.example.weather.domain.enums.ConditionType
-import java.util.Date
-import java.util.UUID
 
 @Immutable
 data class HourlyForecast(
-    val id: String = UUID.randomUUID().toString(),
-    val date: Date = Date(),
+    val id: Long = 0,
+    val locationKey: String = "",
+    val epochDateTime: Long = 0,
     val weatherIcon: Int = 0,
-    val temperature: Value = Value(),
-    val feelTemperature: Value = Value(),
-    val humidity: Float = 0f,
-    val wind: Wind = Wind(),
+    val temperature: Float = 0f,
+    val feelTemperature: Float = 0f,
+    val dewPoint: Float = 0f,
+    val windSpeed: Value = Value(),
+    val windDirection: WindDirection = WindDirection(),
+    val relativeHumidity: Int = 0,
     val visibility: Value = Value(),
-    val rain: Value = Value(),
-    val snow: Value = Value(),
-    val ice: Value = Value(),
-    val dewPoint: Value = Value(),
-    val solarIrradiance: Value = Value(),
-    val precipitation: Float = 0f,
-    val evapotranspiration: Value = Value(),
     val uvIndex: Float = 0f,
-    val parentCurrent: String = "",
-    val created: Date? = null,
+    val rain: Value = Value(),
 ) {
 }

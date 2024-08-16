@@ -305,12 +305,12 @@ fun WeatherForecastHourlyItem(
                             tint = Color.White,
                             modifier = Modifier
                                 .size(24.dp)
-                                .rotate(hourlyForecast.wind.windDirection.degree - 90f)
+                                .rotate(hourlyForecast.windDirection.degree - 90f)
                         )
 
                         Text(
                             modifier = Modifier.height(16.dp),
-                            text = hourlyForecast.wind.windDirection.localized,
+                            text = hourlyForecast.windDirection.localized,
                             style = customizedTextStyle(fontWeight = 400, fontSize =  14),
                             color = Color.White
                         )

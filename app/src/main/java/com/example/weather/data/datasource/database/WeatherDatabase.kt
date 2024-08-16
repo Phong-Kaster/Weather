@@ -7,14 +7,18 @@ import com.example.weather.data.datasource.database.converter.WeatherConverter
 import com.example.weather.data.datasource.database.dao.CurrentConditionDao
 import com.example.weather.data.datasource.database.dao.LocationInfoDao
 import com.example.weather.data.datasource.database.entity.CurrentConditionEntity
+import com.example.weather.data.datasource.database.entity.HourlyForecastEntity
 import com.example.weather.data.datasource.database.entity.LocationInfoEntity
 import com.example.weather.data.datasource.remote.dto.LocationInfoDto
+import com.example.weather.domain.model.HourlyForecast
 
 @TypeConverters(WeatherConverter::class)
 @Database(
     entities = [
         LocationInfoEntity::class,
-        CurrentConditionEntity::class],
+        CurrentConditionEntity::class,
+        HourlyForecastEntity::class,
+    ],
     version = 1,
     exportSchema = true,
 )

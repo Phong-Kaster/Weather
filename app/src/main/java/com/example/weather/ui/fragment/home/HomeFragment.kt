@@ -200,43 +200,11 @@ fun HomeLayout(
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-//                            item(key = "WeatherHeader") {
-//                                Spacer(
-//                                    modifier = Modifier
-//                                        .fillMaxWidth()
-//                                        .height(20.dp)
-//                                )
-//
-//                                WeatherHeader(
-//                                    currentCondition =
-//                                    if (weathers.isEmpty())
-//                                        CurrentCondition()
-//                                    else
-//                                        weathers[pagerState.settledPage].currentCondition,
-//                                )
-//
-//                            }
-
                             item(key = "WeatherForecastHourly") {
                                 WeatherForecastHourly(
                                     showLoading = showLoading,
                                     hourlyForecasts = listOf(
-                                        HourlyForecast(id = "0"),
-                                        HourlyForecast(id = "1"),
-                                        HourlyForecast(id = "2"),
-                                        HourlyForecast(id = "3"),
-                                        HourlyForecast(id = "4"),
-                                        HourlyForecast(id = "5"),
-                                        HourlyForecast(id = "6"),
-                                        HourlyForecast(id = "7"),
-                                        HourlyForecast(id = "8"),
-                                        HourlyForecast(id = "9"),
-                                        HourlyForecast(id = "10"),
-                                        HourlyForecast(id = "11"),
-                                        HourlyForecast(id = "12"),
-                                        HourlyForecast(id = "13"),
-                                        HourlyForecast(id = "14"),
-                                        HourlyForecast(id = "15"),
+                                        HourlyForecast(),
                                     ),
                                     modifier = Modifier,
                                 )
@@ -246,17 +214,6 @@ fun HomeLayout(
                                 WeatherForecastDaily(
                                     showLoading = showLoading,
                                     dailyForecasts = listOf(
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
-                                        DailyForecast(),
                                         DailyForecast(),
                                     ),
                                     modifier = Modifier,
