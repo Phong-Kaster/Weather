@@ -26,7 +26,7 @@ class WeatherWorker
 constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
 ) : CoroutineWorker(context, workerParams) {
 
     private val TAG = "WorkManager"

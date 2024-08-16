@@ -77,8 +77,10 @@ class HomeFragment : CoreFragment() {
                 darkTheme = !darkTheme
                 viewModel.setDarkMode(darkTheme)
             },
-
-            )
+            onOpenSetting = {
+                safeNavigate(R.id.toSetting)
+            }
+        )
 
         LaunchedEffect(key1 = errorMessage) {
             if (errorMessage.isEmpty()) return@LaunchedEffect
@@ -93,7 +95,8 @@ fun HomeLayout(
     showLoading: Boolean,
     weathers: List<Weather>,
     onChangeDarkTheme: () -> Unit = {},
-    onOpenSearch: () -> Unit = {}
+    onOpenSearch: () -> Unit = {},
+    onOpenSetting: ()->Unit = {},
 ) {
 //    LaunchedEffect(key1 = weathers) {
 //        Log.d("TAG", "HomeLayout - weathers: ${weathers.size}")
@@ -152,7 +155,7 @@ fun HomeLayout(
                     weathers[pagerState.settledPage].locationInfo,
                 pageCurrent = pagerState.currentPage,
                 pageCount = weathers.size,
-                onMenuLeft = onChangeDarkTheme,
+                onMenuLeft = onOpenSetting,
                 onMenuRight = onOpenSearch,
                 modifier = Modifier.statusBarsPadding(),
             )

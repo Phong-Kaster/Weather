@@ -29,6 +29,9 @@ object DateUtil {
     const val PATTERN_dd_MMM = "dd MMM" // 14 DEC
     const val PATTERN_MMM = "MMM" // 14 DEC
     const val PATTERN_dd = "dd" // 14
+    const val PATTERN_FULL_DATE_TIME = "hh:mm aa EEE, MMM dd YYYY"
+    const val PATTERN_FULL_DATE_TIME_REVERSED = "EEE, MMM dd YYYY hh:mm aa "
+
     @SuppressLint("SimpleDateFormat")
     fun Date.formatWithPattern(pattern: String, locale: Locale = Locale.getDefault()): String {
         val simpleDateFormat = SimpleDateFormat(pattern, locale)
@@ -100,8 +103,9 @@ object DateUtil {
         return seconds
     }
 
-    fun isLocalNotOutdated(fromDate: Date, toDate: Date) : Boolean{
-        val differenceHour = computeDifferenceDaysBetweenTwoDates(fromDate = fromDate, toDate = toDate)
+    fun isLocalNotOutdated(fromDate: Date, toDate: Date): Boolean {
+        val differenceHour =
+            computeDifferenceDaysBetweenTwoDates(fromDate = fromDate, toDate = toDate)
         val expiryHour = 12
         return differenceHour < expiryHour
     }
@@ -131,6 +135,29 @@ object DateUtil {
 //        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance - distance)} ")
 //        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance * distance)} ")
 //        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance + distance)} ")
-        return if(percent > 1) 1f else percent.toFloat()
+        return if (percent > 1) 1f else percent.toFloat()
+    }
+
+    fun fromLongToDate(time: Long?): Date {
+        return if (time == null) Date() else Date(time)
+    }
+
+    fun createDate(
+        year: Int = Calendar.getInstance().get(Calendar.YEAR),
+        month: Int = Calendar.getInstance().get(Calendar.MONTH),
+        dayOfMonth: Int = Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+        hourOfDay: Int = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+        minute: Int = Calendar.getInstance().get(Calendar.MINUTE),
+    ): Date {
+        val calendar = Calendar.getInstance()
+
+        calendar.time = Date()
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.MONTH, month)
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+        calendar.set(Calendar.MINUTE, minute)
+
+        return calendar.time
     }
 }

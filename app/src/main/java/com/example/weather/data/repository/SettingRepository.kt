@@ -2,6 +2,7 @@ package com.example.weather.data.repository
 
 import com.example.weather.configuration.Language
 import com.example.weather.data.datastore.SettingDatastore
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,5 +49,12 @@ constructor(
 
     fun setDarkMode(boolean: Boolean) {
         settingDatastore.enableDarkMode = boolean
+    }
+
+    // LAST TIME UPDATE
+    fun getLastTimeUpdate(): Date = settingDatastore.lastTimeUpdate
+
+    fun setLastTimeUpdate(date: Date) {
+        settingDatastore.lastTimeUpdate = date
     }
 }

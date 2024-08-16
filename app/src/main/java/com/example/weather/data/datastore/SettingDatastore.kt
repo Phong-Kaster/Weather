@@ -5,15 +5,18 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.weather.WeatherApplication
 import com.example.weather.configuration.Constant
 import com.example.weather.configuration.Language
+import com.example.weather.util.DateUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,8 +33,8 @@ constructor(application: WeatherApplication) {
     private val languageKey = stringPreferencesKey("languageKey")
     private val enableIntroKey = booleanPreferencesKey("enableIntroKey")
     private val enableLanguageIntroKey = booleanPreferencesKey("enableLanguageIntroKey")
-    private val logoKey = stringPreferencesKey("logoKey")
     private val enableDarkModeKey = booleanPreferencesKey("enableDarkModeKey")
+    private val lastTimeUpdateKey = longPreferencesKey("updatedLastTimeKey")
 
     // Enable Intro
     var enableIntro: Boolean
@@ -61,4 +64,12 @@ constructor(application: WeatherApplication) {
     var enableDarkMode: Boolean
         get() = runBlocking { datastore.data.first()[enableDarkModeKey] ?: true }
         set(value) = runBlocking { datastore.edit { pref -> pref[enableDarkModeKey] = value } }
+
+    var lastTimeUpdate: Date
+        get() = DateUtil.fromLongToDate(
+            runBlocking {
+                datastore.data.first()[lastTimeUpdateKey]
+            }
+        )
+        set(value) = run { runBlocking { datastore.edit { pref -> pref[lastTimeUpdateKey] = value.time } } }
 }

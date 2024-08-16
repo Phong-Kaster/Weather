@@ -17,6 +17,11 @@
         android:id="@+id/searchFragment"
         android:name="com.example.weather.ui.fragment.search.SearchFragment" />
 
+
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.weather.ui.fragment.setting.SettingFragment" />
+
     <action
         android:id="@+id/toSearch"
         app:destination="@id/searchFragment"
@@ -30,6 +35,15 @@
     <action
         android:id="@+id/toHome"
         app:destination="@id/homeFragment"
+        app:enterAnim="@anim/enter_slide_in_right"
+        app:exitAnim="@anim/exit_slide_out_left"
+        app:popEnterAnim="@anim/enter_slide_in_left"
+        app:popExitAnim="@anim/exit_slide_out_right"
+        app:popUpToInclusive="true"/>
+
+    <action
+        android:id="@+id/toSetting"
+        app:destination="@id/settingFragment"
         app:enterAnim="@anim/enter_slide_in_right"
         app:exitAnim="@anim/exit_slide_out_left"
         app:popEnterAnim="@anim/enter_slide_in_left"
