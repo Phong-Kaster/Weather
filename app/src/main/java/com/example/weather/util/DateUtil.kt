@@ -160,4 +160,21 @@ object DateUtil {
 
         return calendar.time
     }
+
+    fun calculateInitialDelay(
+        targetHour: Int, targetMinute: Int
+    ): Long {
+        val now = Calendar.getInstance()
+        val targetTime = Calendar.getInstance().apply {
+            timeInMillis = now.timeInMillis
+            set(Calendar.HOUR_OF_DAY, targetHour)
+            set(Calendar.MINUTE, targetMinute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+            if (timeInMillis < now.timeInMillis) { // If target time is in the past, add a day
+                add(Calendar.DAY_OF_YEAR, 1)
+            }
+        }
+        return targetTime.timeInMillis - now.timeInMillis
+    }
 }

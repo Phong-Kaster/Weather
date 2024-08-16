@@ -25,6 +25,7 @@ import com.example.weather.ui.theme.colorNight
 import com.example.weather.ui.theme.customizedTextStyle
 import com.example.weather.util.DateUtil
 import com.example.weather.util.DateUtil.formatWithPattern
+import com.example.weather.util.NavigationUtil.safeNavigateUp
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Date
 
@@ -38,6 +39,7 @@ class SettingFragment : CoreFragment() {
         super.ComposeView()
         SettingLayout(
             lastTimeDate = viewModel.lastTimeUpdate.collectAsState().value,
+            onBack = { safeNavigateUp() }
         )
     }
 }

@@ -57,11 +57,9 @@ class HomeFragment : CoreFragment() {
         viewModel.executeWeatherWorker()
     }
 
-
-
     override fun onResume() {
         super.onResume()
-        viewModel.findAllWeathers()
+        viewModel.findWeathers()
     }
 
     @Composable

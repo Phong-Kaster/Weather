@@ -3,22 +3,22 @@ package com.example.weather.ui.activity
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.WorkRequest
 import com.example.weather.WeatherApplication
 import com.example.weather.core.CoreViewModel
 import com.example.weather.data.repository.SettingRepository
 import com.example.weather.data.repository.WeatherRepository
-import com.example.weather.data.workmanager.ExpeditedWorker
 import com.example.weather.data.workmanager.WeatherWorker
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.LocationAuto
 import com.example.weather.domain.model.LocationInfo
 import com.example.weather.domain.model.Weather
 import com.example.weather.domain.status.Status
+import com.example.weather.util.DateUtil
 import com.panda.wifipassword.data.api.exception.ForbiddenException
 import com.panda.wifipassword.data.api.exception.NoConnectivityException
 import com.panda.wifipassword.data.api.exception.ServerNotFoundException
@@ -35,6 +35,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -84,7 +86,7 @@ constructor(
             locationKey = _weather.value.locationInfo.locationKey.ifEmpty { chosenLocationKey }
         )
 
-        findAllWeathers()
+        findWeathers()
 //        getCurrentCondition(
 //            locationKey = _weathers.value.find { it.locationInfo.locationKey == chosenLocationKey }?.locationInfo?.locationKey ?: "",
 //            fetchFromCache = true
@@ -233,7 +235,7 @@ constructor(
         }
     }
 
-    fun findAllWeathers() {
+    fun findWeathers() {
         _showLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -279,23 +281,42 @@ constructor(
      * # [Work constraints](https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started/define-work#work-constraints)
      * */
     fun executeWeatherWorker() {
-        Log.d(TAG, "executeWeatherWorker")
+        Log.d(TAG, "doWork - executeWeatherWorker")
+
+        val delayDuration = DateUtil.calculateInitialDelay(targetHour = 3, targetMinute = 0)
 
         // this worker requires WI-FI connection
         val weatherConstraint = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.UNMETERED)
             .build()
 
-        val weatherWorker: WorkRequest = OneTimeWorkRequestBuilder<WeatherWorker>()
-            .setConstraints(weatherConstraint)
-            .addTag("weather")
-            .build()
+        // Add initial delay for 3 AM
+//        val weatherWorker = PeriodicWorkRequestBuilder<WeatherWorker>(
+//            repeatInterval = 3,
+//            repeatIntervalTimeUnit = TimeUnit.HOURS,
+//        ).setConstraints(weatherConstraint)
+//            .addTag("weather")
+//            .setInitialDelay(
+//                6000,
+//                TimeUnit.MILLISECONDS
+//            )
+//            .build()
+//
+//        workerManager.enqueueUniquePeriodicWork(
+//            "weather",
+//            ExistingPeriodicWorkPolicy.UPDATE,
+//            weatherWorker
+//        )
 
-        val expeditedWorker: WorkRequest = OneTimeWorkRequestBuilder<ExpeditedWorker>()
-            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+        val weatherWorker = OneTimeWorkRequestBuilder<WeatherWorker>()
+            .addTag("weather")
+            .setConstraints(weatherConstraint)
+            .setInitialDelay(
+                delayDuration,
+                TimeUnit.MILLISECONDS
+            )
             .build()
 
         workerManager.enqueue(weatherWorker)
-        workerManager.enqueue(expeditedWorker)
     }
 }
