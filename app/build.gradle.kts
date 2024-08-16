@@ -90,6 +90,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.profileinstaller)
+
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -137,6 +140,15 @@ dependencies {
 
     // Immutable Collections Library for Kotlin - https://github.com/Kotlin/kotlinx.collections.immutable
     implementation(libs.kotlinx.collections.immutable)
+
+    // Getting started with WorkManager - https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started
+    implementation(libs.androidx.work.runtime.ktx)
+
+
+    // Inject WorkManager with Hilt - https://developer.android.com/training/dependency-injection/hilt-jetpack#workmanager
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
+    kapt(libs.androidx.hilt.compiler)
 }
 
 // Dependency injection with Hilt - Allow references to generated code

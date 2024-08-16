@@ -1,10 +1,8 @@
 package com.example.weather.ui.fragment.home
 
-import android.util.Log
 import androidx.compose.animation.Animatable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,14 +30,12 @@ import androidx.fragment.app.activityViewModels
 import com.example.jetpack.core.CoreFragment
 import com.example.jetpack.core.CoreLayout
 import com.example.weather.R
-import com.example.weather.domain.model.AirAndPollen
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.DailyForecast
 import com.example.weather.domain.model.HourlyForecast
 import com.example.weather.domain.model.LocationInfo
 import com.example.weather.domain.model.Weather
 import com.example.weather.ui.activity.MainViewModel
-import com.example.weather.ui.component.dialog.LoadingDialog
 import com.example.weather.ui.fragment.home.component.AccuWeather
 import com.example.weather.ui.fragment.home.component.HomeTopBar
 import com.example.weather.ui.fragment.home.component.WeatherForecastDaily
@@ -49,26 +45,22 @@ import com.example.weather.ui.fragment.home.component.WeatherSunrise
 import com.example.weather.ui.theme.colorNight
 import com.example.weather.util.NavigationUtil.safeNavigate
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
 @AndroidEntryPoint
 class HomeFragment : CoreFragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.executeWeatherWorker()
+    }
+
+
+
     override fun onResume() {
         super.onResume()
-
-        val airAndPollen = AirAndPollen()
-        val airAndPollen1 = AirAndPollen()
-        Log.d(TAG, "onResume - hashCode: ${airAndPollen.hashCode()} ")
-        Log.d(TAG, "onResume - toString: ${airAndPollen.toString()} ")
-        Log.d(TAG, "onResume - toString: ${airAndPollen.equals(airAndPollen1)} ")
-        Log.d(TAG, "onResume - toString: ${airAndPollen.copy(name = "ABC")} ")
-
-
         viewModel.findAllWeathers()
     }
 
@@ -177,6 +169,21 @@ fun HomeLayout(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(20.dp)
+                )
+
+                WeatherHeader(
+                    currentCondition =
+                    if (weathers.isEmpty())
+                        CurrentCondition()
+                    else
+                        weathers[pagerState.settledPage].currentCondition,
+                )
+
+
                 HorizontalPager(
                     verticalAlignment = Alignment.Top,
                     state = pagerState,
@@ -192,22 +199,22 @@ fun HomeLayout(
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            item(key = "WeatherHeader") {
-                                Spacer(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(20.dp)
-                                )
-
-                                WeatherHeader(
-                                    currentCondition =
-                                    if (weathers.isEmpty())
-                                        CurrentCondition()
-                                    else
-                                        weathers[pagerState.settledPage].currentCondition,
-                                )
-
-                            }
+//                            item(key = "WeatherHeader") {
+//                                Spacer(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .height(20.dp)
+//                                )
+//
+//                                WeatherHeader(
+//                                    currentCondition =
+//                                    if (weathers.isEmpty())
+//                                        CurrentCondition()
+//                                    else
+//                                        weathers[pagerState.settledPage].currentCondition,
+//                                )
+//
+//                            }
 
                             item(key = "WeatherForecastHourly") {
                                 WeatherForecastHourly(

@@ -2,9 +2,18 @@ package com.example.weather.ui.activity
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import com.example.weather.WeatherApplication
 import com.example.weather.core.CoreViewModel
 import com.example.weather.data.repository.SettingRepository
 import com.example.weather.data.repository.WeatherRepository
+import com.example.weather.data.workmanager.ExpeditedWorker
+import com.example.weather.data.workmanager.WeatherWorker
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.LocationAuto
 import com.example.weather.domain.model.LocationInfo
@@ -33,6 +42,7 @@ import kotlin.coroutines.CoroutineContext
 class MainViewModel
 @Inject
 constructor(
+    private val context: WeatherApplication,
     private val settingRepository: SettingRepository,
     private val weatherRepository: WeatherRepository,
 ) : CoreViewModel() {
@@ -62,6 +72,8 @@ constructor(
 
     private var _index = MutableStateFlow<Int>(0)
     val index = _index.asStateFlow()
+
+    private val workerManager = WorkManager.getInstance(context)
 
     init {
         getCurrentCondition(
@@ -179,9 +191,6 @@ constructor(
         locationKey: String,
         fetchFromCache: Boolean = false,
     ) {
-//        Log.d(TAG, "getCurrentCondition ----------------->")
-//        Log.d(TAG, "getCurrentCondition - locationKey = $locationKey")
-
         if (locationKey.isEmpty()) return
 
 
@@ -264,4 +273,29 @@ constructor(
         }
     }
 
+    /*******************************************************
+     * # WORKER MANAGER
+     *
+     * # [Work constraints](https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started/define-work#work-constraints)
+     * */
+    fun executeWeatherWorker() {
+        Log.d(TAG, "executeWeatherWorker")
+
+        // this worker requires WI-FI connection
+        val weatherConstraint = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .build()
+
+        val weatherWorker: WorkRequest = OneTimeWorkRequestBuilder<WeatherWorker>()
+            .setConstraints(weatherConstraint)
+            .addTag("weather")
+            .build()
+
+        val expeditedWorker: WorkRequest = OneTimeWorkRequestBuilder<ExpeditedWorker>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .build()
+
+        workerManager.enqueue(weatherWorker)
+        workerManager.enqueue(expeditedWorker)
+    }
 }

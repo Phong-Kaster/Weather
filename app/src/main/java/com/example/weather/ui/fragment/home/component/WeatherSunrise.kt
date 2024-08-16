@@ -104,7 +104,8 @@ fun WeatherSunrise(
             )
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
-        AnimatedVisibility(visible = showLoading,
+        AnimatedVisibility(
+            visible = showLoading,
             content = {
                 Box(
                     modifier = Modifier
@@ -115,7 +116,8 @@ fun WeatherSunrise(
             }
         )
 
-        AnimatedVisibility(visible = !showLoading,
+        AnimatedVisibility(
+            visible = !showLoading,
             content = {
                 // Draw semi circle
                 Row(
