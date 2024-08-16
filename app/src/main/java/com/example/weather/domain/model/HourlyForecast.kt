@@ -15,7 +15,7 @@ data class HourlyForecast(
     val windDirection: WindDirection = WindDirection(),
     val relativeHumidity: Int = 0,
     val visibility: Value = Value(),
-    val uvIndex: Float = 0f,
+    val uvIndex: Int = 0,
     val rain: Value = Value(),
 ) {
 }

@@ -23,6 +23,6 @@ data class HourlyForecastEntity(
     @ColumnInfo(name = "windDirection") val windDirection: @RawValue WindDirection,
     @ColumnInfo(name = "relativeHumidity") val relativeHumidity: Int = 0,
     @ColumnInfo(name = "visibility") var visibility: @RawValue Value,
-    @ColumnInfo(name = "uvIndex") val uvIndex: Float,
+    @ColumnInfo(name = "uvIndex") val uvIndex: Int,
     @ColumnInfo(name = "rain") val rain: @RawValue Value,
 )

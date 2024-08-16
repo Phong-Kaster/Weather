@@ -1,8 +1,11 @@
 package com.example.weather.util
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -53,10 +56,6 @@ object DateUtil {
         val minutes = seconds / 60
         val hours = minutes / 60
         val days = hours / 24
-
-//        Log.d("TAG", "getCurrentCondition - fromDate = $fromDate")
-//        Log.d("TAG", "getCurrentCondition - toDate = $toDate")
-//        Log.d("TAG", "getCurrentCondition - $days days $hours hours $minutes minutes $seconds seconds")
 
         return days
     }
@@ -110,6 +109,9 @@ object DateUtil {
         return differenceHour < expiryHour
     }
 
+    /*********************************************************
+     * calculate percent from sunrise to sunset
+     */
     fun calculatePercent(sunrise: Date, sunset: Date): Float {
         val calendarSunrise = Calendar.getInstance()
         calendarSunrise.time = sunrise
@@ -124,24 +126,19 @@ object DateUtil {
         val elapsedDistance: Long = abs(calendarNow.timeInMillis - calendarSunrise.timeInMillis)
         val percent = (elapsedDistance.toDouble() / distance)
 
-
-//        Log.d("TAG", "calculatePercent --------------------")
-//        Log.d("TAG", "calculatePercent - sunrise = $sunrise")
-//        Log.d("TAG", "calculatePercent - sunset =  $sunset")
-//        Log.d("TAG", "calculatePercent - distance = $distance")
-//        Log.d("TAG", "calculatePercent - elapsedDistance = $elapsedDistance")
-//        Log.d("TAG", "calculatePercent - percent = $percent ")
-//        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance / distance)} ")
-//        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance - distance)} ")
-//        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance * distance)} ")
-//        Log.d("TAG", "calculatePercent - percent = ${(elapsedDistance + distance)} ")
         return if (percent > 1) 1f else percent.toFloat()
     }
 
+    /*********************************************************
+     * from Long to Date
+     */
     fun fromLongToDate(time: Long?): Date {
         return if (time == null) Date() else Date(time)
     }
 
+    /*******************************************************
+     * create date with specific year, month, day of month
+     */
     fun createDate(
         year: Int = Calendar.getInstance().get(Calendar.YEAR),
         month: Int = Calendar.getInstance().get(Calendar.MONTH),
@@ -161,6 +158,9 @@ object DateUtil {
         return calendar.time
     }
 
+    /*******************************************************
+     * calculate Initial Delay
+     */
     fun calculateInitialDelay(
         targetHour: Int, targetMinute: Int
     ): Long {
@@ -176,5 +176,12 @@ object DateUtil {
             }
         }
         return targetTime.timeInMillis - now.timeInMillis
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun fromEpochDateTimeToDate(epochDateTime: Long): Date{
+        val instant = Instant.ofEpochSecond(epochDateTime)
+        val date = Date.from(instant)
+        return date
     }
 }

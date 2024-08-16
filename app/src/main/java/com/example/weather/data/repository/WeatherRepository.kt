@@ -3,12 +3,16 @@ package com.example.weather.data.repository
 import android.util.Log
 import com.example.jetpack.network.dto.LocationGeoDto
 import com.example.weather.data.datasource.database.WeatherDatabase
-import com.example.weather.domain.mapper.CurrentConditionMapper.toModel
+import com.example.weather.data.datasource.database.entity.HourlyForecastEntity
 import com.example.weather.data.datasource.remote.WeatherApi
+import com.example.weather.domain.mapper.CurrentConditionMapper.toModel
+import com.example.weather.domain.mapper.HourlyForecastMapper.toEntity
+import com.example.weather.domain.mapper.HourlyForecastMapper.toModel
 import com.example.weather.domain.mapper.LocationAutoMapper.toLocationInfoModel
 import com.example.weather.domain.mapper.LocationInfoMapper.toEntity
 import com.example.weather.domain.mapper.LocationInfoMapper.toModel
 import com.example.weather.domain.model.CurrentCondition
+import com.example.weather.domain.model.HourlyForecast
 import com.example.weather.domain.model.LocationAuto
 import com.example.weather.domain.model.LocationInfo
 import com.example.weather.domain.status.Status
@@ -23,6 +27,7 @@ import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
+
 @Singleton
 class WeatherRepository
 @Inject
@@ -33,6 +38,7 @@ constructor(
     private val TAG = "WeatherRepository"
     private val currentConditionDao = weatherDatabase.currentConditionDao()
     private val locationInfoDao = weatherDatabase.locationInfoDao()
+    private val hourlyForecastDao = weatherDatabase.hourlyForecastDao()
 
     suspend fun searchGeoposition(lntLng: String) : LocationGeoDto {
         return ApiUtil.fetchDataBody {  weatherApi.searchGeoposition(lnglat = lntLng) }
@@ -154,7 +160,7 @@ constructor(
         /** 2. Check should we need to fetch from Accu Weather or not. If local data is outdated then call accu weather as usual*/
         val fetchFromLocalOnly = isDatabaseNotEmpty && !fetchFromRemote
         val isLocalNotOutdated = if (isDatabaseNotEmpty) {
-            val local = localCurrentCondition.map { it.toModel() }.first().toModel()
+            val local = localCurrentCondition.map { it.toModel() }.first()
             DateUtil.isLocalNotOutdated(fromDate = local.date, toDate = Date())
         } else false
         if (fetchFromLocalOnly && isLocalNotOutdated) {
@@ -243,5 +249,60 @@ constructor(
         val response = ApiUtil.fetchDataBody { weatherApi.get1HourOfHourlyForecast(locationKey = locationKey) }
 
         Log.d(TAG, "get1HourOfHourlyForecast = $response ")
+    }
+
+    suspend fun get24HoursOfHourlyForecast(
+        fetchFromRemote: Boolean,
+        locationKey: String
+    ): List<HourlyForecast> {
+        if (locationKey.isEmpty()) return listOf()
+
+        val listOfLocalHourlyForecast = hourlyForecastDao.findByLocationKey(locationKey = locationKey)
+        val isDatabaseNotEmpty = listOfLocalHourlyForecast.isNotEmpty()
+
+        Log.d(TAG, "get24HoursOfHourlyForecast - listOfHourlyForecast size: ${listOfLocalHourlyForecast.size}")
+        Log.d(TAG, "get24HoursOfHourlyForecast - isDatabaseNotEmpty = $isDatabaseNotEmpty")
+
+        /** 2. Check should we need to fetch from Accu Weather or not. If local data is outdated then call accu weather as usual*/
+        val fetchFromLocalOnly = isDatabaseNotEmpty && !fetchFromRemote
+        val isLocalNotOutdated = if (isDatabaseNotEmpty) {
+            val local = listOfLocalHourlyForecast.map { it.toModel() }.first()
+            DateUtil.isLocalNotOutdated(fromDate = DateUtil.fromEpochDateTimeToDate(local.epochDateTime), toDate = Date())
+        } else false
+        if (fetchFromLocalOnly && isLocalNotOutdated) {
+            Log.d(TAG, "get24HoursOfHourlyForecast - case 1 - just fetch from database")
+            return listOfLocalHourlyForecast.map { it.toModel() }
+        }
+
+        /** 3. Let us fetch from Accu Weather*/
+        Log.d(TAG, "get24HoursOfHourlyForecast - case 2 - fetch from Accu Weather")
+        try {
+            val response = ApiUtil.fetchDataBody { weatherApi.get24HoursOfHourlyForecast(locationKey = locationKey) }
+            if (response.isEmpty()) {
+                Log.d(TAG, "get24HoursOfHourlyForecast - Accu Weather returns nothing")
+                return listOf()
+            }
+
+
+            hourlyForecastDao.clear(locationKey = locationKey)
+            val listOfHourlyForecastModel: List<HourlyForecast> = response.map { it.toModel(locationKey) }
+            val listOfHourlyForecastEntity: List<HourlyForecastEntity> = listOfHourlyForecastModel.map { it.toEntity(locationKey) }
+            hourlyForecastDao.insertMany(listOfHourlyForecastEntity)
+
+
+            return listOfHourlyForecastModel
+        } catch (e: HttpException) {
+            e.printStackTrace()
+            //emit(value = Status.Failure(message = "HttpException"))
+            return listOf()
+        } catch (e: NoConnectivityException) {
+            e.printStackTrace()
+            //emit(value = Status.Failure(message = "No Internet connectivity"))
+            return listOf()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            //emit(value = Status.Failure(message = "IOException"))
+            return listOf()
+        }
     }
 }
