@@ -21,7 +21,7 @@ data class HourlyForecast(
 ) {
     companion object {
 
-        fun getFakeHourlyForecast(): List<HourlyForecast> {
+        fun getFakeList(): List<HourlyForecast> {
 
             val epochDateTime = LocalDate.now()
 
@@ -32,7 +32,7 @@ data class HourlyForecast(
             val hourly5 = HourlyForecast(id = 5, locationKey = "1", epochDateTime = epochDateTime.plusDays(5).toEpochDay(), weatherIcon = 1, temperature = 24f, feelTemperature = 20f, dewPoint = 0f, windSpeed = Value(1f, "km/h"), windDirection = WindDirection(1, "N"), relativeHumidity = 10, visibility = Value(1f, "km"), uvIndex = 1, rain = Value(1f, "mm"))
             val hourly6 = HourlyForecast(id = 6, locationKey = "1", epochDateTime = epochDateTime.plusDays(6).toEpochDay(), weatherIcon = 1, temperature = 22f, feelTemperature = 23f, dewPoint = 0f, windSpeed = Value(1f, "km/h"), windDirection = WindDirection(1, "N"), relativeHumidity = 10, visibility = Value(1f, "km"), uvIndex = 1, rain = Value(1f, "mm"))
 
-            return listOf(hourly1, hourly2, hourly3, hourly4, hourly5,)
+            return listOf(hourly1, hourly2, hourly3, hourly4, hourly5, hourly6)
         }
     }
 }
