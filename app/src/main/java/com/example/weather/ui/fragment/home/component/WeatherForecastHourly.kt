@@ -77,138 +77,139 @@ fun WeatherForecastHourly(
             .background(color = Color.White.copy(alpha = 0.25f))
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
-        // 72 - HOURLY FORECAST & 3 BUTTONS
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-        ) {
-            Text(
-                text = "72 - Hourly Forecast",
-                style = customizedTextStyle(fontWeight = 600, fontSize = 14),
-                color = Color.White,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Start,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            /*3 BUTTONS: TEMPERATURE, PRECIPITATION & WIND*/
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(
-                    space = 10.dp,
-                    alignment = Alignment.CenterHorizontally
-                ),
-                modifier = Modifier
-            ) {
-                // 1. TEMPERATURE
-                Icon(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(shape = RoundedCornerShape(5.dp))
-                        .clickable {
-//                            if (filter != ConditionType.TEMPERATURE) {
-//                                FirebaseUtils.trackEvent(com.weatherapp.weatherforecast.weatheradar.weatherwidget.utils.firebase.EventName.HOME_SCR_TEMP_HOURLY_FC_CLICK.eventName())
-//                            }
-                            filterChange = ConditionType.TEMPERATURE
-                            lastFilter = filter
-                        }
-                        .background(
-                            color = if (filter == ConditionType.TEMPERATURE)
-                                Color.White.copy(alpha = 0.4f)
-                            else
-                                Color.White.copy(0.1f)
-                        )
-                        .padding(5.dp),
-                    painter = painterResource(R.drawable.ic_temperature),
-                    contentDescription = "icon next hourly",
-                    tint = Color.White,
-                )
-
-                // 2. PRECIPITATION
-                Icon(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(RoundedCornerShape(5.dp))
-                        .clickable {
-                            filterChange = ConditionType.PRECIPITATION
-                            lastFilter = filter
-                        }
-                        .background(
-                            color = if (filter == ConditionType.PRECIPITATION)
-                                Color.White.copy(alpha = 0.4f)
-                            else
-                                Color.White.copy(alpha = 0.1f)
-                        )
-                        .padding(5.dp),
-                    painter = painterResource(R.drawable.ic_precipitation),
-                    contentDescription = "icon next hourly",
-                    tint = Color.White)
-
-                // 3. WIND
-                Icon(
-                    painter = painterResource(R.drawable.ic_wind),
-                    contentDescription = "icon next hourly",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(RoundedCornerShape(5.dp))
-                        .clickable {
-                            filterChange = ConditionType.WIND
-                            lastFilter = filter
-                        }
-                        .background(
-                            color = if (filter == ConditionType.WIND)
-                                Color.White.copy(alpha = 0.4f)
-                            else
-                                Color.White.copy(0.1f)
-                        )
-                        .padding(5.dp),
-                )
-
-                // 4. OPEN HOURLY FORECAST
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .clip(shape = CircleShape)
-                        .clickable { }
-                )
-            }
-        }
-
-
-        Spacer(
-            modifier = Modifier
-                .padding(vertical = 10.dp)
-                .fillMaxWidth()
-                .height(0.5.dp)
-                .background(color = Color.White.copy(0.3f))
-        )
-
         AnimatedVisibility(
             visible = !showLoading,
             content = {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(30.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    itemsIndexed(
-                        items = hourlyForecasts,
-                        key = { index, hourlyForecast -> "$index - ${hourlyForecast.id}" },
-                        itemContent = { index: Int, hourlyForecast: HourlyForecast ->
-                            WeatherForecastHourlyItem(
-                                modifier = Modifier,
-                                hourlyForecast = hourlyForecast,
-                                timeZone = timezone,
-                                conditionType = filter,
-                                onClick = {  },
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    // 72 - HOURLY FORECAST & 3 BUTTONS
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                    ) {
+                        Text(
+                            text = "72-Hour",
+                            style = customizedTextStyle(fontWeight = 600, fontSize = 14),
+                            color = Color.White,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Start,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        /*3 BUTTONS: TEMPERATURE, PRECIPITATION & WIND*/
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(
+                                space = 10.dp,
+                                alignment = Alignment.CenterHorizontally
+                            ),
+                            modifier = Modifier
+                        ) {
+                            // 1. TEMPERATURE
+                            Icon(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(shape = RoundedCornerShape(5.dp))
+                                    .clickable {
+//                            if (filter != ConditionType.TEMPERATURE) {
+//                                FirebaseUtils.trackEvent(com.weatherapp.weatherforecast.weatheradar.weatherwidget.utils.firebase.EventName.HOME_SCR_TEMP_HOURLY_FC_CLICK.eventName())
+//                            }
+                                        filterChange = ConditionType.TEMPERATURE
+                                        lastFilter = filter
+                                    }
+                                    .background(
+                                        color = if (filter == ConditionType.TEMPERATURE)
+                                            Color.White.copy(alpha = 0.4f)
+                                        else
+                                            Color.White.copy(0.1f)
+                                    )
+                                    .padding(5.dp),
+                                painter = painterResource(R.drawable.ic_temperature),
+                                contentDescription = "icon next hourly",
+                                tint = Color.White,
+                            )
+
+                            // 2. PRECIPITATION
+                            Icon(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(RoundedCornerShape(5.dp))
+                                    .clickable {
+                                        filterChange = ConditionType.PRECIPITATION
+                                        lastFilter = filter
+                                    }
+                                    .background(
+                                        color = if (filter == ConditionType.PRECIPITATION)
+                                            Color.White.copy(alpha = 0.4f)
+                                        else
+                                            Color.White.copy(alpha = 0.1f)
+                                    )
+                                    .padding(5.dp),
+                                painter = painterResource(R.drawable.ic_precipitation),
+                                contentDescription = "icon next hourly",
+                                tint = Color.White)
+
+                            // 3. WIND
+                            Icon(
+                                painter = painterResource(R.drawable.ic_wind),
+                                contentDescription = "icon next hourly",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(RoundedCornerShape(5.dp))
+                                    .clickable {
+                                        filterChange = ConditionType.WIND
+                                        lastFilter = filter
+                                    }
+                                    .background(
+                                        color = if (filter == ConditionType.WIND)
+                                            Color.White.copy(alpha = 0.4f)
+                                        else
+                                            Color.White.copy(0.1f)
+                                    )
+                                    .padding(5.dp),
+                            )
+
+                            // 4. OPEN HOURLY FORECAST
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .clip(shape = CircleShape)
+                                    .clickable { }
                             )
                         }
+                    }
+
+
+                    Spacer(
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .fillMaxWidth()
+                            .height(0.5.dp)
+                            .background(color = Color.White.copy(0.3f))
                     )
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(30.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        itemsIndexed(
+                            items = hourlyForecasts,
+                            key = { index, hourlyForecast -> "$index - ${hourlyForecast.id}" },
+                            itemContent = { index: Int, hourlyForecast: HourlyForecast ->
+                                WeatherForecastHourlyItem(
+                                    modifier = Modifier,
+                                    hourlyForecast = hourlyForecast,
+                                    timeZone = timezone,
+                                    conditionType = filter,
+                                    onClick = { },
+                                )
+                            }
+                        )
+                    }
                 }
-            }
-        )
+            })
+
 
         AnimatedVisibility(
             visible = showLoading,
@@ -266,11 +267,11 @@ fun WeatherForecastHourlyItem(
         Text(
             modifier = Modifier.height(18.dp),
             text = "12:00",
-            style = customizedTextStyle(fontWeight = 400, fontSize =  14),
+            style = customizedTextStyle(fontWeight = 400, fontSize = 14),
             color = Color.White
         )
 
-        AnimatedContent(targetState = conditionType, label = "conditionType") {  it ->
+        AnimatedContent(targetState = conditionType, label = "conditionType") { it ->
             when (it) {
                 ConditionType.TEMPERATURE -> {
                     Column(
@@ -285,8 +286,8 @@ fun WeatherForecastHourlyItem(
                         )
 
                         Text(
-                            text = "25°C",
-                            style = customizedTextStyle(fontWeight = 400, fontSize =  14),
+                            text = "${hourlyForecast.temperature}°C",
+                            style = customizedTextStyle(fontWeight = 400, fontSize = 14),
                             color = Color.White,
                             modifier = Modifier.height(22.dp)
                         )
@@ -311,7 +312,7 @@ fun WeatherForecastHourlyItem(
                         Text(
                             modifier = Modifier.height(16.dp),
                             text = hourlyForecast.windDirection.localized,
-                            style = customizedTextStyle(fontWeight = 400, fontSize =  14),
+                            style = customizedTextStyle(fontWeight = 400, fontSize = 14),
                             color = Color.White
                         )
                     }
@@ -365,7 +366,7 @@ private fun PreviewWeatherForecastHourlyItem() {
         modifier = Modifier
             .fillMaxWidth()
             .background(brush = brushSunset)
-    ){
+    ) {
         WeatherForecastHourlyItem(
             modifier = Modifier,
             hourlyForecast = HourlyForecast(),

@@ -81,16 +81,16 @@ fun Modifier.shimmerEffect(): Modifier = composed {
     val startOffsetX by transition.animateFloat(
         initialValue = -2 * size.width.toFloat(),
         targetValue = 2 * size.width.toFloat(),
-        animationSpec = infiniteRepeatable<Float>(animation = tween(durationMillis = 1000), repeatMode = RepeatMode.Restart),
+        animationSpec = infiniteRepeatable<Float>(animation = tween(durationMillis = 1500), repeatMode = RepeatMode.Restart),
         label = "startOffsetX"
     )
 
     background(
         brush = Brush.linearGradient(
             colors = listOf(
-                Color(0xFFB8B5B5),
-                Color(0xFF8F8B8B),
-                Color(0xFFB8B5B5),
+                Color.White.copy(alpha = 0.0f),
+                Color.White.copy(alpha = 0.6f),
+                Color.White.copy(alpha = 0.0f),
             ),
             start = Offset(x = startOffsetX, y = 0F),
             end = Offset(x = startOffsetX + size.width.toFloat(), y = size.height.toFloat())

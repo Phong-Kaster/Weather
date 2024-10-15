@@ -110,53 +110,6 @@ fun WeatherForecastDaily(
             .background(color = Color.White.copy(alpha = 0.25f))
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-        ) {
-            Text(
-                text = "7 - Day Forecast",
-                style = customizedTextStyle(14, 600),
-                modifier = Modifier.weight(1f),
-                color = Color.White,
-                textAlign = TextAlign.Start,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clip(shape = RoundedCornerShape(5.dp))
-                    .clickable { onDailyClick(null) }
-            ) {
-                Text(
-                    text = stringResource(R.string.view_all),
-                    color = Color.White,
-                    style = customizedTextStyle(fontWeight = 300, fontSize = 14),
-                )
-
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-        }
-
-        Spacer(
-            modifier = Modifier
-                .padding(vertical = 10.dp)
-                .fillMaxWidth()
-                .height(0.5.dp)
-                .background(color = Color.White.copy(0.3f))
-        )
-
         AnimatedVisibility(
             visible = showLoading,
             content = {
@@ -169,33 +122,87 @@ fun WeatherForecastDaily(
             }
         )
 
+
         AnimatedVisibility(
             visible = !showLoading,
             content = {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    DailyForecastItem2(
-                        dailyForecast = daily0,
-                        timeZone = timeZone,
-                        isDayTime = isDayTime,
-                        onClick = { onDailyClick(daily0) }
+
+                Column {
+
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    ) {
+                        Text(
+                            text = "7-Day",
+                            style = customizedTextStyle(14, 600),
+                            modifier = Modifier.weight(1f),
+                            color = Color.White,
+                            textAlign = TextAlign.Start,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clip(shape = RoundedCornerShape(5.dp))
+                                .clickable { onDailyClick(null) }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.view_all),
+                                color = Color.White,
+                                style = customizedTextStyle(fontWeight = 300, fontSize = 14),
+                            )
+
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .fillMaxWidth()
+                            .height(0.5.dp)
+                            .background(color = Color.White.copy(0.3f))
                     )
 
-                    DailyForecastItem2(
-                        dailyForecast = daily1,
-                        timeZone = timeZone,
-                        isDayTime = isDayTime,
-                        onClick = { onDailyClick(daily1) }
-                    )
 
-                    DailyForecastItem2(
-                        dailyForecast = daily2,
-                        timeZone = timeZone,
-                        isDayTime = isDayTime,
-                        onClick = { onDailyClick(daily2) }
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        DailyForecastItem2(
+                            dailyForecast = daily0,
+                            timeZone = timeZone,
+                            isDayTime = isDayTime,
+                            onClick = { onDailyClick(daily0) }
+                        )
+
+                        DailyForecastItem2(
+                            dailyForecast = daily1,
+                            timeZone = timeZone,
+                            isDayTime = isDayTime,
+                            onClick = { onDailyClick(daily1) }
+                        )
+
+                        DailyForecastItem2(
+                            dailyForecast = daily2,
+                            timeZone = timeZone,
+                            isDayTime = isDayTime,
+                            onClick = { onDailyClick(daily2) }
+                        )
+                    }
                 }
             }
         )

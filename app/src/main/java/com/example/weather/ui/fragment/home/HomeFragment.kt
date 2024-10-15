@@ -1,6 +1,7 @@
 package com.example.weather.ui.fragment.home
 
 import androidx.compose.animation.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,7 +44,11 @@ import com.example.weather.ui.fragment.home.component.WeatherForecastDaily
 import com.example.weather.ui.fragment.home.component.WeatherForecastHourly
 import com.example.weather.ui.fragment.home.component.WeatherHeader
 import com.example.weather.ui.fragment.home.component.WeatherSunrise
+import com.example.weather.ui.theme.colorDreary
 import com.example.weather.ui.theme.colorNight
+import com.example.weather.ui.theme.colorRain
+import com.example.weather.ui.theme.colorSunrise
+import com.example.weather.ui.theme.colorSunset
 import com.example.weather.util.NavigationUtil.safeNavigate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.collections.immutable.persistentListOf
@@ -94,51 +100,31 @@ fun HomeLayout(
     weathers: List<Weather>,
     onChangeDarkTheme: () -> Unit = {},
     onOpenSearch: () -> Unit = {},
-    onOpenSetting: ()->Unit = {},
+    onOpenSetting: () -> Unit = {},
 ) {
-//    LaunchedEffect(key1 = weathers) {
-//        Log.d("TAG", "HomeLayout - weathers: ${weathers.size}")
-//    }
-
-    val context = LocalContext.current
     val color = remember { Animatable(colorNight) }
 
     var pageValue by remember { mutableIntStateOf(0) }
-    val pagerState =
-        rememberPagerState(initialPage = 0, pageCount = { weathers.size.coerceAtLeast(1) })
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { weathers.size.coerceAtLeast(1) })
 
-//    val backgroundBrush by remember {
-//        derivedStateOf {
-//            when (pagerState.currentPage) {
-//                0 -> brushSunset
-//                1 -> brushDay
-//                2 -> brushNight
-//                3 -> brushDreary
-//                4 -> brushMidnight
-//                else -> brushNight
-//            }
-//        }
-//    }
-
-//    LaunchedEffect(Unit) {
-//        snapshotFlow { pagerState.settledPage }.collect { page ->
-//            color.animateTo(
-//                targetValue = when (page) {
-//                    0 -> colorSunrise
-//                    1 -> colorDreary
-//                    2 -> colorNight
-//                    3 -> colorRain
-//                    4 -> colorSunset
-//                    else -> colorNight
-//                },
-//                animationSpec = tween(1000),
-//                block = {},
-//            )
-//        }
-//    }
+    LaunchedEffect(Unit) {
+        snapshotFlow { pagerState.settledPage }.collect { page ->
+            color.animateTo(
+                targetValue = when (page) {
+                    0 -> colorSunrise
+                    1 -> colorDreary
+                    2 -> colorNight
+                    3 -> colorRain
+                    4 -> colorSunset
+                    else -> colorNight
+                },
+                animationSpec = tween(1000),
+                block = {},
+            )
+        }
+    }
 
     val lazyColumnState = rememberLazyListState()
-
 
     // CONTENT
     CoreLayout(
@@ -166,70 +152,57 @@ fun HomeLayout(
             )
         },
         content = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(20.dp)
-                )
+            HorizontalPager(
+                verticalAlignment = Alignment.Top,
+                state = pagerState,
+                modifier = Modifier.fillMaxSize(),
+                pageContent = { page ->
+                    pageValue = page
 
-                WeatherHeader(
-                    currentCondition =
-                    if (weathers.isEmpty())
-                        CurrentCondition()
-                    else
-                        weathers[pagerState.settledPage].currentCondition,
-                )
+                    LazyColumn(
+                        state = lazyColumnState,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        item(key = "WeatherHeader") {
+                            WeatherHeader(
+                                currentCondition =
+                                if (weathers.isEmpty())
+                                    CurrentCondition()
+                                else
+                                    weathers[pagerState.settledPage].currentCondition,
+                            )
 
+                        }
 
-                HorizontalPager(
-                    verticalAlignment = Alignment.Top,
-                    state = pagerState,
-                    modifier = Modifier.fillMaxSize(),
-                    pageContent = { page ->
-                        pageValue = page
+                        item(key = "WeatherForecastHourly") {
+                            WeatherForecastHourly(
+                                showLoading = showLoading,
+                                hourlyForecasts = HourlyForecast.getFakeHourlyForecast(),
+                                modifier = Modifier,
+                            )
+                        }
 
-                        LazyColumn(
-                            state = lazyColumnState,
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            item(key = "WeatherForecastHourly") {
-                                WeatherForecastHourly(
-                                    showLoading = showLoading,
-                                    hourlyForecasts = listOf(
-                                        HourlyForecast(),
-                                    ),
-                                    modifier = Modifier,
-                                )
-                            }
+                        item(key = "WeatherForecastDaily") {
+                            WeatherForecastDaily(
+                                showLoading = showLoading,
+                                dailyForecasts = listOf(DailyForecast()),
+                                modifier = Modifier,
+                            )
+                        }
 
-                            item(key = "WeatherForecastDaily") {
-                                WeatherForecastDaily(
-                                    showLoading = showLoading,
-                                    dailyForecasts = listOf(
-                                        DailyForecast(),
-                                    ),
-                                    modifier = Modifier,
-                                )
-                            }
-
-                            item(key = "WeatherSunrise") {
-                                WeatherSunrise(
-                                    showLoading = showLoading,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
+                        item(key = "WeatherSunrise") {
+                            WeatherSunrise(
+                                showLoading = showLoading,
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     }
-                )
-            }
+                }
+            )
         }
     )
 }
