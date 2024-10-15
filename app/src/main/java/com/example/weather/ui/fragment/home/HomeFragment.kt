@@ -39,6 +39,7 @@ import com.example.weather.ui.fragment.home.component.HomeTopBar
 import com.example.weather.ui.fragment.home.component.WeatherForecastDaily
 import com.example.weather.ui.fragment.home.component.WeatherForecastHourly
 import com.example.weather.ui.fragment.home.component.WeatherHeader
+import com.example.weather.ui.fragment.home.component.WeatherHourlyChart
 import com.example.weather.ui.fragment.home.component.WeatherSunrise
 import com.example.weather.ui.theme.colorDreary
 import com.example.weather.ui.theme.colorNight
@@ -101,7 +102,8 @@ fun HomeLayout(
     val color = remember { Animatable(colorNight) }
 
     var pageValue by remember { mutableIntStateOf(0) }
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { weathers.size.coerceAtLeast(1) })
+    val pagerState =
+        rememberPagerState(initialPage = 0, pageCount = { weathers.size.coerceAtLeast(1) })
 
     LaunchedEffect(Unit) {
         snapshotFlow { pagerState.settledPage }.collect { page ->
@@ -171,7 +173,13 @@ fun HomeLayout(
                                 else
                                     weathers[pagerState.settledPage].currentCondition,
                             )
+                        }
 
+                        item(key = "WeatherHourlyChart") {
+                            WeatherHourlyChart(
+                                records = HourlyForecast.getFakeList(),
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
 
                         item(key = "WeatherForecastHourly") {
@@ -196,6 +204,8 @@ fun HomeLayout(
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
+
+
                     }
                 }
             )
