@@ -23,7 +23,12 @@ data class HourlyForecast(
 
         fun getFakeInstance(): HourlyForecast {
             val epochDateTime = LocalDate.now()
-            return HourlyForecast(id = 1, locationKey = "1", epochDateTime = epochDateTime.plusDays(0).toEpochDay(), weatherIcon = 1, temperature = 37f, feelTemperature = 40f, dewPoint = 0f, windSpeed = Value(1f, "km/h"), windDirection = WindDirection(1, "N"), relativeHumidity = 10, visibility = Value(1f, "km"), uvIndex = 1, rain = Value(1f, "mm"))
+            return HourlyForecast(id = 1, locationKey = "1", epochDateTime = epochDateTime.plusDays(0).toEpochDay(), weatherIcon = 1, temperature = 17f, feelTemperature = 40f, dewPoint = 0f, windSpeed = Value(1f, "km/h"), windDirection = WindDirection(1, "N"), relativeHumidity = 10, visibility = Value(1f, "km"), uvIndex = 1, rain = Value(1f, "mm"))
+        }
+
+        fun getFakeInstance2(): HourlyForecast {
+            val epochDateTime = LocalDate.now()
+            return HourlyForecast(id = 1, locationKey = "1", epochDateTime = epochDateTime.plusDays(0).toEpochDay(), weatherIcon = 1, temperature = 55f, feelTemperature = 45f, dewPoint = 0f, windSpeed = Value(1f, "km/h"), windDirection = WindDirection(1, "N"), relativeHumidity = 10, visibility = Value(1f, "km"), uvIndex = 1, rain = Value(1f, "mm"))
 
         }
 

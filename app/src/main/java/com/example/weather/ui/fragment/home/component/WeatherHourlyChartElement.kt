@@ -15,18 +15,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.asAndroidPath
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.jetpack.core.LocalTheme
 import com.example.weather.domain.model.HourlyForecast
 import com.example.weather.ui.theme.customizedTextStyle
@@ -45,6 +53,21 @@ fun WeatherHourlyChartElement(
     minTemperature: Float = 0f,
     modifier: Modifier = Modifier
 ) {
+
+    val textMeasurer = rememberTextMeasurer()
+
+    val textToDraw = "${hourlyForecast.temperature.toInt()}°"
+
+    val style = TextStyle(
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.White,
+        background = Color.Transparent
+    )
+
+    val textLayoutResult = remember(textToDraw) { textMeasurer.measure(textToDraw, style) }
+    val halfWidthTextLayout = remember(textLayoutResult) { textLayoutResult.size.width * 0.5f }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(space = 10.dp),
@@ -58,7 +81,7 @@ fun WeatherHourlyChartElement(
                     .weight(1f)
             ) {
                 val path = Path()
-
+                val halfWidthScreen = this.size.width*0.5f
                 val spacing = size.height / maxTemperature
 
                 val previousX = 0f
@@ -77,14 +100,43 @@ fun WeatherHourlyChartElement(
                     y3 = currentY
                 )
 
-
                 drawPath(
                     path = path,
-                    color = Color.White,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF9EFFFF),
+                            Color(0xFF004BDC),
+                        )
+                    ),
                     style = Stroke(
                         width = 2.dp.toPx(),
                         cap = StrokeCap.Round
                     )
+                )
+
+                val fillPath = android.graphics.Path(path.asAndroidPath())
+                    .asComposePath()
+                    .apply {
+                        lineTo(size.width, size.height)
+                        lineTo(0f, size.height)
+                        close()
+                    }
+                drawPath(
+                    path = fillPath,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF004BDC),
+                            Color(0xFF9EFFFF),
+                        )
+                    ),
+                )
+
+                drawText(
+                    textLayoutResult = textLayoutResult,
+                    topLeft = Offset(
+                        x = halfWidthScreen - halfWidthTextLayout,
+                        y = currentY * 0.75f
+                    ),
                 )
             }
 
@@ -92,7 +144,7 @@ fun WeatherHourlyChartElement(
                 text = hourlyForecast.epochDateTime.toDateWithPattern(pattern = "dd/MM"),
                 style = customizedTextStyle(
                     fontSize = 12,
-                    fontWeight = 500,
+                    fontWeight = 600,
                     color = Color.White
                 ),
             )
@@ -113,7 +165,7 @@ private fun Preview() {
     ) {
         WeatherHourlyChartElement(
             previousHourlyForecast = HourlyForecast.getFakeInstance(),
-            hourlyForecast = HourlyForecast.getFakeInstance(),
+            hourlyForecast = HourlyForecast.getFakeInstance2(),
             modifier = Modifier
         )
         Column(

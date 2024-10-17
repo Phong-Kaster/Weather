@@ -157,6 +157,23 @@ fun WeatherHourlyChart(
                     .aspectRatio(16 / 10f)
                     .padding(16.dp)
             ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .drawChartBaseline(
+                            textMeasurer = rememberTextMeasurer(),
+                            minAlignment = alignment.first,
+                            maxAlignment = alignment.second,
+                            numberLine = 4,
+                            dateHeight = dateHeight,
+                            enableDashedLine = false
+                        )
+                ) {
+
+                }
+
                 LazyRow(
                     modifier = Modifier.weight(1f)
                 ) {
@@ -176,25 +193,6 @@ fun WeatherHourlyChart(
                         }
                     )
                 }
-
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .drawChartBaseline(
-                            textMeasurer = rememberTextMeasurer(),
-                            minAlignment = alignment.first,
-                            maxAlignment = alignment.second,
-                            numberLine = 4,
-                            dateHeight = dateHeight,
-                            enableDashedLine = false
-                        )
-                ) {
-
-                }
-
-
             }
         }
     )
@@ -222,7 +220,7 @@ fun Modifier.drawChartBaseline(
 
     val textCoordinates = lineCoordinates.map { number: Float ->
         textMeasurer.measure(
-            text = number.toInt().toString(), style = customizedTextStyle(
+            text = "${number.toInt()}°", style = customizedTextStyle(
                 fontSize = 10
             )
         )
