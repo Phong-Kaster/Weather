@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -74,7 +77,7 @@ fun WeatherHourlyChart(
             ) {
                 defaultAlignment
             } else {
-                var minAlignment = defaultAlignment.first
+                /*var minAlignment = defaultAlignment.first
                 var maxAlignment = defaultAlignment.second
 
                 if (minValue < minAlignment) {
@@ -91,10 +94,10 @@ fun WeatherHourlyChart(
                 if (maxValue > maxAlignment) {
                     // Keep multiplying max alignment until max value is inside the range
                     while (maxValue > maxAlignment && maxAlignment < 10000f) maxAlignment *= 1.5f
-                }
+                }*/
 
 
-                minAlignment to maxAlignment
+                minValue to maxValue
             }
         }
     }
@@ -148,6 +151,7 @@ fun WeatherHourlyChart(
         visible = records.isNotEmpty(),
         content = {
             Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = modifier
                     .fillMaxWidth()
                     .aspectRatio(16 / 10f)
@@ -156,13 +160,18 @@ fun WeatherHourlyChart(
                 LazyRow(
                     modifier = Modifier.weight(1f)
                 ) {
-                    items(
-                        items = records.take(1),
-                        key = { it.id },
-                        itemContent = { hourlyForecast ->
+                    itemsIndexed(
+                        items = records,
+                        key = { index, _ -> index },
+                        itemContent = { index: Int, hourlyForecast: HourlyForecast ->
                             WeatherHourlyChartElement(
+                                previousHourlyForecast = records.getOrNull(index - 1) ?: HourlyForecast(),
                                 hourlyForecast = hourlyForecast,
+                                maxTemperature = alignment.second,
+                                minTemperature = alignment.first,
                                 modifier = Modifier
+                                    .width(100.dp)
+                                    .fillParentMaxHeight(),
                             )
                         }
                     )

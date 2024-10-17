@@ -3,6 +3,7 @@ package com.example.weather.ui.fragment.home
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,6 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
@@ -75,8 +79,8 @@ class HomeFragment : CoreFragment() {
             weathers = viewModel.weathers.collectAsState().value,
             onOpenSearch = { safeNavigate(R.id.toSearch) },
             onChangeDarkTheme = {
-                darkTheme = !darkTheme
-                viewModel.setDarkMode(darkTheme)
+                enableDarkTheme = !enableDarkTheme
+                viewModel.setDarkMode(enableDarkTheme)
             },
             onOpenSetting = {
                 safeNavigate(R.id.toSetting)
@@ -179,6 +183,8 @@ fun HomeLayout(
                             WeatherHourlyChart(
                                 records = HourlyForecast.getFakeList(),
                                 modifier = Modifier.fillMaxWidth()
+                                    .clip(shape = RoundedCornerShape(10.dp))
+                                    .background(color = Color.White.copy(alpha = 0.3f))
                             )
                         }
 

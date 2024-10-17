@@ -6,13 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.ComposeView
@@ -20,10 +19,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.weather.data.repository.SettingRepository
-import com.example.weather.ui.localcomposition.DarkCustomizedTheme
-import com.example.weather.ui.localcomposition.LightCustomizedTheme
-import com.example.weather.ui.localcomposition.LocalCustomizedTheme
-import com.example.weather.ui.theme.CustomizedWeatherTheme
+import com.example.weather.ui.theme.DarkCustomizedTheme
+import com.example.weather.ui.theme.LightCustomizedTheme
 import com.example.weather.ui.theme.WeatherTheme
 import com.example.weather.util.AppUtil
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +30,7 @@ import javax.inject.Inject
 
 val LocalLocale = staticCompositionLocalOf { Locale.getDefault() }
 val LocalNavController = staticCompositionLocalOf<NavController?> { null }
+val LocalTheme = compositionLocalOf { DarkCustomizedTheme }
 
 @AndroidEntryPoint
 open class CoreFragment : Fragment(), CoreBehavior {
@@ -41,7 +39,7 @@ open class CoreFragment : Fragment(), CoreBehavior {
     @Inject
     lateinit var settingRepository: SettingRepository
 
-    var darkTheme by mutableStateOf(false)
+    var enableDarkTheme by mutableStateOf(false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,15 +59,16 @@ open class CoreFragment : Fragment(), CoreBehavior {
                 CompositionLocalProvider(
                     LocalNavController provides findNavController(),
                     LocalLocale provides requireActivity().resources.configuration.locales[0],
-                    *compositionLocalProvider().toTypedArray()
+                    *compositionLocalProvider().toTypedArray(),
+                    LocalTheme provides if (enableDarkTheme) DarkCustomizedTheme else LightCustomizedTheme,
                 ) {
-                    CustomizedWeatherTheme(
-                        darkTheme = darkTheme,
-                        content = {
+//                    CustomizedWeatherTheme(
+//                        darkTheme = enableDarkTheme,
+//                        content = {
                             WeatherTheme {
                                 ComposeView()
                             }
-                        })
+//                        })
                 }
             }
         }
@@ -108,6 +107,6 @@ open class CoreFragment : Fragment(), CoreBehavior {
     }
 
     private fun setupDarkMode() {
-        darkTheme = settingRepository.enableDarkTheme()
+        enableDarkTheme = settingRepository.enableDarkTheme()
     }
 }

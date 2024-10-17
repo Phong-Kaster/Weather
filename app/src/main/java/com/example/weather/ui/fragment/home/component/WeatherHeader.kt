@@ -19,11 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.weather.domain.model.CurrentCondition
-import com.example.weather.ui.localcomposition.LocalCustomizedTheme
 import com.example.weather.ui.theme.CustomizedWeatherTheme
 import com.example.weather.ui.theme.customizedTextStyle
 import kotlin.math.roundToInt
@@ -40,7 +40,7 @@ fun WeatherHeader(
 //    )
 
     val textColor by animateColorAsState(
-        targetValue = LocalCustomizedTheme.current.textColor,
+        targetValue = Color.White,
         animationSpec = tween(durationMillis = 1500),
         label = "textColor"
     )

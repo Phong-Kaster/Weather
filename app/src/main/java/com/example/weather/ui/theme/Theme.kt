@@ -1,6 +1,5 @@
 package com.example.weather.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -9,12 +8,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
-import com.example.weather.ui.fragment.home.component.WeatherHeader
-import com.example.weather.ui.localcomposition.DarkCustomizedTheme
-import com.example.weather.ui.localcomposition.LightCustomizedTheme
-import com.example.weather.ui.localcomposition.LocalCustomizedTheme
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -68,9 +62,9 @@ fun CustomizedWeatherTheme(
     // Dynamic color is available on Android 12+
     content: @Composable () -> Unit
 ) {
-    CompositionLocalProvider(
-        LocalCustomizedTheme provides if (darkTheme) DarkCustomizedTheme else LightCustomizedTheme,
-    ){
+//    CompositionLocalProvider(
+//        LocalCustomizedTheme provides if (darkTheme) DarkCustomizedTheme else LightCustomizedTheme,
+//    ){
         content()
-    }
+//    }
 }
