@@ -2,6 +2,8 @@ package com.example.weather.ui.fragment.home.component
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,18 +49,21 @@ fun HomeTopBar(
     onMenuRight: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val cityName by remember(locationInfo){ mutableStateOf(locationInfo.localizedName.ifEmpty { "" }) }
+    val cityName by remember(locationInfo) { mutableStateOf(locationInfo.localizedName.ifEmpty { "" }) }
 
     LaunchedEffect(key1 = cityName) {
         Log.d("TAG", "HomeTopBar - cityName = $cityName")
     }
 
     Box(modifier = modifier.fillMaxWidth()) {
+
+
         IconButton(
             onClick = onMenuLeft,
+            modifier = Modifier.align(Alignment.CenterStart),
             content = {
                 Icon(
-                    imageVector = Icons.Default.Menu,
+                    imageVector = Icons.Default.Add,
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
@@ -66,23 +71,25 @@ fun HomeTopBar(
             },
         )
 
+
+
         Column(
             verticalArrangement = Arrangement.spacedBy(5.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .align(Alignment.Center)
         ) {
-//            AnimatedVisibility(
-//                visible = cityName.isEmpty(),
-//                content = {
-//                    Box(
-//                        modifier = Modifier
-//                            .width(200.dp)
-//                            .height(20.dp)
-//                            .shimmerEffect()
-//                    ) {}
-//                }
-//            )
+            AnimatedVisibility(
+                visible = cityName.isEmpty(),
+                content = {
+                    Box(
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(20.dp)
+                            .shimmerEffect()
+                    ) {}
+                }
+            )
 
             AnimatedVisibility(
                 visible = cityName.isNotEmpty(),
@@ -100,6 +107,24 @@ fun HomeTopBar(
                 }
             )
 
+//            Crossfade(
+//                label = "Crossfade",
+//                targetState = cityName,
+//                animationSpec = tween(durationMillis = 2000),
+//                content = { it ->
+//                    Text(
+//                        text = it,
+//                        style = customizedTextStyle(fontWeight = 500, fontSize = 18),
+//                        color = Color.White,
+//                        maxLines = 1,
+//                        overflow = TextOverflow.Ellipsis,
+//                        textAlign = TextAlign.Center,
+//                        modifier = Modifier
+//                            .widthIn(0.dp, 200.dp)
+//                    )
+//                }
+//            )
+
 
 
 
@@ -110,25 +135,25 @@ fun HomeTopBar(
                 itemsIndexed(
                     items = (1..pageCount).toList(),
                     key = { index, _ ->
-                    index
-                }) { index, _ ->
+                        index
+                    }) { index, _ ->
                     /*if (index == 0) {
                         AppIconColor(
                             modifier = Modifier.size(16.dp), icon = R.drawable.ic_navigate_green,
                             color = if (pageCurrent == index) ActiveColor else Color.White
                         )
                     } else {*/
-                        Spacer(
-                            modifier = Modifier
-                                .size(6.dp)
-                                .background(
-                                    color = if (pageCurrent == index)
-                                        Color.White
-                                    else
-                                        Color.DarkGray,
-                                    shape = RoundedCornerShape(10.dp)
-                                )
-                        )
+                    Spacer(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(
+                                color = if (pageCurrent == index)
+                                    Color.White
+                                else
+                                    Color.DarkGray,
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                    )
                     /*}*/
                 }
             }
@@ -136,10 +161,10 @@ fun HomeTopBar(
 
         IconButton(
             onClick = onMenuRight,
-            modifier = Modifier.align(Alignment.CenterEnd),
+            modifier= Modifier.align(Alignment.CenterEnd),
             content = {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = Icons.Default.Menu,
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)

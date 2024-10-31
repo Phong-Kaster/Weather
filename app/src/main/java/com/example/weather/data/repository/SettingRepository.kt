@@ -2,6 +2,7 @@ package com.example.weather.data.repository
 
 import com.example.weather.configuration.Language
 import com.example.weather.data.datastore.SettingDatastore
+import kotlinx.coroutines.flow.Flow
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -56,5 +57,16 @@ constructor(
 
     fun setLastTimeUpdate(date: Date) {
         settingDatastore.lastTimeUpdate = date
+    }
+
+    // IS CELSIUS ENABLED
+    fun isCelsiusEnabled() : Boolean = settingDatastore.isCelsiusEnabled
+
+    fun isCelsiusEnabledFlow() : Flow<Boolean> {
+        return settingDatastore.isCelsiusEnabledFlow
+    }
+
+    fun setEnableCelsius(boolean: Boolean){
+        settingDatastore.isCelsiusEnabled = boolean
     }
 }

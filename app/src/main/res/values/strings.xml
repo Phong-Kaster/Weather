@@ -16,4 +16,6 @@
     <string name="wrong_please_try_again_later">Something goes wrong. Please! Try again later</string>
     <string name="enter_a_name">Enter a name</string>
     <string name="settings">Settings</string>
+    <string name="exclusively_from">Exclusively from</string>
+    <string name="temperature">Temperature</string>
 </resources>

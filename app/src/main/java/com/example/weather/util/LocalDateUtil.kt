@@ -1,12 +1,17 @@
 package com.example.weather.util
 
+import java.text.SimpleDateFormat
 import java.time.DayOfWeek
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 
 object LocalDateUtil {
@@ -58,5 +63,28 @@ object LocalDateUtil {
      */
     fun LocalDate.lastDayOfWeek(): LocalDate {
         return this.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+    }
+
+
+    /**
+     * Epoch Date Time to Date
+     */
+    fun Long.toDate(): Date {
+        val instant = Instant.ofEpochSecond(this)
+        val dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+        val outcome = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant())
+        return outcome
+    }
+
+    fun Date.convertToTimezone(timezone: String): Date {
+        return try {
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ssa", Locale.getDefault())
+            simpleDateFormat.timeZone = TimeZone.getTimeZone(timezone)
+
+            val sdfLocal = SimpleDateFormat("yyyy-MM-dd hh:mm:ssa", Locale.getDefault())
+            sdfLocal.parse(simpleDateFormat.format(this)) ?: Date()
+        } catch (ex: Exception) {
+            Calendar.getInstance().time
+        }
     }
 }

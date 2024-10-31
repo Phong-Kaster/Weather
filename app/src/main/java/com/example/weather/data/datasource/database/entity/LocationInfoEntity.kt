@@ -13,4 +13,5 @@ data class LocationInfoEntity(
     @ColumnInfo(name = "localizedName") val localizedName: String = "",
     @ColumnInfo(name = "country") val country: Country? = Country(),
     @ColumnInfo(name = "administrativeArea") val administrativeArea: AdministrativeArea? = AdministrativeArea(),
+    @ColumnInfo(name = "timezone") val timezone: String? = "",
 )

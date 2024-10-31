@@ -39,4 +39,7 @@ object Constant {
     const val FOREGROUND_SERVICE_ACTION_STOP = "foreground_service_action_stop"
 
     const val TIME_OUT_API = 45L
+
+    const val CELSIUS_SYMBOL = "°C"
+    const val FAHRENHEIT_SYMBOL = "°F"
 }

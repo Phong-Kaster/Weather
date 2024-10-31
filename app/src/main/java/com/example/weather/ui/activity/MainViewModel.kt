@@ -3,10 +3,8 @@ package com.example.weather.ui.activity
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.weather.WeatherApplication
 import com.example.weather.core.CoreViewModel
@@ -14,6 +12,7 @@ import com.example.weather.data.repository.SettingRepository
 import com.example.weather.data.repository.WeatherRepository
 import com.example.weather.data.workmanager.WeatherWorker
 import com.example.weather.domain.model.CurrentCondition
+import com.example.weather.domain.model.HourlyForecast
 import com.example.weather.domain.model.LocationAuto
 import com.example.weather.domain.model.LocationInfo
 import com.example.weather.domain.model.Weather
@@ -35,11 +34,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * [Kotlin Coroutines: how to merge asynchronous results in Kotlin?](https://medium.com/@jtlalka/kotlin-coroutines-how-to-merge-asynchronous-results-in-kotlin-674c3079edba)
+ */
 @HiltViewModel
 class MainViewModel
 @Inject
@@ -49,19 +50,13 @@ constructor(
     private val weatherRepository: WeatherRepository,
 ) : CoreViewModel() {
 
-    val chosenLocationKey = "1024259"
+    val chosenLocationKey = "353511"
 
     private var _locations = MutableStateFlow<ImmutableList<LocationAuto>?>(persistentListOf())
     val locations = _locations.asStateFlow()
 
-//    private var _chosenLocationInfo = MutableStateFlow<LocationInfo>(LocationInfo())
-//    var chosenLocationInfo = _chosenLocationInfo.asStateFlow()
-
     private var _showLoading = MutableStateFlow(false)
     val showLoading = _showLoading.asStateFlow()
-
-//    private var _currentCondition = MutableStateFlow(CurrentCondition())
-//    val currentCondition = _currentCondition.asStateFlow()
 
     private var _errorMessage = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
@@ -78,54 +73,10 @@ constructor(
     private val workerManager = WorkManager.getInstance(context)
 
     init {
-        /*getCurrentCondition(
-            locationKey = _weather.value.locationInfo.locationKey.ifEmpty { chosenLocationKey },
-            fetchFromCache = true
-        )
-        searchLocationByKey(
-            locationKey = _weather.value.locationInfo.locationKey.ifEmpty { chosenLocationKey }
-        )*/
-
         findWeathers()
-
-        get24HoursOfHourlyForecast(
-            locationKey = chosenLocationKey,
-            fetchFromCache = true
-        )
+        searchByLocationKey()
     }
 
-    private val coroutineExceptionHandler =
-        CoroutineExceptionHandler { coroutineContext: CoroutineContext, throwable: Throwable ->
-            Log.d(TAG, "----------> coroutineExceptionHandler")
-            _showLoading.value = false
-            when (throwable) {
-                is UnauthorizedException -> {
-                    Log.d(TAG, "UnauthorizedException")
-                    _errorMessage.value = "UnauthorizedException"
-                }
-
-                is ServerNotFoundException -> {
-                    Log.d(TAG, "ServerNotFoundException")
-                    _errorMessage.value = "ServerNotFoundException"
-                }
-
-                is ForbiddenException -> {
-                    Log.d(TAG, "ForbiddenException")
-                    _errorMessage.value = "ForbiddenException"
-                }
-
-                is NoConnectivityException -> {
-                    Log.d(TAG, "NoConnectivityException")
-                    _errorMessage.value = "NoConnectivityException"
-                }
-
-                else -> {
-                    throwable.message
-                    _errorMessage.value = "Check exception for more detail"
-                }
-            }
-            throwable.printStackTrace()
-        }
 
     /***************************************
      * search auto complete
@@ -196,6 +147,16 @@ constructor(
 
 
     /***************************************
+     * search by locationKey
+     */
+    private  fun searchByLocationKey() {
+        Log.d(TAG, "searchByLocationKey: ")
+        viewModelScope.launch(Dispatchers.IO) {
+            weatherRepository.searchByLocationKey(locationKey = chosenLocationKey )
+        }
+    }
+
+    /***************************************
      * get current condition
      */
     private fun getCurrentCondition(
@@ -203,7 +164,6 @@ constructor(
         fetchFromCache: Boolean = false,
     ) {
         if (locationKey.isEmpty()) return
-
 
         viewModelScope.launch(Dispatchers.IO) {
             weatherRepository.getCurrentCondition(
@@ -236,15 +196,6 @@ constructor(
         }
     }
 
-    fun searchLocationByKey(locationKey: String) {
-        if (locationKey.isEmpty()) return
-
-        viewModelScope.launch(Dispatchers.IO) {
-            _weather.value.locationInfo =
-                weatherRepository.searchInfoByLocationKey(locationKey = locationKey)
-                    ?: LocationInfo()
-        }
-    }
 
     fun findWeathers() {
         _showLoading.value = true
@@ -253,37 +204,70 @@ constructor(
             val listOfLocationInfo: List<LocationInfo> = weatherRepository.findAllLocationInfo()
             val listOfCurrentCondition =
                 listOfLocationInfo.mapIndexed { index: Int, locationInfo: LocationInfo ->
+                    async { findActualCurrentCondition(locationKey = locationInfo.locationKey) }
+                }.awaitAll()
+
+            val listOfHourlyForecast =
+                listOfLocationInfo.mapIndexed { index: Int, locationInfo: LocationInfo ->
                     async {
-                        findActualCurrentCondition(locationKey = locationInfo.locationKey)
+                        get24HoursOfHourlyForecast(
+                            locationKey = locationInfo.locationKey,
+                            fetchFromRemote = false
+                        )
                     }
                 }.awaitAll()
 
+            /*
 
-//            listOfCurrentCondition.forEachIndexed { index: Int, currentCondition: CurrentCondition ->
-//                val weather = Weather(
-//                    currentCondition = currentCondition,
-//                    locationInfo = listOfLocationInfo[index]
-//                )
-//                listOfWeather.add(weather)
-//            }
+                        val listOfWeather: List<Weather> =
+                            listOfLocationInfo.zip(listOfCurrentCondition) { info, condition ->
+                                Weather(locationInfo = info, currentCondition = condition)
+                            } //  For instance, result: [("Red", 0.1f), ("Green", 0.5f), ("Blue", 0.9f)]
+            */
 
+
+            // Zipping three lists together
             val listOfWeather: List<Weather> =
-                listOfLocationInfo.zip(listOfCurrentCondition) { info, condition ->
-                    Weather(locationInfo = info, currentCondition = condition)
-                }
+                listOfLocationInfo
+                    .zip(listOfCurrentCondition)
+                    .zip(listOfHourlyForecast) { (info, condition), listOfHourly ->
+                        Weather(
+                            locationInfo = info,
+                            currentCondition = condition,
+                            listOfHourlyForecast = listOfHourly
+                        )
+                    }
 
             _weathers.value = listOfWeather.toImmutableList()
             _showLoading.value = false
         }
     }
 
-    private suspend fun findActualCurrentCondition(locationKey: String): CurrentCondition {
+    private suspend fun findActualCurrentCondition(
+        locationKey: String,
+        fetchFromRemote: Boolean = false,
+    ): CurrentCondition {
         if (locationKey.isEmpty()) return CurrentCondition()
 
         return withContext(Dispatchers.IO) {
             weatherRepository.getCurrentCondition2(
-                fetchFromRemote = true,
+                fetchFromRemote = fetchFromRemote,
                 locationKey = locationKey
+            )
+        }
+    }
+
+
+    private suspend fun get24HoursOfHourlyForecast(
+        locationKey: String,
+        fetchFromRemote: Boolean = false
+    ): List<HourlyForecast> {
+        if (locationKey.isEmpty()) return listOf()
+
+        return withContext(Dispatchers.IO) {
+            weatherRepository.get24HoursOfHourlyForecast(
+                locationKey = locationKey,
+                fetchFromRemote = fetchFromRemote
             )
         }
     }
@@ -318,17 +302,47 @@ constructor(
         workerManager.enqueue(weatherWorker)
     }
 
-    private fun get24HoursOfHourlyForecast(
-        locationKey: String,
-        fetchFromCache: Boolean = false
-    ) {
+    fun searchLocationByKey(locationKey: String) {
         if (locationKey.isEmpty()) return
 
         viewModelScope.launch(Dispatchers.IO) {
-            weatherRepository.get24HoursOfHourlyForecast(
-                locationKey = locationKey,
-                fetchFromRemote = fetchFromCache
-            )
+            _weather.value.locationInfo =
+                weatherRepository.searchInfoByLocationKey(locationKey = locationKey)
+                    ?: LocationInfo()
         }
     }
+
+    private val coroutineExceptionHandler =
+        CoroutineExceptionHandler { coroutineContext: CoroutineContext, throwable: Throwable ->
+            Log.d(TAG, "----------> coroutineExceptionHandler")
+            _showLoading.value = false
+            when (throwable) {
+                is UnauthorizedException -> {
+                    Log.d(TAG, "UnauthorizedException")
+                    _errorMessage.value = "UnauthorizedException"
+                }
+
+                is ServerNotFoundException -> {
+                    Log.d(TAG, "ServerNotFoundException")
+                    _errorMessage.value = "ServerNotFoundException"
+                }
+
+                is ForbiddenException -> {
+                    Log.d(TAG, "ForbiddenException")
+                    _errorMessage.value = "ForbiddenException"
+                }
+
+                is NoConnectivityException -> {
+                    Log.d(TAG, "NoConnectivityException")
+                    _errorMessage.value = "NoConnectivityException"
+                }
+
+                else -> {
+                    throwable.message
+                    _errorMessage.value = "Check exception for more detail"
+                }
+            }
+            throwable.printStackTrace()
+        }
+
 }

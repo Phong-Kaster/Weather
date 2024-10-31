@@ -1,5 +1,6 @@
 package com.example.weather.ui.fragment.home.component
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +54,10 @@ import com.example.weather.domain.model.HourlyForecast
 import com.example.weather.ui.component.effect.shimmerEffect
 import com.example.weather.ui.theme.brushSunset
 import com.example.weather.ui.theme.customizedTextStyle
+import com.example.weather.util.LocalDateUtil.convertToTimezone
+import com.example.weather.util.LocalDateUtil.toDate
+import com.example.weather.util.TemperatureUtil.toCorrespondingTemperatureUnit
+import com.example.weather.util.TemperatureUtil.toTime
 
 
 val LineSpacing = 30.dp
@@ -62,7 +68,7 @@ fun WeatherForecastHourly(
     showLoading: Boolean,
     modifier: Modifier = Modifier,
     hourlyForecasts: List<HourlyForecast> = listOf(),
-    timezone: String = "",
+    timezone: String,
 ) {
     var filterChange by remember { mutableStateOf(lastFilter) }
     val filter by remember { derivedStateOf { filterChange } }
@@ -200,7 +206,7 @@ fun WeatherForecastHourly(
                                 WeatherForecastHourlyItem(
                                     modifier = Modifier,
                                     hourlyForecast = hourlyForecast,
-                                    timeZone = timezone,
+                                    timezone = timezone,
                                     conditionType = filter,
                                     onClick = { },
                                 )
@@ -228,7 +234,7 @@ fun WeatherForecastHourly(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(100.dp)
+                        .height(120.dp)
                         .shimmerEffect()
                 )
             }
@@ -242,19 +248,33 @@ fun WeatherForecastHourly(
 fun WeatherForecastHourlyItem(
     modifier: Modifier,
     hourlyForecast: HourlyForecast = HourlyForecast(),
-    timeZone: String = "America/New_York",
+    timezone: String = "America/New_York",
     conditionType: ConditionType,
     onClick: () -> Unit
 ) {
-//    val time by remember(timeZone, hourlyForecast.date) {
-//        derivedStateOf {
-//            hourlyForecast.date
-//                .convertTo(timeZone)
-//                .formatDate(
-//                    if (UnitUtils.timeUnit == Constants.TIME_UNIT_24H) "H:mm" else "h a"
-//                ).replace("AM", "am").replace("PM", "pm")
-//        }
-//    }
+    /*    val time by remember(timeZone, hourlyForecast.date) {
+            derivedStateOf {
+                hourlyForecast.date
+                    .convertTo(timeZone)
+                    .formatDate(
+                        if (UnitUtils.timeUnit == Constants.TIME_UNIT_24H) "H:mm" else "h a"
+                    ).replace("AM", "am").replace("PM", "pm")
+            }
+        }*/
+
+    val time by remember(timezone, hourlyForecast.epochDateTime) {
+        derivedStateOf {
+            hourlyForecast.epochDateTime.toTime()
+        }
+    }
+
+    LaunchedEffect(timezone, hourlyForecast.epochDateTime) {
+        Log.d("TAG", "WeatherForecastHourlyItem -------------------- ")
+        Log.d("TAG", "WeatherForecastHourlyItem - timezone = ${timezone} ")
+        Log.d("TAG", "WeatherForecastHourlyItem - date = ${hourlyForecast.epochDateTime.toDate()} ")
+        Log.d("TAG", "WeatherForecastHourlyItem - convertToTimezone = ${hourlyForecast.epochDateTime.toDate().convertToTimezone(timezone = timezone)}")
+    }
+
 
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -265,8 +285,8 @@ fun WeatherForecastHourlyItem(
     ) {
         // 23:22
         Text(
+            text = hourlyForecast.epochDateTime.toTime(),
             modifier = Modifier.height(18.dp),
-            text = "12:00",
             style = customizedTextStyle(fontWeight = 400, fontSize = 14),
             color = Color.White
         )
@@ -286,7 +306,7 @@ fun WeatherForecastHourlyItem(
                         )
 
                         Text(
-                            text = "${hourlyForecast.temperature}°C",
+                            text = "${hourlyForecast.temperature.toCorrespondingTemperatureUnit()}",
                             style = customizedTextStyle(fontWeight = 400, fontSize = 14),
                             color = Color.White,
                             modifier = Modifier.height(22.dp)
@@ -370,7 +390,7 @@ private fun PreviewWeatherForecastHourlyItem() {
         WeatherForecastHourlyItem(
             modifier = Modifier,
             hourlyForecast = HourlyForecast(),
-            timeZone = "America/New_York",
+            timezone = "America/New_York",
             conditionType = ConditionType.TEMPERATURE,
             onClick = {}
         )
@@ -378,7 +398,7 @@ private fun PreviewWeatherForecastHourlyItem() {
         WeatherForecastHourlyItem(
             modifier = Modifier,
             hourlyForecast = HourlyForecast(),
-            timeZone = "America/New_York",
+            timezone = "America/New_York",
             conditionType = ConditionType.WIND,
             onClick = {}
         )
@@ -386,7 +406,7 @@ private fun PreviewWeatherForecastHourlyItem() {
         WeatherForecastHourlyItem(
             modifier = Modifier,
             hourlyForecast = HourlyForecast(),
-            timeZone = "America/New_York",
+            timezone = "America/New_York",
             conditionType = ConditionType.PRECIPITATION,
             onClick = {}
         )
@@ -399,6 +419,7 @@ fun PreviewDetailHourlyView() {
     Column(modifier = Modifier.background(brush = brushSunset)) {
         WeatherForecastHourly(
             showLoading = false,
+            timezone = "",
             hourlyForecasts = listOf(
                 HourlyForecast(),
                 HourlyForecast(),
@@ -414,6 +435,7 @@ fun PreviewDetailHourlyViewShowLoading() {
     Column(modifier = Modifier.background(brush = brushSunset)) {
         WeatherForecastHourly(
             showLoading = true,
+            timezone = "",
             hourlyForecasts = listOf(
                 HourlyForecast(),
                 HourlyForecast(),

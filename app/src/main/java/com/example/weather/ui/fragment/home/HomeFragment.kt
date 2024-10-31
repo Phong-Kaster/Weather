@@ -14,12 +14,17 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -53,6 +58,8 @@ import com.example.weather.ui.theme.colorSunset
 import com.example.weather.util.NavigationUtil.safeNavigate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.launch
+import java.util.TimeZone
 
 @AndroidEntryPoint
 class HomeFragment : CoreFragment() {
@@ -141,8 +148,8 @@ fun HomeLayout(
                     weathers[pagerState.settledPage].locationInfo,
                 pageCurrent = pagerState.currentPage,
                 pageCount = weathers.size,
-                onMenuLeft = onOpenSetting,
-                onMenuRight = onOpenSearch,
+                onMenuLeft = onOpenSearch,
+                onMenuRight = onOpenSetting,
                 modifier = Modifier.statusBarsPadding(),
             )
         },
@@ -150,7 +157,7 @@ fun HomeLayout(
             AccuWeather(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 0.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 10.dp, top = 0.dp)
             )
         },
         content = {
@@ -179,19 +186,27 @@ fun HomeLayout(
                             )
                         }
 
-                        item(key = "WeatherHourlyChart") {
+                        /*item(key = "WeatherHourlyChart") {
                             WeatherHourlyChart(
                                 records = HourlyForecast.getFakeList(),
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .clip(shape = RoundedCornerShape(10.dp))
                                     .background(color = Color.White.copy(alpha = 0.3f))
                             )
-                        }
+                        }*/
 
                         item(key = "WeatherForecastHourly") {
                             WeatherForecastHourly(
+                                timezone = if(weathers.isEmpty())
+                                    TimeZone.getDefault().id
+                                else
+                                    weathers[pagerState.settledPage].locationInfo.timezone,
                                 showLoading = showLoading,
-                                hourlyForecasts = HourlyForecast.getFakeList(),
+                                hourlyForecasts = if (weathers.isEmpty())
+                                    listOf()
+                                else
+                                    weathers[pagerState.settledPage].listOfHourlyForecast,
                                 modifier = Modifier,
                             )
                         }
@@ -210,8 +225,6 @@ fun HomeLayout(
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-
-
                     }
                 }
             )

@@ -22,13 +22,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import com.example.jetpack.core.CoreFragment
 import com.example.jetpack.core.CoreLayout
+import com.example.jetpack.core.LocalTheme
 import com.example.weather.R
 import com.example.weather.ui.theme.colorDay
 import com.example.weather.ui.theme.customizedTextStyle
@@ -53,7 +58,7 @@ class SplashFragment : CoreFragment() {
         SplashLayout(
             gotoNextScreen = {
                 Log.d(TAG, "isDatabaseEmpty: ${viewModel.isDatabaseEmpty.value}")
-                if(viewModel.isDatabaseEmpty.value){
+                if (viewModel.isDatabaseEmpty.value) {
                     safeNavigate(destination = R.id.toSearch)
                 } else {
                     safeNavigate(destination = R.id.toHome)
@@ -84,15 +89,34 @@ fun SplashLayout(
     CoreLayout(
         backgroundColor = colorDay,
         bottomBar = {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 10.dp, top = 0.dp)
             ) {
+
+                Text(
+                    text = "${stringResource(R.string.exclusively_from)} Jestapol, Inc.",
+                    style = customizedTextStyle(
+                        fontWeight = 600,
+                        fontSize = 14,
+                        color = LocalTheme.current.textColor,
+                        fontStyle = FontStyle.Italic
+                    ),
+                    maxLines = 1,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
                 LinearProgressIndicator(
-                    modifier = Modifier.padding(16.dp),
                     color = Color.White,
+                    trackColor = LocalTheme.current.primary,
+                    strokeCap = StrokeCap.Round,
                 )
             }
+
         },
         content = {
             Column(

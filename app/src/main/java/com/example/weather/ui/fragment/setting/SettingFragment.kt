@@ -18,9 +18,10 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import com.example.jetpack.core.CoreFragment
 import com.example.jetpack.core.CoreLayout
+import com.example.jetpack.core.LocalTheme
 import com.example.weather.R
-import com.example.weather.configuration.Constant
 import com.example.weather.core.CoreTopBar3
+import com.example.weather.ui.fragment.setting.component.TemperatureSwitch
 import com.example.weather.ui.theme.colorNight
 import com.example.weather.ui.theme.customizedTextStyle
 import com.example.weather.util.DateUtil
@@ -38,16 +39,18 @@ class SettingFragment : CoreFragment() {
     override fun ComposeView() {
         super.ComposeView()
         SettingLayout(
-            lastTimeDate = viewModel.lastTimeUpdate.collectAsState().value,
-            onBack = { safeNavigateUp() }
+            isCelsiusEnabled = viewModel.isCelsiusEnabled.collectAsState().value,
+            onBack = { safeNavigateUp() },
+            onChangeCelsiusEnabled = { isCelsiusEnabled -> viewModel.setEnabledCelsius(boolean = isCelsiusEnabled) }
         )
     }
 }
 
 @Composable
 fun SettingLayout(
-    lastTimeDate: Date = Date(),
+    isCelsiusEnabled: Boolean = false,
     onBack: () -> Unit = {},
+    onChangeCelsiusEnabled: (Boolean) -> Unit = {},
 ) {
     CoreLayout(
         backgroundColor = colorNight,
@@ -62,21 +65,16 @@ fun SettingLayout(
         },
         content = {
             LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                item(key = "LastTimeUpdate") {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Last time: ${lastTimeDate.formatWithPattern(DateUtil.PATTERN_FULL_DATE_TIME_REVERSED)}",
-                            color = Color.White,
-                            style = customizedTextStyle(
-                                fontWeight = 500,
-                                fontSize = 16
-                            )
-                        )
-                    }
+                item(key = "isCelsiusEnabled") {
+                    TemperatureSwitch(
+                        isCelsiusEnabled = isCelsiusEnabled,
+                        onChange = onChangeCelsiusEnabled,
+                    )
                 }
             }
         }
@@ -86,7 +84,5 @@ fun SettingLayout(
 @Preview
 @Composable
 fun PreviewSettingLayout() {
-    SettingLayout(
-        lastTimeDate = Date(),
-    )
+    SettingLayout()
 }

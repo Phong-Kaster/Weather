@@ -7,10 +7,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
+
+/**
+ * [Kotlin Coroutines: how to merge asynchronous results in Kotlin?](https://medium.com/@jtlalka/kotlin-coroutines-how-to-merge-asynchronous-results-in-kotlin-674c3079edba)
+ */
 @HiltViewModel
 class SettingViewModel
 @Inject
@@ -18,22 +22,25 @@ constructor(
     private val settingRepository: SettingRepository,
 ) : CoreViewModel() {
 
-    private var _lastTimeUpdate = MutableStateFlow(Date())
-    val lastTimeUpdate = _lastTimeUpdate.asStateFlow()
+    private var _isCelsiusEnabled = MutableStateFlow<Boolean>(false)
+    val isCelsiusEnabled = _isCelsiusEnabled.asStateFlow()
 
     init {
-        getLastTimeUpdate()
+        collectCelsiusEnabled()
     }
 
-    fun getLastTimeUpdate() {
+
+    private fun collectCelsiusEnabled() {
         viewModelScope.launch(Dispatchers.IO) {
-            _lastTimeUpdate.value = settingRepository.getLastTimeUpdate()
+            settingRepository.isCelsiusEnabledFlow().collectLatest {
+                _isCelsiusEnabled.value = it
+            }
         }
     }
 
-    fun setLastTimeUpdate(date: Date) {
+    fun setEnabledCelsius(boolean: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            settingRepository.setLastTimeUpdate(date)
+            settingRepository.setEnableCelsius(boolean = boolean)
         }
     }
 }

@@ -12,6 +12,10 @@ import javax.inject.Inject
 @HiltAndroidApp
 class WeatherApplication : Application(), Configuration.Provider {
 
+    companion object {
+        lateinit var application: Application
+    }
+
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
@@ -19,4 +23,9 @@ class WeatherApplication : Application(), Configuration.Provider {
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()
+
+    override fun onCreate() {
+        super.onCreate()
+        application = this@WeatherApplication
+    }
 }

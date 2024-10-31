@@ -1,13 +1,13 @@
 package com.example.weather.domain.mapper
 
-import com.example.weather.data.datasource.remote.response.LocationAutoResponse
+import com.example.weather.data.datasource.remote.response.GeopositionSearchResponse
 import com.example.weather.domain.model.AdministrativeArea
 import com.example.weather.domain.model.Country
 import com.example.weather.domain.model.LocationAuto
 import com.example.weather.domain.model.LocationInfo
 
 object LocationAutoMapper {
-    fun LocationAutoResponse.toLocationInfoModel() : LocationAuto {
+    fun GeopositionSearchResponse.toLocationInfoModel() : LocationAuto {
         return LocationAuto(
             version = this.Version,
             key = this.Key,

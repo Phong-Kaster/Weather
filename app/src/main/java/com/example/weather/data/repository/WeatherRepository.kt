@@ -203,7 +203,7 @@ constructor(
     /****************************************
      * save location info
      */
-    suspend fun saveLocationInfo(locationAuto: LocationAuto): Flow<Status<LocationInfo>> {
+    fun saveLocationInfo(locationAuto: LocationAuto): Flow<Status<LocationInfo>> {
         return flow {
             emit(value = Status.Loading(enabled = true))
             val localInfo = locationInfoDao.findByLocationKey(locationKey = locationAuto.key ?: "")
@@ -229,6 +229,15 @@ constructor(
                 emit(value = Status.Failure(message = "Exception"))
             }
         }
+    }
+
+    /****************************************
+     * search By Location Key
+     */
+    suspend fun searchByLocationKey(locationKey: String){
+        Log.d(TAG, "searchByLocationKey")
+        val response = ApiUtil.fetchDataBody { weatherApi.searchByLocationKey(locationKey = locationKey) }
+        Log.d(TAG, "searchByLocationKey - response = $response ")
     }
 
     suspend fun searchInfoByLocationKey(locationKey: String): LocationInfo? {
@@ -260,7 +269,8 @@ constructor(
         val listOfLocalHourlyForecast = hourlyForecastDao.findByLocationKey(locationKey = locationKey)
         val isDatabaseNotEmpty = listOfLocalHourlyForecast.isNotEmpty()
 
-        Log.d(TAG, "get24HoursOfHourlyForecast - listOfHourlyForecast size: ${listOfLocalHourlyForecast.size}")
+        Log.d(TAG, "get24HoursOfHourlyForecast ------------------------------")
+        Log.d(TAG, "get24HoursOfHourlyForecast - listOfHourlyForecast size = ${listOfLocalHourlyForecast.size}")
         Log.d(TAG, "get24HoursOfHourlyForecast - isDatabaseNotEmpty = $isDatabaseNotEmpty")
 
         /** 2. Check should we need to fetch from Accu Weather or not. If local data is outdated then call accu weather as usual*/
@@ -269,8 +279,10 @@ constructor(
             val local = listOfLocalHourlyForecast.map { it.toModel() }.first()
             DateUtil.isLocalNotOutdated(fromDate = DateUtil.fromEpochDateTimeToDate(local.epochDateTime), toDate = Date())
         } else false
+        Log.d(TAG, "get24HoursOfHourlyForecast - fetchFromLocalOnly = $fetchFromLocalOnly")
+        Log.d(TAG, "get24HoursOfHourlyForecast - isLocalNotOutdated = $isLocalNotOutdated")
         if (fetchFromLocalOnly && isLocalNotOutdated) {
-            Log.d(TAG, "get24HoursOfHourlyForecast - case 1 - just fetch from database")
+            Log.d(TAG, "get24HoursOfHourlyForecast - case 1 - fetch from database only")
             return listOfLocalHourlyForecast.map { it.toModel() }
         }
 

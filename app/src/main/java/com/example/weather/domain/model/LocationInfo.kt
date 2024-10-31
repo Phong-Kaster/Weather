@@ -12,6 +12,7 @@ data class LocationInfo(
     val localizedName: String = "",
     val country: Country? = Country(),
     val administrativeArea: AdministrativeArea? = AdministrativeArea(),
+    val timezone: String = "Europe/Berlin",
 ){
 
 }

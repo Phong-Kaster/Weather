@@ -36,6 +36,8 @@ constructor(application: WeatherApplication) {
     private val enableDarkModeKey = booleanPreferencesKey("enableDarkModeKey")
     private val lastTimeUpdateKey = longPreferencesKey("updatedLastTimeKey")
 
+    private val isCelsiusEnabledKey = booleanPreferencesKey("isCelsiusKey")
+
     // Enable Intro
     var enableIntro: Boolean
         get() = runBlocking { datastore.data.first()[enableIntroKey] ?: true }
@@ -72,4 +74,11 @@ constructor(application: WeatherApplication) {
             }
         )
         set(value) = run { runBlocking { datastore.edit { pref -> pref[lastTimeUpdateKey] = value.time } } }
+
+    // Enable Intro
+    var isCelsiusEnabled: Boolean
+        get() = runBlocking { datastore.data.first()[isCelsiusEnabledKey] ?: true }
+        set(value) = runBlocking { datastore.edit { pref -> pref[isCelsiusEnabledKey] = value } }
+
+    val isCelsiusEnabledFlow: Flow<Boolean> = datastore.data.map { mutablePreferences -> datastore.data.first()[isCelsiusEnabledKey] ?: true }
 }

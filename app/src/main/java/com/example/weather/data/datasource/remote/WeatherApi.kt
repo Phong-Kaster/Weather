@@ -1,10 +1,10 @@
 package com.example.weather.data.datasource.remote
 
-import com.example.weather.data.datasource.remote.response.LocationAutoResponse
+import com.example.weather.data.datasource.remote.response.GeopositionSearchResponse
 import com.example.jetpack.network.dto.LocationGeoDto
 import com.example.weather.data.datasource.remote.response.CurrentConditionResponse
 import com.example.weather.data.datasource.remote.response.HourlyForecastResponse
-import com.example.weather.domain.model.HourlyForecast
+import com.example.weather.data.datasource.remote.response.SearchByLocationKeyResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -22,8 +22,14 @@ interface WeatherApi {
      * # [Autocomplete search](https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/autocomplete)
      */
     @GET("/locations/v1/cities/autocomplete")
-    suspend fun searchAutocomplete( @Query("q") keyword: String ): Response<List<LocationAutoResponse>>
+    suspend fun searchAutocomplete( @Query("q") keyword: String ): Response<List<GeopositionSearchResponse>>
 
+
+    /*********************************
+     * # [Search by location Key](https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/%7BlocationKey%7D)
+     */
+    @GET("locations/v1/{locationKey}")
+    suspend fun searchByLocationKey(@Path("locationKey") locationKey: String): Response<SearchByLocationKeyResponse>
 
     /*********************************
      * # [Search by locationKey](https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/%7BlocationKey%7D)
