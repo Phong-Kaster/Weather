@@ -49,7 +49,7 @@ object LocationAutoMapper {
                 localizedType =  this.administrativeArea?.localizedType,
                 englishType = this.administrativeArea?.englishType,
                 countryId = this.administrativeArea?.countryId
-            )
+            ),
         )
     }
 }

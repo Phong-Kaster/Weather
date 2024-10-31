@@ -31,11 +31,6 @@ interface WeatherApi {
     @GET("locations/v1/{locationKey}")
     suspend fun searchByLocationKey(@Path("locationKey") locationKey: String): Response<SearchByLocationKeyResponse>
 
-    /*********************************
-     * # [Search by locationKey](https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/%7BlocationKey%7D)
-     */
-//    @GET("/locations/v1/{locationKey}")
-//    fun searchLocationByKey( @Path("locationKey") locationKey: String ): Deferred<Response<LocationGeoDto>>
 
     /***********************************
      * # [Current Conditions](https://developer.accuweather.com/accuweather-current-conditions-api/apis/get/currentconditions/v1/%7BlocationKey%7D)
@@ -43,11 +38,13 @@ interface WeatherApi {
     @GET("/currentconditions/v1/{locationKey}")
     suspend fun getCurrentCondition(@Path("locationKey") locationKey: String): Response<List<CurrentConditionResponse>>
 
+
     /***********************************
      * # [24 Hours of Hourly Forecasts](https://developer.accuweather.com/accuweather-forecast-api/apis/get/forecasts/v1/hourly/24hour/%7BlocationKey%7D)
      */
     @GET("forecasts/v1/hourly/24hour/{locationKey}")
     suspend fun get24HoursOfHourlyForecast(@Path("locationKey") locationKey: String): Response<List<HourlyForecastResponse>>
+
 
     /***********************************
      * # [1 Hour of Hourly Forecasts](https://developer.accuweather.com/accuweather-forecast-api/apis/get/forecasts/v1/hourly/1hour/%7BlocationKey%7D)

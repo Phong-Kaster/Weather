@@ -3,7 +3,6 @@ package com.example.weather.data.datasource.remote.response
 import androidx.annotation.Keep
 import com.example.jetpack.network.dto.AdministrativeAreaDto
 import com.example.jetpack.network.dto.CountryDto
-import com.example.jetpack.network.dto.GeoPositionDto
 import com.example.jetpack.network.dto.TimeZoneDto
 import com.google.gson.annotations.SerializedName
 
@@ -24,5 +23,4 @@ data class SearchByLocationKeyResponse(
     @SerializedName("Country"            ) val CountryDto            : CountryDto?            = CountryDto(),
     @SerializedName("AdministrativeArea" ) val AdministrativeAreaDto : AdministrativeAreaDto? = AdministrativeAreaDto(),
     @SerializedName("TimeZone"           ) val TimeZone: TimeZoneDto? = TimeZoneDto(),
-    @SerializedName("GeoPosition"        ) val GeoPosition: GeoPositionDto? = GeoPositionDto(),
 )

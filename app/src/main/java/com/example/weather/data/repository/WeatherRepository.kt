@@ -5,12 +5,14 @@ import com.example.jetpack.network.dto.LocationGeoDto
 import com.example.weather.data.datasource.database.WeatherDatabase
 import com.example.weather.data.datasource.database.entity.HourlyForecastEntity
 import com.example.weather.data.datasource.remote.WeatherApi
+import com.example.weather.data.datasource.remote.response.SearchByLocationKeyResponse
 import com.example.weather.domain.mapper.CurrentConditionMapper.toModel
 import com.example.weather.domain.mapper.HourlyForecastMapper.toEntity
 import com.example.weather.domain.mapper.HourlyForecastMapper.toModel
 import com.example.weather.domain.mapper.LocationAutoMapper.toLocationInfoModel
 import com.example.weather.domain.mapper.LocationInfoMapper.toEntity
 import com.example.weather.domain.mapper.LocationInfoMapper.toModel
+import com.example.weather.domain.mapper.SearchByLocationKeyMapper.toLocationInfoModel
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.HourlyForecast
 import com.example.weather.domain.model.LocationAuto
@@ -209,23 +211,32 @@ constructor(
             val localInfo = locationInfoDao.findByLocationKey(locationKey = locationAuto.key ?: "")
             val isDatabaseNotEmpty = localInfo.isNotEmpty()
 
+            /** If database is not Empty*/
             Log.d(TAG, "saveLocationInfo - isDatabaseNotEmpty = $isDatabaseNotEmpty")
-            
             if (isDatabaseNotEmpty) {
                 emit(value = Status.Success(data = localInfo.map { it.toModel() }.first()))
                 return@flow
             }
 
+            /** No location key then can not call Accu Weather API*/
+            Log.d(TAG, "saveLocationInfo - locationKey isNullOrEmpty = ${locationAuto.key.isNullOrEmpty()}")
+            if (locationAuto.key.isNullOrEmpty()){
+                emit(value = Status.Failure(message = "Location auto is null. No location key"))
+                return@flow
+            }
+
+            /** Call Accu Weather to get full info & Store into Room datebase*/
             try {
-                val model: LocationInfo = locationAuto.toLocationInfoModel()
-                Log.d(TAG, "saveLocationInfo - model: $model")
-                locationInfoDao.insert(model.toEntity())
-                emit(value = Status.Success(data = model))
-            } catch (e: IOException) {
-                e.printStackTrace()
+                val response: SearchByLocationKeyResponse = ApiUtil.fetchDataBody { weatherApi.searchByLocationKey(locationKey = locationAuto.key) }
+                val locationInfoModel: LocationInfo = response.toLocationInfoModel()
+                Log.d(TAG, "saveLocationInfo - model = $locationInfoModel")
+                locationInfoDao.insert(locationInfoModel.toEntity())
+                emit(value = Status.Success(data = locationInfoModel))
+            } catch (ex: IOException) {
+                ex.printStackTrace()
                 emit(value = Status.Failure(message = "IOException"))
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } catch (ex: Exception) {
+                ex.printStackTrace()
                 emit(value = Status.Failure(message = "Exception"))
             }
         }

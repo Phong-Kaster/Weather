@@ -25,6 +25,7 @@ object LocationInfoMapper {
                 englishType = this.administrativeArea?.englishType,
                 countryId = this.administrativeArea?.countryId
             ),
+            timezone = this.timezone ?: "Europe/Berlin",
         )
     }
 
@@ -46,7 +47,8 @@ object LocationInfoMapper {
                 localizedType =  this.administrativeArea?.localizedType,
                 englishType = this.administrativeArea?.englishType,
                 countryId = this.administrativeArea?.countryId
-            )
+            ),
+            timezone = this.timezone
         )
     }
 }

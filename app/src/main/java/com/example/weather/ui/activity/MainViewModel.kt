@@ -74,7 +74,6 @@ constructor(
 
     init {
         findWeathers()
-        searchByLocationKey()
     }
 
 
