@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.DailyForecast
 import com.example.weather.domain.model.HourlyForecast
+import com.example.weather.ui.theme.brushDay
 import java.util.TimeZone
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -98,10 +99,10 @@ fun WeatherPage(
 private fun PreviewWeatherPage() {
     WeatherPage(
         timezone = TimeZone.getDefault().id,
-        listOfHourlyForecast = listOf(),
-        listOfDailyForecast = listOf(),
+        listOfHourlyForecast = listOf(HourlyForecast()),
+        listOfDailyForecast = listOf(DailyForecast()),
         currentCondition = CurrentCondition(),
         showLoading = false,
-        modifier = Modifier
+        modifier = Modifier.background(brush = brushDay)
     )
 }

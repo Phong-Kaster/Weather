@@ -1,7 +1,7 @@
 package com.example.weather.ui.fragment.home.component
 
-import android.widget.Toast
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,17 +9,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -27,18 +28,22 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpack.core.LocalTheme
+import com.example.weather.configuration.Constant
 import com.example.weather.domain.model.HourlyForecast
 import com.example.weather.ui.theme.customizedTextStyle
-import com.example.weather.util.LocalDateUtil.toDateWithPattern
+import com.example.weather.util.DateUtil.formatWithPattern
+import com.example.weather.util.LocalDateUtil.toDate
+import com.example.weather.util.WeatherUtil
+import com.example.weather.util.WeatherUtil.toCalculableTemperature
+import com.example.weather.util.WeatherUtil.toReadableTemperature
 
 /**
  * [Learn Jetpack Compose Canvas Cubic and Quadratic Bezier And Its Usage](https://medium.com/mobile-app-development-publication/learn-jetpack-compose-canvas-cubic-and-quadratic-bezier-and-its-usage-96a4d9a7e3fb)
@@ -56,7 +61,10 @@ fun WeatherHourlyChartElement(
 
     val textMeasurer = rememberTextMeasurer()
 
-    val textToDraw = "${hourlyForecast.temperature.toInt()}°"
+    val weatherIcon by remember(hourlyForecast.weatherIcon) {
+        mutableIntStateOf(WeatherUtil.convertToWeatherIcon(hourlyForecast.weatherIcon))
+    }
+    val textToDraw = "${hourlyForecast.temperature.toCalculableTemperature()}°"
 
     val style = TextStyle(
         fontSize = 16.sp,
@@ -81,7 +89,7 @@ fun WeatherHourlyChartElement(
                     .weight(1f)
             ) {
                 val path = Path()
-                val halfWidthScreen = this.size.width*0.5f
+                val halfWidthScreen = this.size.width * 0.5f
                 val spacing = size.height / maxTemperature
 
                 val previousX = 0f
@@ -131,17 +139,35 @@ fun WeatherHourlyChartElement(
                     ),
                 )
 
-                drawText(
+                /*drawText(
                     textLayoutResult = textLayoutResult,
                     topLeft = Offset(
                         x = halfWidthScreen - halfWidthTextLayout,
                         y = currentY * 0.75f
                     ),
-                )
+                )*/
             }
 
+
+            Image(
+                painter = painterResource(id = weatherIcon),
+                contentDescription = "Icon",
+                modifier = Modifier
+                    .size(24.dp)
+            )
+
+
             Text(
-                text = hourlyForecast.epochDateTime.toDateWithPattern(pattern = "dd/MM"),
+                text = "${hourlyForecast.temperature.toCalculableTemperature()}${Constant.TEMPERATURE_SYMBOL}",
+                style = customizedTextStyle(
+                    fontSize = 14,
+                    fontWeight = 600,
+                    color = LocalTheme.current.textColor
+                )
+            )
+
+            Text(
+                text = hourlyForecast.epochDateTime.toDate().formatWithPattern(pattern = "HH:mm"),
                 style = customizedTextStyle(
                     fontSize = 12,
                     fontWeight = 600,

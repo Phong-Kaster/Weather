@@ -40,6 +40,7 @@ object Constant {
 
     const val TIME_OUT_API = 45L
 
+    const val TEMPERATURE_SYMBOL ="°"
     const val CELSIUS_SYMBOL = "°C"
     const val FAHRENHEIT_SYMBOL = "°F"
 }

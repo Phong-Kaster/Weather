@@ -55,12 +55,7 @@ import com.example.weather.ui.theme.customizedTextStyle
 import com.example.weather.util.DateUtil.formatWithPattern
 import com.example.weather.util.LocalDateUtil.convertToTimezone
 import com.example.weather.util.LocalDateUtil.toDate
-import com.example.weather.util.TemperatureUtil.toCorrespondingTemperatureUnit
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-
-
+import com.example.weather.util.WeatherUtil.toReadableTemperature
 
 
 val LineSpacing = 30.dp
@@ -294,7 +289,7 @@ fun WeatherForecastHourlyItem(
                         )
 
                         Text(
-                            text = hourlyForecast.temperature.toCorrespondingTemperatureUnit(),
+                            text = hourlyForecast.temperature.toReadableTemperature(),
                             style = customizedTextStyle(fontWeight = 400, fontSize = 14),
                             color = Color.White,
                             modifier = Modifier.height(22.dp)

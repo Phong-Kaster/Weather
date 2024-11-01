@@ -4,17 +4,15 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
@@ -42,12 +40,12 @@ import androidx.compose.ui.unit.dp
 import com.example.weather.R
 import com.example.weather.configuration.Constant
 import com.example.weather.domain.model.HourlyForecast
-import com.example.weather.ui.theme.brushDay
 import com.example.weather.ui.theme.brushNight
 import com.example.weather.ui.theme.customizedTextStyle
+import com.example.weather.util.WeatherUtil.toCalculableTemperature
 
 private val alignmentLinesPathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-private val dateHeight: Dp = 30.dp
+private val dateHeight: Dp = 100.dp
 
 @Composable
 fun WeatherHourlyChart(
@@ -154,7 +152,7 @@ fun WeatherHourlyChart(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = modifier
                     .fillMaxWidth()
-                    .aspectRatio(16 / 10f)
+                    .height(250.dp)
                     .padding(16.dp)
             ) {
                 Column(
@@ -220,7 +218,7 @@ fun Modifier.drawChartBaseline(
 
     val textCoordinates = lineCoordinates.map { number: Float ->
         textMeasurer.measure(
-            text = "${number.toInt()}°", style = customizedTextStyle(
+            text = "${number.toCalculableTemperature()}°", style = customizedTextStyle(
                 fontSize = 10
             )
         )
