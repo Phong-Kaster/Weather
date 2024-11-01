@@ -43,6 +43,7 @@ import com.example.weather.R
 import com.example.weather.domain.model.LocationAuto
 import com.example.weather.lifecycleobserver.LocationPermissionLifecycleObserver
 import com.example.weather.ui.activity.MainViewModel
+import com.example.weather.ui.component.dialog.LoadingDialog
 import com.example.weather.ui.fragment.search.component.SearchList
 import com.example.weather.ui.fragment.search.component.SearchTopBar
 import com.example.weather.ui.theme.brushManageLocation
@@ -187,6 +188,11 @@ class SearchFragment : CoreFragment() {
                 )
             }
         )
+
+
+        /*LoadingDialog(
+            enable = viewModel.showLoading.collectAsState().value,
+        )*/
     }
 }
 

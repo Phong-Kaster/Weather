@@ -1,9 +1,6 @@
 package com.example.weather.ui.fragment.home
 
-import androidx.compose.animation.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,24 +10,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
@@ -39,7 +28,6 @@ import com.example.jetpack.core.CoreLayout
 import com.example.weather.R
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.DailyForecast
-import com.example.weather.domain.model.HourlyForecast
 import com.example.weather.domain.model.LocationInfo
 import com.example.weather.domain.model.Weather
 import com.example.weather.ui.activity.MainViewModel
@@ -48,17 +36,11 @@ import com.example.weather.ui.fragment.home.component.HomeTopBar
 import com.example.weather.ui.fragment.home.component.WeatherForecastDaily
 import com.example.weather.ui.fragment.home.component.WeatherForecastHourly
 import com.example.weather.ui.fragment.home.component.WeatherHeader
-import com.example.weather.ui.fragment.home.component.WeatherHourlyChart
 import com.example.weather.ui.fragment.home.component.WeatherSunrise
-import com.example.weather.ui.theme.colorDreary
-import com.example.weather.ui.theme.colorNight
-import com.example.weather.ui.theme.colorRain
-import com.example.weather.ui.theme.colorSunrise
-import com.example.weather.ui.theme.colorSunset
+import com.example.weather.util.ColorUtil
 import com.example.weather.util.NavigationUtil.safeNavigate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.launch
 import java.util.TimeZone
 
 @AndroidEntryPoint
@@ -110,34 +92,38 @@ fun HomeLayout(
     onOpenSearch: () -> Unit = {},
     onOpenSetting: () -> Unit = {},
 ) {
-    val color = remember { Animatable(colorNight) }
+
 
     var pageValue by remember { mutableIntStateOf(0) }
     val pagerState =
         rememberPagerState(initialPage = 0, pageCount = { weathers.size.coerceAtLeast(1) })
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { pagerState.settledPage }.collect { page ->
-            color.animateTo(
-                targetValue = when (page) {
-                    0 -> colorSunrise
-                    1 -> colorDreary
-                    2 -> colorNight
-                    3 -> colorRain
-                    4 -> colorSunset
-                    else -> colorNight
-                },
-                animationSpec = tween(1000),
-                block = {},
-            )
-        }
-    }
 
     val lazyColumnState = rememberLazyListState()
 
+    val weatherIcon by remember(weathers) {
+        derivedStateOf {
+            if (weathers.isEmpty())
+                1
+            else
+                weathers[pagerState.settledPage].currentCondition.weatherIcon
+        }
+    }
+    val timezone by remember(weathers) {
+        derivedStateOf {
+            if (weathers.isEmpty())
+                TimeZone.getDefault().id
+            else
+                weathers[pagerState.settledPage].locationInfo.timezone
+        }
+    }
+
     // CONTENT
     CoreLayout(
-        backgroundColor = color.value,
+        backgroundBrush = ColorUtil.createWeatherBrush(
+            weatherIcon = weatherIcon,
+            timezone = timezone
+        ),
         modifier = Modifier,
         topBar = {
             HomeTopBar(
@@ -183,6 +169,7 @@ fun HomeLayout(
                                     CurrentCondition()
                                 else
                                     weathers[pagerState.settledPage].currentCondition,
+                                modifier = Modifier.padding(top = 20.dp, bottom = 0.dp)
                             )
                         }
 
@@ -198,7 +185,7 @@ fun HomeLayout(
 
                         item(key = "WeatherForecastHourly") {
                             WeatherForecastHourly(
-                                timezone = if(weathers.isEmpty())
+                                timezone = if (weathers.isEmpty())
                                     TimeZone.getDefault().id
                                 else
                                     weathers[pagerState.settledPage].locationInfo.timezone,

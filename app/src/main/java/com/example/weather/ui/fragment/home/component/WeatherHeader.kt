@@ -31,6 +31,7 @@ import kotlin.math.roundToInt
 @Composable
 fun WeatherHeader(
     currentCondition: CurrentCondition,
+    modifier: Modifier = Modifier,
 ) {
     var temperature by remember { mutableFloatStateOf(0f) }
 //    val temperatureAnimation by animateFloatAsState(
@@ -51,21 +52,9 @@ fun WeatherHeader(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            /*.padding(horizontal = 16.dp)*/
+        modifier = modifier
             .fillMaxWidth(),
     ) {
-
-//        val isNight by remember(currentForecast.weatherIcon, currentForecast.isDayTime) {
-//            derivedStateOf {
-//                Background.backgroundByWeather(
-//                    currentForecast.weatherIcon,
-//                    currentForecast.isDayTime
-//                )
-//                    .isBackgroundBlack()
-//            }
-//        }
-
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxWidth()

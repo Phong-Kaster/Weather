@@ -29,7 +29,7 @@
         app:exitAnim="@anim/exit_slide_out_left"
         app:popEnterAnim="@anim/enter_slide_in_left"
         app:popExitAnim="@anim/exit_slide_out_right"
-        app:popUpToInclusive="true"/>
+        app:popUpToInclusive="true" />
 
 
     <action
@@ -39,7 +39,8 @@
         app:exitAnim="@anim/exit_slide_out_left"
         app:popEnterAnim="@anim/enter_slide_in_left"
         app:popExitAnim="@anim/exit_slide_out_right"
-        app:popUpToInclusive="true"/>
+        app:popUpTo="@id/splashFragment"
+        app:popUpToInclusive="true" />
 
     <action
         android:id="@+id/toSetting"
@@ -48,6 +49,6 @@
         app:exitAnim="@anim/exit_slide_out_left"
         app:popEnterAnim="@anim/enter_slide_in_left"
         app:popExitAnim="@anim/exit_slide_out_right"
-        app:popUpToInclusive="true"/>
+        app:popUpToInclusive="true" />
 
 </navigation>

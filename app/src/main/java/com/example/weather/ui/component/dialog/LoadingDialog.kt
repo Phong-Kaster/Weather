@@ -1,6 +1,5 @@
 package com.example.weather.ui.component.dialog
 
-import android.graphics.fonts.FontFamily
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,11 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.weather.R
 import com.example.weather.ui.theme.customizedTextStyle
@@ -68,6 +66,7 @@ fun LoadingDialog(
                                 .fillMaxWidth(),
                             text = stringResource(R.string.please_wait_a_minute),
                             textAlign = TextAlign.Center,
+                            overflow = TextOverflow.Ellipsis,
                             style = customizedTextStyle(fontSize = 14, fontWeight = 600, color = Color.White)
                         )
                     }

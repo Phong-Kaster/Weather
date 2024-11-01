@@ -126,6 +126,7 @@ constructor(
                 Log.d(TAG, "saveLocationInfo - status: ${status.javaClass.simpleName} ")
                 when (status) {
                     is Status.Success -> {
+                        _showLoading.value = false
                         if (status.data == null) {
                             onFailure("Location Info is null")
                         } else {
@@ -135,10 +136,13 @@ constructor(
                     }
 
                     is Status.Failure -> {
+                        _showLoading.value = false
                         onFailure("Accu Weather fail !")
                     }
 
-                    is Status.Loading -> {}
+                    is Status.Loading -> {
+                        _showLoading.value = true
+                    }
                 }
             }
         }
