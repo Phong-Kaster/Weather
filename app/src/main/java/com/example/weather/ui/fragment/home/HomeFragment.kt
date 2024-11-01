@@ -1,16 +1,24 @@
 package com.example.weather.ui.fragment.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalOverscrollConfiguration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -20,6 +28,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
@@ -28,6 +38,7 @@ import com.example.jetpack.core.CoreLayout
 import com.example.weather.R
 import com.example.weather.domain.model.CurrentCondition
 import com.example.weather.domain.model.DailyForecast
+import com.example.weather.domain.model.HourlyForecast
 import com.example.weather.domain.model.LocationInfo
 import com.example.weather.domain.model.Weather
 import com.example.weather.ui.activity.MainViewModel
@@ -36,6 +47,8 @@ import com.example.weather.ui.fragment.home.component.HomeTopBar
 import com.example.weather.ui.fragment.home.component.WeatherForecastDaily
 import com.example.weather.ui.fragment.home.component.WeatherForecastHourly
 import com.example.weather.ui.fragment.home.component.WeatherHeader
+import com.example.weather.ui.fragment.home.component.WeatherHourlyChart
+import com.example.weather.ui.fragment.home.component.WeatherPage
 import com.example.weather.ui.fragment.home.component.WeatherSunrise
 import com.example.weather.util.ColorUtil
 import com.example.weather.util.NavigationUtil.safeNavigate
@@ -99,8 +112,6 @@ fun HomeLayout(
         rememberPagerState(initialPage = 0, pageCount = { weathers.size.coerceAtLeast(1) })
 
 
-    val lazyColumnState = rememberLazyListState()
-
     val weatherIcon by remember(weathers) {
         derivedStateOf {
             if (weathers.isEmpty())
@@ -148,71 +159,18 @@ fun HomeLayout(
         },
         content = {
             HorizontalPager(
-                verticalAlignment = Alignment.Top,
                 state = pagerState,
                 modifier = Modifier.fillMaxSize(),
                 pageContent = { page ->
                     pageValue = page
 
-                    LazyColumn(
-                        state = lazyColumnState,
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        item(key = "WeatherHeader") {
-                            WeatherHeader(
-                                currentCondition =
-                                if (weathers.isEmpty())
-                                    CurrentCondition()
-                                else
-                                    weathers[pagerState.settledPage].currentCondition,
-                                modifier = Modifier.padding(top = 20.dp, bottom = 0.dp)
-                            )
-                        }
-
-                        /*item(key = "WeatherHourlyChart") {
-                            WeatherHourlyChart(
-                                records = HourlyForecast.getFakeList(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(shape = RoundedCornerShape(10.dp))
-                                    .background(color = Color.White.copy(alpha = 0.3f))
-                            )
-                        }*/
-
-                        item(key = "WeatherForecastHourly") {
-                            WeatherForecastHourly(
-                                timezone = if (weathers.isEmpty())
-                                    TimeZone.getDefault().id
-                                else
-                                    weathers[pagerState.settledPage].locationInfo.timezone,
-                                showLoading = showLoading,
-                                hourlyForecasts = if (weathers.isEmpty())
-                                    listOf()
-                                else
-                                    weathers[pagerState.settledPage].listOfHourlyForecast,
-                                modifier = Modifier,
-                            )
-                        }
-
-                        item(key = "WeatherForecastDaily") {
-                            WeatherForecastDaily(
-                                showLoading = showLoading,
-                                dailyForecasts = listOf(DailyForecast()),
-                                modifier = Modifier,
-                            )
-                        }
-
-                        item(key = "WeatherSunrise") {
-                            WeatherSunrise(
-                                showLoading = showLoading,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
+                     WeatherPage(
+                        showLoading = showLoading,
+                        currentCondition = if (weathers.isEmpty()) CurrentCondition() else weathers[page].currentCondition,
+                        listOfHourlyForecast = if (weathers.isEmpty()) listOf() else weathers[page].listOfHourlyForecast,
+                        listOfDailyForecast = if (weathers.isEmpty()) listOf() else listOf(),
+                        modifier = Modifier,
+                    )
                 }
             )
         }
