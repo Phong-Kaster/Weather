@@ -60,7 +60,7 @@ android {
             manifestPlaceholders["accu_weather_key"] = "x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ"
 
             buildConfigField("String", "API_URL", "\"https://dataservice.accuweather.com\"")
-            buildConfigField("String", "API_KEY", "\"x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ\"")
+            buildConfigField("String", "API_KEY", "\"ldjskgPZUf0u08CWHUQoG4msDPx0NvuK\"")
             buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "true")
         }
 
@@ -69,7 +69,7 @@ android {
             manifestPlaceholders["accu_weather_key"] = "x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ"
 
             buildConfigField("String", "API_URL", "\"https://dataservice.accuweather.com\"")
-            buildConfigField("String", "API_KEY", "\"x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ\"")
+            buildConfigField("String", "API_KEY", "\"ldjskgPZUf0u08CWHUQoG4msDPx0NvuK\"")
             buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "false")
         }
     }
