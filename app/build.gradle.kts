@@ -129,15 +129,19 @@ dependencies {
     implementation(libs.okhttp3)
     implementation(libs.okhttp3.interceptor)
 
+
     // Preferences DataStore - https://developer.android.com/topic/libraries/architecture/datastore#preferences-datastore-dependencies
     implementation(libs.androidx.datastore.preferences)
+
 
     // Coil - https://coil-kt.github.io/coil/compose/
     implementation(libs.coil.compose)
     implementation(libs.coil.gif)
 
+
     // Immutable Collections Library for Kotlin - https://github.com/Kotlin/kotlinx.collections.immutable
     implementation(libs.kotlinx.collections.immutable)
+
 
     // Getting started with WorkManager - https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started
     implementation(libs.androidx.work.runtime.ktx)

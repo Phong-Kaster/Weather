@@ -63,7 +63,7 @@ class HomeFragment : CoreFragment() {
 
     override fun onStart() {
         super.onStart()
-        //viewModel.executeWeatherWorker()
+        viewModel.executeWeatherWorker()
     }
 
     override fun onResume() {

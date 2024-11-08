@@ -36,7 +36,7 @@ constructor(
     private val settingRepository: SettingRepository,
 ) : CoroutineWorker(context, workerParams) {
 
-    private val TAG = "WorkManager"
+    private val TAG = this.javaClass.simpleName
 
     override suspend fun doWork(): Result {
         // Do the work here--in this case, upload the images.
