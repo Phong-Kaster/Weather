@@ -1,12 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("androidx.navigation.safeargs")
     alias(libs.plugins.baselineprofile)
     id("kotlin-parcelize")
     alias(libs.plugins.compose.compiler)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -60,7 +60,7 @@ android {
             manifestPlaceholders["accu_weather_key"] = "x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ"
 
             buildConfigField("String", "API_URL", "\"https://dataservice.accuweather.com\"")
-            buildConfigField("String", "API_KEY", "\"ldjskgPZUf0u08CWHUQoG4msDPx0NvuK\"")
+            buildConfigField("String", "API_KEY", "\"x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ\"")
             buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "true")
         }
 
@@ -69,7 +69,7 @@ android {
             manifestPlaceholders["accu_weather_key"] = "x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ"
 
             buildConfigField("String", "API_URL", "\"https://dataservice.accuweather.com\"")
-            buildConfigField("String", "API_KEY", "\"ldjskgPZUf0u08CWHUQoG4msDPx0NvuK\"")
+            buildConfigField("String", "API_KEY", "\"x5ADcexs7Ge2ge8ZlB8T8JnJtWG4AhSJ\"")
             buildConfigField("Boolean", "DEVELOPMENT_ENVIRONMENT", "false")
         }
     }
@@ -113,13 +113,13 @@ dependencies {
      Hilt Android Processor - https://mvnrepository.com/artifact/com.google.dagger/hilt-android-compiler
      */
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.fragment)
 
     // Save data in a local database using Room - https://developer.android.com/training/data-storage/room#setup
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     /*Retrofit*/
     implementation(libs.retrofit)
@@ -150,10 +150,10 @@ dependencies {
     // Inject WorkManager with Hilt - https://developer.android.com/training/dependency-injection/hilt-jetpack#workmanager
     implementation(libs.androidx.hilt.common)
     implementation(libs.androidx.hilt.work)
-    kapt(libs.androidx.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
 }
 
 // Dependency injection with Hilt - Allow references to generated code
-kapt {
-    correctErrorTypes = true
-}
+//kapt {
+//    correctErrorTypes = true
+//}
