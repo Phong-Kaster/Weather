@@ -21,7 +21,7 @@ import com.example.weather.domain.model.HourlyForecast
         HourlyForecastEntity::class,
     ],
     version = 1,
-    exportSchema = true,
+    exportSchema = false,
 )
 
 abstract class WeatherDatabase : RoomDatabase() {

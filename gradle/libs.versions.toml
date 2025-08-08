@@ -1,25 +1,30 @@
 [versions]
-agp = "8.7.1"
+agp = "8.12.0"
 coilCompose = "2.7.0"
-coilGif = "2.6.0"
-converterGson = "2.11.0"
-datastorePreferences = "1.1.1"
-hiltAndroid = "2.51.1"
+coilGif = "2.7.0"
+converterGson = "3.0.0"
+datastorePreferences = "1.1.7"
+hiltAndroid = "2.57"
 hiltNavigationFragment = "1.2.0"
-kotlin = "2.0.20"
-kotlin_version = "2.0.20"
-coreKtx = "1.13.1"
+kotlin = "2.2.0"
+coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-kotlinxCollectionsImmutable = "0.3.7"
-lifecycleRuntimeKtx = "2.8.0"
+kotlinxCollectionsImmutable = "0.4.0"
+kotlinxSerializationJson = "1.9.0"
+ktorClientAndroid = "3.2.3"
+ktorClientContentNegotiation = "3.2.3"
+ktorClientCore = "3.2.3"
+ktorClientLogging = "3.2.3"
+ktorSerializationKotlinxJson = "3.2.3"
+lifecycleRuntimeKtx = "2.9.2"
 activityCompose = "1.9.0"
 composeBom = "2024.05.00"
 lifecycleViewmodelCompose = "2.8.1"
 navigationSafeArgsGradlePlugin = "2.7.7"
 retrofit = "2.11.0"
-roomRuntime = "2.6.1"
+roomRuntime = "2.7.2"
 appcompat = "1.7.0"
 constraintlayout = "2.1.4"
 uiautomator = "2.3.0"
@@ -63,6 +68,12 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 
 #Retrofit
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientAndroid" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientCore" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorClientLogging" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
@@ -94,5 +105,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-test = { id = "com.android.test", version.ref = "agp" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin_version" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

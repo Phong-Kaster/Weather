@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.example.weather"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.weather"
@@ -153,15 +153,16 @@ dependencies {
     ksp(libs.androidx.hilt.compiler)
 
     // Ktor core - https://proandroiddev.com/using-ktor-in-jetpack-compose-e00b1b32eef0
-    implementation("io.ktor:ktor-client-core:3.2.3")
-    implementation("io.ktor:ktor-client-android:3.2.3")
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.android)
     // Ktor handles JSON
-    implementation("io.ktor:ktor-client-core:2.3.12")
-    implementation("io.ktor:ktor-client-android:3.2.3")
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.android)
     // The Content Negotiation dependency is responsible for serializing/deserializing the data into a specific format (I.E. JSON)
-    implementation("io.ktor:ktor-client-content-negotiation:3.2.3")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.client.logging)
 }
 
 // Dependency injection with Hilt - Allow references to generated code
