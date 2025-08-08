@@ -6,6 +6,7 @@ import com.example.weather.data.datasource.remote.dto.WindResponseDto
 import com.google.gson.annotations.SerializedName
 
 /***********************************
+ * # [Serializable](https://levelup.gitconnected.com/serialization-with-kotlin-and-jetpack-compose-3ab36055fd59)
  * # [24 Hours of Hourly Forecasts](https://developer.accuweather.com/accuweather-forecast-api/apis/get/forecasts/v1/hourly/24hour/%7BlocationKey%7D)
  */
 @Keep

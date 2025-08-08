@@ -21,8 +21,10 @@ import com.example.weather.domain.status.Status
 import com.example.weather.util.ApiUtil
 import com.example.weather.util.DateUtil
 import com.panda.wifipassword.data.api.exception.NoConnectivityException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import java.util.Date

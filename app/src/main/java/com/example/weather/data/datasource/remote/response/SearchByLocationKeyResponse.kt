@@ -7,6 +7,7 @@ import com.example.jetpack.network.dto.TimeZoneDto
 import com.google.gson.annotations.SerializedName
 
 /**
+ * # [Serializable](https://levelup.gitconnected.com/serialization-with-kotlin-and-jetpack-compose-3ab36055fd59)
  * # DTO is Data transfer object
  * @author Phong-Kaster
  * this class is bases on AccuWeather API - Search by locationKey

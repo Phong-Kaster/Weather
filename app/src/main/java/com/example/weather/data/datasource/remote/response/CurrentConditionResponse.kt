@@ -6,6 +6,7 @@ import com.example.weather.data.datasource.remote.dto.WindResponseDto
 import com.google.gson.annotations.SerializedName
 
 /***********************************
+ * # [Serializable](https://levelup.gitconnected.com/serialization-with-kotlin-and-jetpack-compose-3ab36055fd59)
  * # [Current Conditions](https://developer.accuweather.com/accuweather-current-conditions-api/apis/get/currentconditions/v1/%7BlocationKey%7D)
  */
 @Keep

@@ -12,6 +12,7 @@ import java.io.Serializable
 import java.util.UUID
 
 /**
+ * # [Serializable](https://levelup.gitconnected.com/serialization-with-kotlin-and-jetpack-compose-3ab36055fd59)
 * @author Phong-Apero
 * this class is bases on AccuWeather API - GeopositionSearch
 * @see https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/geoposition/search

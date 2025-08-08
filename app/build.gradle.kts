@@ -151,6 +151,17 @@ dependencies {
     implementation(libs.androidx.hilt.common)
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)
+
+    // Ktor core - https://proandroiddev.com/using-ktor-in-jetpack-compose-e00b1b32eef0
+    implementation("io.ktor:ktor-client-core:3.2.3")
+    implementation("io.ktor:ktor-client-android:3.2.3")
+    // Ktor handles JSON
+    implementation("io.ktor:ktor-client-core:2.3.12")
+    implementation("io.ktor:ktor-client-android:3.2.3")
+    // The Content Negotiation dependency is responsible for serializing/deserializing the data into a specific format (I.E. JSON)
+    implementation("io.ktor:ktor-client-content-negotiation:3.2.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 }
 
 // Dependency injection with Hilt - Allow references to generated code
