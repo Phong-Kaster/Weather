@@ -157,7 +157,10 @@ class SearchFragment : CoreFragment() {
             locations = viewModel.locations.collectAsState().value,
             onBack = { safeNavigateUp() },
             onAllow = { requestLocationPermissions() },
-            onValueChange = { query -> viewModel.searchAutocomplete(keyword = query) },
+            onValueChange = { query ->
+                viewModel.searchAutocomplete(keyword = query)
+                viewModel.ktorSearchAutocomplete(keyword = query)
+            },
             onClickLocation = { locationAuto ->
 
                 val cityName = locationAuto.localizedName

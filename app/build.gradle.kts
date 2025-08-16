@@ -1,12 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("com.google.dagger.hilt.android")
-    id("androidx.navigation.safeargs")
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.androidx.navigation.safe.args)
     alias(libs.plugins.baselineprofile)
     id("kotlin-parcelize")
     alias(libs.plugins.compose.compiler)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {

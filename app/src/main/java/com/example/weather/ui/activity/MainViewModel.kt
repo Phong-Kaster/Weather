@@ -1,6 +1,7 @@
 package com.example.weather.ui.activity
 
 import android.util.Log
+import androidx.compose.runtime.key
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
 import androidx.work.NetworkType
@@ -8,6 +9,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.weather.WeatherApplication
 import com.example.weather.core.CoreViewModel
+import com.example.weather.data.datasource.remotektor.KtorHttpRequest
 import com.example.weather.data.repository.SettingRepository
 import com.example.weather.data.repository.WeatherRepository
 import com.example.weather.data.workmanager.WeatherWorker
@@ -48,6 +50,7 @@ constructor(
     private val context: WeatherApplication,
     private val settingRepository: SettingRepository,
     private val weatherRepository: WeatherRepository,
+    private val ktor: KtorHttpRequest,
 ) : CoreViewModel() {
 
     val chosenLocationKey = "353511"
@@ -104,6 +107,15 @@ constructor(
                         }
                     }
                 }
+        }
+    }
+
+    fun ktorSearchAutocomplete(keyword: String) {
+        Log.d(TAG, "ktorSearchAutocomplete run with keyword $keyword")
+        if (keyword.isEmpty()) return
+
+        viewModelScope.launch(Dispatchers.IO){
+            ktor.searchAutocomplete(keyword = keyword)
         }
     }
 

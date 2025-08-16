@@ -3,9 +3,11 @@ package com.example.weather.injection
 import android.content.Context
 import android.os.Environment
 import com.example.weather.BuildConfig
+import com.example.weather.WeatherApplication
 import com.example.weather.configuration.Constant
 import com.example.weather.data.datasource.remote.WeatherApi
 import com.example.weather.data.datasource.remote.interceptor.WeatherInterceptor
+import com.example.weather.data.datasource.remotektor.requestplugin.WeatherRequestPlugin
 import com.example.weather.data.repository.SettingRepository
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -48,10 +50,14 @@ object NetworkModule {
     @Singleton
     @Provides
     @Named("cached")
-    fun provideOkHttpClient(@ApplicationContext context: Context, settingRepository: SettingRepository): OkHttpClient {
+    fun provideOkHttpClient(
+        @ApplicationContext context: Context,
+        settingRepository: SettingRepository
+    ): OkHttpClient {
         val cache = Cache(Environment.getDownloadCacheDirectory(), 10 * 1024 * 1024)
 
-        val interceptor = WeatherInterceptor(context = context, settingRepository = settingRepository)
+        val interceptor =
+            WeatherInterceptor(context = context, settingRepository = settingRepository)
 
         return OkHttpClient.Builder()
             .addInterceptor(logger)
@@ -66,9 +72,13 @@ object NetworkModule {
     @Singleton
     @Provides
     @Named("non_cached")
-    fun provideNonCachedOkHttpClient(@ApplicationContext context: Context, settingRepository: SettingRepository): OkHttpClient {
+    fun provideNonCachedOkHttpClient(
+        @ApplicationContext context: Context,
+        settingRepository: SettingRepository
+    ): OkHttpClient {
 
-        val interceptor = WeatherInterceptor(context = context, settingRepository = settingRepository)
+        val interceptor =
+            WeatherInterceptor(context = context, settingRepository = settingRepository)
 
         return OkHttpClient.Builder()
             .addInterceptor(logger)
@@ -96,8 +106,11 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideKtorHttpClient(): HttpClient {
-        return  HttpClient(
+    fun provideKtorHttpClient(
+        context: WeatherApplication,
+        settingRepository: SettingRepository,
+    ): HttpClient {
+        val httpClient = HttpClient(
             engineFactory = Android,
             block = { // this is HttpClientConfig where installs plugin
 
@@ -122,12 +135,17 @@ object NetworkModule {
                     configure = { requestTimeoutMillis = 100000 },
                 )
 
-                //3.
+                //3. Logging plugin to log requests and responses
                 install(
                     plugin = Logging,
                     configure = { level = LogLevel.BODY } // Log all requests and responses
                 )
             }
         )
+
+        //4. Attach API, details & metric
+        WeatherRequestPlugin(context, settingRepository).install(httpClient)
+
+        return httpClient
     }
 }

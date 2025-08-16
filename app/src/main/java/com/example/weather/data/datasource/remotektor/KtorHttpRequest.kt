@@ -2,15 +2,13 @@ package com.example.weather.data.datasource.remotektor
 
 
 import android.util.Log
+import com.example.weather.data.datasource.remote.response.GeopositionSearchResponse
+import com.example.weather.domain.model.LocationAuto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.URLProtocol
-import io.ktor.http.encodedPath
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.text.get
 
 @Singleton
 class KtorHttpRequest
@@ -20,33 +18,29 @@ constructor(
 ) {
     private val TAG = KtorHttpRequest::class.java.simpleName
 
-    suspend fun getGoogleFile() {
-         try {
-            // Builder approach
-            val response1 = ktorHttpClient.get {
-                url {
-                    protocol = URLProtocol.HTTPS
-                    host = "www.google.com"
-                    encodedPath = "path/file.html"
-                }
-            }
+    /**
+     * Search for locations based on a keyword.
+     * This method uses the AccuWeather API to perform an autocomplete search.
+     *
+     * @param keyword The keyword to search for.
+     */
+    suspend fun searchAutocomplete(keyword: String): List<LocationAuto> {
+        Log.d(TAG, "Ktor searchAutocomplete called with keyword: $keyword")
+        return try {
+            val response: List<GeopositionSearchResponse> =
+                ktorHttpClient.get("https://dataservice.accuweather.com/locations/v1/cities/autocomplete") {
+                    url {
+                        parameters.append("q", keyword)
+                    }
+                }.body()
 
-            // Direct URL approach
-            //val response2 = ktorHttpClient.get("https://www.google.com/path/file.html")
+            Log.d(TAG, "searchAutocomplete response size: ${response.size}")
 
-            val statusCode = response1.status.value
-            when(statusCode) {
-                in 200..299 -> {
-                    val carDetails = response1.body<String>()
-                    Log.d(TAG, "getGoogleFile response1 = $carDetails")
-                }
-                else -> {
-                    Log.d(TAG, "getGoogleFile has error with status code $statusCode")
-                }
-            }
-
-        } catch (exception: Exception) {
-            exception.printStackTrace()
+            listOf()
+        } catch (e: Exception) {
+            Log.e(TAG, "searchAutocomplete error", e)
+            emptyList()
         }
     }
+
 }

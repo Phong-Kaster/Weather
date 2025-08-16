@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 import com.example.jetpack.network.dto.AdministrativeAreaDto
 import com.example.jetpack.network.dto.CountryDto
 import com.google.gson.annotations.SerializedName
-
+import kotlinx.serialization.Serializable
 
 /**
  * # [Serializable](https://levelup.gitconnected.com/serialization-with-kotlin-and-jetpack-compose-3ab36055fd59)
@@ -12,8 +12,12 @@ import com.google.gson.annotations.SerializedName
  * @author Phong-Kaster
  * this class is bases on AccuWeather API - Autocomplete Search
  * @see https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/geoposition/search
+ *
+ * @Serializable is required by Ktor
+ * @SerializedName is required by Retrofit
  * */
 @Keep
+@Serializable
 data class GeopositionSearchResponse(
     @SerializedName("Version"            ) val Version            : Int?                = null,
     @SerializedName("Key"                ) val Key                : String?             = null,
