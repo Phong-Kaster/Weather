@@ -1,7 +1,6 @@
 package com.example.weather.ui.activity
 
 import android.util.Log
-import androidx.compose.runtime.key
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
 import androidx.work.NetworkType
@@ -9,7 +8,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.weather.WeatherApplication
 import com.example.weather.core.CoreViewModel
-import com.example.weather.data.datasource.remotektor.KtorHttpRequest
+import com.example.weather.data.repository.KtorWeatherRepository
 import com.example.weather.data.repository.SettingRepository
 import com.example.weather.data.repository.WeatherRepository
 import com.example.weather.data.workmanager.WeatherWorker
@@ -47,10 +46,10 @@ import kotlin.coroutines.CoroutineContext
 class MainViewModel
 @Inject
 constructor(
-    private val context: WeatherApplication,
+    context: WeatherApplication,
     private val settingRepository: SettingRepository,
     private val weatherRepository: WeatherRepository,
-    private val ktor: KtorHttpRequest,
+    private val ktorWeatherRepository: KtorWeatherRepository,
 ) : CoreViewModel() {
 
     val chosenLocationKey = "353511"
@@ -111,11 +110,30 @@ constructor(
     }
 
     fun ktorSearchAutocomplete(keyword: String) {
-        Log.d(TAG, "ktorSearchAutocomplete run with keyword $keyword")
+        Log.d(TAG, "Ktor search autocomplete keyword $keyword")
         if (keyword.isEmpty()) return
 
         viewModelScope.launch(Dispatchers.IO){
-            ktor.searchAutocomplete(keyword = keyword)
+            ktorWeatherRepository
+                .searchAutocomplete(keyword = keyword)
+                .collect { status ->
+                    when (status) {
+                        is Status.Success -> {
+//                            _showLoading.value = false
+//                            _locations.value = status.data?.toImmutableList()
+                            Log.d(TAG, "ktorSearchAutocomplete - location: ${locations.value?.size}")
+                        }
+
+                        is Status.Failure -> {
+//                            _locations.value = persistentListOf()
+//                            _showLoading.value = false
+                        }
+
+                        is Status.Loading -> {
+//                            _showLoading.value = true
+                        }
+                    }
+                }
         }
     }
 

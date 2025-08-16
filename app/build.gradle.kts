@@ -164,9 +164,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.logging)
-}
 
-// Dependency injection with Hilt - Allow references to generated code
-//kapt {
-//    correctErrorTypes = true
-//}
+    implementation("javax.inject:javax.inject:1")
+    ksp("jakarta.inject:jakarta.inject-api:2.0.1") // only for processors
+}

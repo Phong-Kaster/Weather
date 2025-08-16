@@ -1,4 +1,4 @@
-package com.example.weather.data.datasource.remotektor.requestplugin
+package com.example.weather.data.datasource.remotektor.plugin
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -8,12 +8,14 @@ import com.example.weather.data.repository.SettingRepository
 import com.panda.wifipassword.data.api.exception.NoConnectivityException
 import io.ktor.client.*
 import io.ktor.client.plugins.*
-import io.ktor.client.request.*
 import io.ktor.http.*
-import javax.inject.Inject
 import com.example.weather.BuildConfig
+import javax.inject.Inject
 
-class WeatherRequestPlugin
+/**
+ * KtorPlugin is identical to data/remote/interceptor/WeatherInterceptor in Retrofit
+ */
+class KtorPlugin
 @Inject
 constructor(
     private val context: Context,

@@ -17,6 +17,10 @@ import javax.inject.Inject
 
 /**
  * Interceptors in OkHttp - https://www.linkedin.com/pulse/interceptors-okhttp-mohamad-abuzaid/
+ *
+ * WeatherInterceptor is an OkHttp Interceptor that adds query parameters to the request URL
+ *
+ * WeatherInterceptor in Retrofit is identical to data/remotektor/requestplugin/KtorPlugin
  */
 class WeatherInterceptor
 @Inject

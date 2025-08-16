@@ -7,7 +7,7 @@ import com.example.weather.WeatherApplication
 import com.example.weather.configuration.Constant
 import com.example.weather.data.datasource.remote.WeatherApi
 import com.example.weather.data.datasource.remote.interceptor.WeatherInterceptor
-import com.example.weather.data.datasource.remotektor.requestplugin.WeatherRequestPlugin
+import com.example.weather.data.datasource.remotektor.plugin.KtorPlugin
 import com.example.weather.data.repository.SettingRepository
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -144,7 +144,7 @@ object NetworkModule {
         )
 
         //4. Attach API, details & metric
-        WeatherRequestPlugin(context, settingRepository).install(httpClient)
+        KtorPlugin(context, settingRepository).install(httpClient)
 
         return httpClient
     }
