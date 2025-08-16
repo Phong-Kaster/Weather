@@ -1,4 +1,4 @@
-package com.example.jetpack.network.dto
+package com.example.weather.data.datasource.remote.dto
 
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName

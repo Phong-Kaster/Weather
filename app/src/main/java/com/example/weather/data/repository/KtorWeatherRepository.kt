@@ -1,5 +1,6 @@
 package com.example.weather.data.repository
 
+import android.util.Log
 import com.example.weather.data.datasource.remotektor.KtorWeatherApi
 import com.example.weather.domain.mapper.LocationAutoMapper.toLocationInfoModel
 import com.example.weather.domain.model.LocationAuto
@@ -18,22 +19,39 @@ import javax.inject.Singleton
 class KtorWeatherRepository @Inject constructor(
     private val ktorWeatherApi: KtorWeatherApi // <-- depends on KtorWeatherApi, not HttpClient directly!
 ) {
-
+    private val TAG = this.javaClass.simpleName
     /*********************************
      * # [Autocomplete search](https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/autocomplete)
      */
-    suspend fun searchAutocomplete(keyword: String): Flow<Status<List<LocationAuto>>> {
+    fun searchAutocomplete(keyword: String): Flow<Status<List<LocationAuto>>> {
         return flow {
             emit(value = Status.Loading())
             try {
                 val response = ktorWeatherApi.searchAutocomplete(keyword)
+                val raw = response.firstOrNull()
+                Log.d(TAG, "Raw = ${raw}")
+
                 if (response.isEmpty()) {
-                    emit(Status.Failure(message = "No results"))
+                    emit(value = Status.Failure(message = "Accu Weather does not find any thing!"))
                     return@flow
                 }
 
-                val outcome = response.map { it.toLocationInfoModel() }
-                emit(value = Status.Success(outcome))
+                val outcome: List<LocationAuto> = response.map { it.toLocationInfoModel() }
+                Log.d(TAG, "------------------------------------------")
+                Log.d(TAG, "The first item")
+                if(outcome.isNotEmpty()){
+                    val first = outcome.first()
+                    val cityName = first.administrativeArea?.localizedName
+                    val countryName = first.country?.localizedName
+
+                    // todo: it still return NULL
+                    Log.d(TAG, "searchAutocomplete - cityName: $cityName")
+                    Log.d(TAG, "searchAutocomplete - countryName: $countryName")
+                }
+
+
+
+                emit(value = Status.Success(data = outcome))
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 emit(value = Status.Failure(message = ex.message ?: "Unknown error"))

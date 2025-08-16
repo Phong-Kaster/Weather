@@ -2,8 +2,6 @@ package com.example.weather.data.datasource.remote.dto
 
 import android.graphics.Region
 import androidx.annotation.Keep
-import com.example.jetpack.network.dto.AdministrativeAreaDto
-import com.example.jetpack.network.dto.CountryDto
 import com.example.jetpack.network.dto.GeoPositionDto
 import com.example.jetpack.network.dto.ParentCityDto
 import com.example.jetpack.network.dto.TimeZoneDto

@@ -1,8 +1,8 @@
 package com.example.weather.data.datasource.remote.response
 
 import androidx.annotation.Keep
-import com.example.jetpack.network.dto.AdministrativeAreaDto
-import com.example.jetpack.network.dto.CountryDto
+import com.example.weather.data.datasource.remote.dto.AdministrativeAreaDto
+import com.example.weather.data.datasource.remote.dto.CountryDto
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 

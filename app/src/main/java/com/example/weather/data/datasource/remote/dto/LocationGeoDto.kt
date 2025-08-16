@@ -1,6 +1,8 @@
 package com.example.jetpack.network.dto
 
 import androidx.annotation.Keep
+import com.example.weather.data.datasource.remote.dto.AdministrativeAreaDto
+import com.example.weather.data.datasource.remote.dto.CountryDto
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.util.UUID

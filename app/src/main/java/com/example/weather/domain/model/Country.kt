@@ -1,7 +1,5 @@
 package com.example.weather.domain.model
 
-import com.example.jetpack.network.dto.CountryDto
-
 /**
  * # DTO is Data transfer object
  */

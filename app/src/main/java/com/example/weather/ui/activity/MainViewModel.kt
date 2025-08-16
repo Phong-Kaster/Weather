@@ -119,18 +119,20 @@ constructor(
                 .collect { status ->
                     when (status) {
                         is Status.Success -> {
-//                            _showLoading.value = false
-//                            _locations.value = status.data?.toImmutableList()
+                            _showLoading.value = false
+                            _locations.value = status.data?.toImmutableList()
                             Log.d(TAG, "ktorSearchAutocomplete - location: ${locations.value?.size}")
                         }
 
                         is Status.Failure -> {
-//                            _locations.value = persistentListOf()
-//                            _showLoading.value = false
+                            _locations.value = persistentListOf()
+                            _showLoading.value = false
+                            Log.d(TAG, "ktorSearchAutocomplete - failure")
                         }
 
                         is Status.Loading -> {
-//                            _showLoading.value = true
+                            _showLoading.value = true
+                            Log.d(TAG, "ktorSearchAutocomplete - loading")
                         }
                     }
                 }

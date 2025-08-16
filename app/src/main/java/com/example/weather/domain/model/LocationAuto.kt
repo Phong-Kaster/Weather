@@ -1,8 +1,6 @@
 package com.example.weather.domain.model
 
 import androidx.compose.runtime.Stable
-import com.example.jetpack.network.dto.AdministrativeAreaDto
-import com.example.jetpack.network.dto.CountryDto
 
 @Stable
 class LocationAuto(
