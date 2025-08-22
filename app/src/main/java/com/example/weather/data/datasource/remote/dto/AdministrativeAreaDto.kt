@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName
  *
  * @Serializable is required by Ktor
  * @SerializedName is required by Retrofit
+ *
  * For Ktor/KotlinX: Use @Serializable and match names. Use @SerialName only when needed.
  * For Retrofit/Gson: Use @SerializedName on every DTO property
  */
