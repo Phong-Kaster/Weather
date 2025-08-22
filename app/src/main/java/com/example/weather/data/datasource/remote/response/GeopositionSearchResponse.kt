@@ -4,20 +4,17 @@ import androidx.annotation.Keep
 import com.example.weather.data.datasource.remote.dto.AdministrativeAreaDto
 import com.example.weather.data.datasource.remote.dto.CountryDto
 import com.google.gson.annotations.SerializedName
-import kotlinx.serialization.Serializable
 
 /**
  * # [Serializable](https://levelup.gitconnected.com/serialization-with-kotlin-and-jetpack-compose-3ab36055fd59)
- * # DTO is Data transfer object
- * @author Phong-Kaster
- * this class is bases on AccuWeather API - Autocomplete Search
+ * GeopositionSearchResponse is Data transfer object ( DTO) & its class is bases on AccuWeather API - Autocomplete Search
  * @see https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/geoposition/search
  *
- * @Serializable is required by Ktor
- * @SerializedName is required by Retrofit
+ * annotation @Serializable is required by Ktor
+ * annotation @SerializedName is required by Retrofit. This annotation is for Gson/Retrofit, not used by KotlinX serialization.
+ * @author Phong-Kaster
  * */
 @Keep
-@Serializable
 data class GeopositionSearchResponse(
     @SerializedName("Version"            ) val Version            : Int?                = null,
     @SerializedName("Key"                ) val Key                : String?             = null,

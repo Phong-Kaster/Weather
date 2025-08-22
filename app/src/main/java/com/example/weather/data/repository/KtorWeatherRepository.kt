@@ -36,6 +36,8 @@ class KtorWeatherRepository @Inject constructor(
                     return@flow
                 }
 
+
+
                 val outcome: List<LocationAuto> = response.map { it.toLocationInfoModel() }
                 Log.d(TAG, "------------------------------------------")
                 Log.d(TAG, "The first item")
@@ -43,8 +45,6 @@ class KtorWeatherRepository @Inject constructor(
                     val first = outcome.first()
                     val cityName = first.administrativeArea?.localizedName
                     val countryName = first.country?.localizedName
-
-                    // todo: it still return NULL
                     Log.d(TAG, "searchAutocomplete - cityName: $cityName")
                     Log.d(TAG, "searchAutocomplete - countryName: $countryName")
                 }

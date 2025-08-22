@@ -1,6 +1,6 @@
 package com.example.weather.data.datasource.remotektor
 
-import com.example.weather.data.datasource.remote.response.GeopositionSearchResponse
+import com.example.weather.data.datasource.remotektor.dto.KtorGeopositionSearchResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -19,7 +19,7 @@ constructor(
     /*********************************
      * # [Autocomplete search](https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/autocomplete)
      */
-    suspend fun searchAutocomplete(keyword: String): List<GeopositionSearchResponse> {
+    suspend fun searchAutocomplete(keyword: String): List<KtorGeopositionSearchResponse> {
         return ktorHttpClient.get("https://dataservice.accuweather.com/locations/v1/cities/autocomplete") {
             url { parameters.append("q", keyword) }
         }.body()

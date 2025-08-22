@@ -9,6 +9,9 @@ import kotlinx.serialization.Serializable
  * # DTO is Data transfer object
  * @Serializable is required by Ktor
  * @SerializedName is required by Retrofit
+ *
+ * For Ktor/KotlinX: Use @Serializable and match names. Use @SerialName only when needed.
+ * For Retrofit/Gson: Use @SerializedName on every DTO property
  */
 @Keep
 @Serializable
